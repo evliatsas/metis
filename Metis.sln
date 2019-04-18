@@ -1,0 +1,59 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.572
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Metis.Guard.Entities", "Metis.Guard.Entities\Metis.Guard.Entities.csproj", "{60F55655-AD4F-449B-9127-358ECA214114}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metis.Guard", "Metis.Guard\Metis.Guard.csproj", "{303576A5-5C73-476F-9AAA-5D9DCF917FAC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metis.Overseer", "Metis.Overseer\Metis.Overseer.csproj", "{303EBC24-2887-49B0-8D95-F1D9F455A09A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metis.Teamwork.Entities", "Metis.Teamwork.Entities\Metis.Teamwork.Entities.csproj", "{315EA2AE-FC88-4243-AC4B-D5765FE633A5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metis.Teamwork", "Metis.Teamwork\Metis.Teamwork.csproj", "{CF26A284-D5A1-4AD1-8D51-B5AAF6645DEC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Guard", "Guard", "{4B3876D1-C6E7-4043-B1E1-5636B61D968E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Teamwork", "Teamwork", "{1FD69E01-010A-4BB5-960A-FBD4969F81D1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{60F55655-AD4F-449B-9127-358ECA214114}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60F55655-AD4F-449B-9127-358ECA214114}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60F55655-AD4F-449B-9127-358ECA214114}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60F55655-AD4F-449B-9127-358ECA214114}.Release|Any CPU.Build.0 = Release|Any CPU
+		{303576A5-5C73-476F-9AAA-5D9DCF917FAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{303576A5-5C73-476F-9AAA-5D9DCF917FAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{303576A5-5C73-476F-9AAA-5D9DCF917FAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{303576A5-5C73-476F-9AAA-5D9DCF917FAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{303EBC24-2887-49B0-8D95-F1D9F455A09A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{303EBC24-2887-49B0-8D95-F1D9F455A09A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{303EBC24-2887-49B0-8D95-F1D9F455A09A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{303EBC24-2887-49B0-8D95-F1D9F455A09A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{315EA2AE-FC88-4243-AC4B-D5765FE633A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{315EA2AE-FC88-4243-AC4B-D5765FE633A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{315EA2AE-FC88-4243-AC4B-D5765FE633A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{315EA2AE-FC88-4243-AC4B-D5765FE633A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF26A284-D5A1-4AD1-8D51-B5AAF6645DEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF26A284-D5A1-4AD1-8D51-B5AAF6645DEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF26A284-D5A1-4AD1-8D51-B5AAF6645DEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF26A284-D5A1-4AD1-8D51-B5AAF6645DEC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{60F55655-AD4F-449B-9127-358ECA214114} = {4B3876D1-C6E7-4043-B1E1-5636B61D968E}
+		{303576A5-5C73-476F-9AAA-5D9DCF917FAC} = {4B3876D1-C6E7-4043-B1E1-5636B61D968E}
+		{315EA2AE-FC88-4243-AC4B-D5765FE633A5} = {1FD69E01-010A-4BB5-960A-FBD4969F81D1}
+		{CF26A284-D5A1-4AD1-8D51-B5AAF6645DEC} = {1FD69E01-010A-4BB5-960A-FBD4969F81D1}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1E88033B-64C9-4C36-89D0-0F2A890FCA06}
+	EndGlobalSection
+EndGlobal
