@@ -1,0 +1,16 @@
+{
+  "UiD": "Δήμος Αργυρούπολης",
+  "EncodingCode": "ISO-8859-7",
+  "Pages": [
+    {
+      "Uri": "https://www.elliniko-argyroupoli.gr/",
+      "Exceptions": [
+        {
+          "Type": "div",
+          "Attribute": "class",
+          "Value": "slider-wrapper theme-default"
+        }
+      ]
+    }
+  ]
+}

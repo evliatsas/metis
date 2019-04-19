@@ -1,6 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Metis.Guard
 {
@@ -8,6 +11,8 @@ namespace Metis.Guard
     {
         static void Main(string[] args)
         {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
             var exists = File.Exists(args[0]);
             if(!exists)
             {
@@ -22,8 +27,9 @@ namespace Metis.Guard
                 Console.WriteLine($"Started guarding site {configuration.UiD}.");
 
                 var site = new Entities.Site(configuration);
-                
-                
+                var watcher = new Watcher(site);
+                List<Task> tasks = new List<Task>() { watcher.Start() };
+                Task.WaitAll(tasks.ToArray());
             }
             catch(Exception exc)
             {
