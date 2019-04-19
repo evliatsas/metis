@@ -28,8 +28,13 @@ namespace Metis.Guard
 
                 var site = new Entities.Site(configuration);
                 var watcher = new Watcher(site);
-                List<Task> tasks = new List<Task>() { watcher.Start() };
-                Task.WaitAll(tasks.ToArray());
+                watcher.Start();
+
+                Console.ReadLine();
+                Console.WriteLine("Stopping....");
+                watcher.Stop();
+                Console.WriteLine("Stopped");
+                Console.ReadLine();
             }
             catch(Exception exc)
             {

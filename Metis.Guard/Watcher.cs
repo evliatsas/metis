@@ -1,8 +1,5 @@
-﻿using HtmlAgilityPack;
-using Metis.Guard.Entities;
-using System;
+﻿using Metis.Guard.Entities;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,49 +10,39 @@ namespace Metis.Guard
         private readonly Site _site;
         private readonly Encoding _encoding;
 
+        private List<PageMonitor> _pageMonitors; 
+
         public Watcher(Site site)
         {
             this._site = site;
             this._encoding = Encoding.GetEncoding(_site.EncodingCode);
+            this._pageMonitors = new List<PageMonitor>();
         }
 
-        public async Task Start()
+        public void Start()
         {
             foreach (var page in _site.Pages)
             {
-                await parsePage(page);
+                var pageMonitor = new PageMonitor(page, _encoding);
+                this._pageMonitors.Add(pageMonitor);                
             }
         }
 
-        private async Task<string> parsePage(Page page)
+        public void Stop()
         {
-            var web = new HtmlWeb();
-            var doc = await web.LoadFromWebAsync(page.Uri, _encoding);
-
-            var title = doc.DocumentNode.SelectSingleNode("//title");
-            page.Title = string.IsNullOrEmpty(title?.InnerText) ? "no title" : title.InnerText;
-
-            foreach (var exception in page.Exceptions)
+            foreach(var monitor in this._pageMonitors)
             {
-                var path = $"//{exception.Type}[@{exception.Attribute}='{exception.Value}']";
-                var nodes = doc.DocumentNode.SelectNodes(path);
-                if (nodes != null)
-                {
-                    foreach (HtmlNode node in nodes)
-                    {
-                        node.Remove();
-                    }
-                }
-                else
-                {
-                    Console.WriteLine($"Exception rule {path} has not been found.");
-                }
+                monitor.CancellationToken.Cancel();
             }
 
-            var content = doc.ParsedText;
+            this._pageMonitors.Clear();
+        }
 
+      
 
-            return content;
+        private async Task readLastKnownImage()
+        {
+
         }
     }
 }

@@ -7,5 +7,6 @@ namespace Metis.Guard.Entities
         public string UiD { get; set; }
         public IEnumerable<Page> Pages { get; set; }
         public string EncodingCode { get; set; }
+        public string ConnectionString { get; set; }
     }
 }

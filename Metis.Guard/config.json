@@ -12,5 +12,6 @@
         }
       ]
     }
-  ]
+  ],
+  "ConnectionString": "mongodb://admin:Abc.123@ds349065.mlab.com:49065/metis"
 }

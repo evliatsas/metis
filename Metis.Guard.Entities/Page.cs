@@ -6,7 +6,9 @@ namespace Metis.Guard.Entities
     {
         public string Title { get; set; }
         public string Uri { get; set; }
-        public string Hash { get; set; }
+        public string MD5Hash { get; set; }
         public IEnumerable<PageElement> Exceptions { get; set; }
+
+        public Status Status { get; set; }
     }
 }
