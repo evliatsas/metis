@@ -37,6 +37,7 @@ namespace Metis.Overseer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<UserService>();
+            services.AddSingleton(new GuardService(this.Configuration));
 
             services.AddAuthentication(options =>
             {
@@ -134,7 +135,7 @@ namespace Metis.Overseer
             app.UseMvc();
 
             // start the site guards
-            var guardService = new GuardService(this.Configuration);
+            //var guardService = new GuardService(this.Configuration);
         }
     }
 }
