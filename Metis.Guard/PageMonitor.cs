@@ -10,9 +10,9 @@ namespace Metis.Guard
     public class PageMonitor
     {
         /// <summary>
-        /// The page refresh time in minutes
+        /// The page refresh time in seconds
         /// </summary>
-        const int MONITOR_THRESHOLD = 20; 
+        const int MONITOR_THRESHOLD = 60; 
 
         private readonly Encoding _encoding;
 
@@ -29,10 +29,27 @@ namespace Metis.Guard
         {
             while(!token.IsCancellationRequested)
             {
-                var content = await parsePage(page);
+                var content = await parsePage(page);                
+
+                if(string.IsNullOrEmpty(content))
+                {
+                    //an exception has occured
+                    //an event should already notified the watcher
+                    //to safely cancel the monitor
+                    continue;
+                }
+
                 var md5 = Utilities.CreateMD5(content, _encoding);
 
-                if(string.Equals(page.MD5Hash, md5))
+                //if it is a new page
+                if(string.IsNullOrEmpty(page.MD5Hash))
+                {
+                    //initialize the md5 hash of the content to the current one
+                    page.MD5Hash = md5;
+                    page.Status = Status.Ok;
+                }
+
+                if (string.Equals(page.MD5Hash, md5))
                 {
                     if(page.Status != Status.Ok)
                     {
@@ -53,31 +70,48 @@ namespace Metis.Guard
         private async Task<string> parsePage(Page page)
         {
             var web = new HtmlWeb();
-            var doc = await web.LoadFromWebAsync(page.Uri, _encoding);
-
-            var title = doc.DocumentNode.SelectSingleNode("//title");
-            page.Title = string.IsNullOrEmpty(title?.InnerText) ? "no title" : title.InnerText;
-
-            foreach (var exception in page.Exceptions)
+            try
             {
-                var path = $"//{exception.Type}[@{exception.Attribute}='{exception.Value}']";
-                var nodes = doc.DocumentNode.SelectNodes(path);
-                if (nodes != null)
+                var doc = await web.LoadFromWebAsync(page.Uri, _encoding);
+
+                var title = doc.DocumentNode.SelectSingleNode("//title");
+                page.Title = string.IsNullOrEmpty(title?.InnerText) ? "no title" : title.InnerText;
+
+                foreach (var exception in page.Exceptions)
                 {
-                    foreach (HtmlNode node in nodes)
+                    var path = $"//{exception.Type}[@{exception.Attribute}='{exception.Value}']";
+                    var nodes = doc.DocumentNode.SelectNodes(path);
+                    if (nodes != null)
                     {
-                        node.Remove();
+                        foreach (HtmlNode node in nodes)
+                        {
+                            node.Remove();
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Exception rule {path} has not been found.");
                     }
                 }
-                else
-                {
-                    Console.WriteLine($"Exception rule {path} has not been found.");
-                }
+
+                var content = doc.ParsedText;
+
+                return content;
             }
+            catch(System.Net.Http.HttpRequestException exception)
+            {
+                //todo raise page not found event
+                //log exception
 
-            var content = doc.ParsedText;
+                return string.Empty;
+            }
+            catch(Exception exception)
+            {
+                //todo raise exception event
+                //log exception
 
-            return content;
+                return string.Empty;
+            }
         }
     }
 }

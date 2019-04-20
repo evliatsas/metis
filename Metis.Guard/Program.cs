@@ -26,8 +26,7 @@ namespace Metis.Guard
 
                 Console.WriteLine($"Started guarding site {configuration.UiD}.");
 
-                var site = new Entities.Site(configuration);
-                var watcher = new Watcher(site);
+                var watcher = new Watcher(configuration);
                 watcher.Start();
 
                 Console.ReadLine();

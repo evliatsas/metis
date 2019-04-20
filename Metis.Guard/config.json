@@ -1,17 +1,4 @@
 {
-  "UiD": "Δήμος Αργυρούπολης",
-  "EncodingCode": "ISO-8859-7",
-  "Pages": [
-    {
-      "Uri": "https://www.elliniko-argyroupoli.gr/",
-      "Exceptions": [
-        {
-          "Type": "div",
-          "Attribute": "class",
-          "Value": "slider-wrapper theme-default"
-        }
-      ]
-    }
-  ],
+  "UiD": "5cba5b8d5015d5e57dd534c2",
   "ConnectionString": "mongodb://admin:Abc.123@ds349065.mlab.com:49065/metis"
 }
