@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Metis.Overseer.Controllers
@@ -11,6 +12,7 @@ namespace Metis.Overseer.Controllers
     public class ValuesController : ControllerBase
     {
         // GET api/values
+        [AllowAnonymous]
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {

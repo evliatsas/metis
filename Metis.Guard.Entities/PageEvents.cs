@@ -21,12 +21,12 @@ namespace Metis.Guard.Entities
     public class PageStatusEventArgs : EventArgs
     {
         public Page Page { get; }
-        public Status Status { get; }
+        public Status PreviousStatus { get; }
 
         public PageStatusEventArgs(Page page, Status status)
         {
             this.Page = page;
-            this.Status = status;
+            this.PreviousStatus = status;
         }
     }
 }

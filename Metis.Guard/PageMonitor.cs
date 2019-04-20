@@ -111,9 +111,10 @@ namespace Metis.Guard
                     {
                         //initialize the md5 hash of the content to the current one
                         page.MD5Hash = md5;
+                        var previousStatus = page.Status;
                         page.Status = Status.Ok;
                         // raise page status changed event
-                        var args = new PageStatusEventArgs(page, Status.Ok);
+                        var args = new PageStatusEventArgs(page, previousStatus);
                         OnPageStatusChanged(args);
                     }
 
@@ -121,17 +122,19 @@ namespace Metis.Guard
                     {
                         if (page.Status != Status.Ok)
                         {
+                            var previousStatus = page.Status;
                             page.Status = Status.Ok;
                             // raise page status changed event
-                            var args = new PageStatusEventArgs(page, Status.Ok);
+                            var args = new PageStatusEventArgs(page, previousStatus);
                             OnPageStatusChanged(args);
                         }
                     }
                     else
                     {
+                        var previousStatus = page.Status;
                         page.Status = Status.Alarm;
                         // raise page status changed event
-                        var args = new PageStatusEventArgs(page, Status.Alarm);
+                        var args = new PageStatusEventArgs(page, previousStatus);
                         OnPageStatusChanged(args);
                     }
 

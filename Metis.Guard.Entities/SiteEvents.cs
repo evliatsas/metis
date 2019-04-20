@@ -8,12 +8,12 @@ namespace Metis.Guard.Entities
     public class SiteStatusEventArgs : EventArgs
     {
         public Site Site { get; }
-        public Status status { get; }
+        public Status PreviousStatus { get; }
 
         public SiteStatusEventArgs(Site site, Status status)
         {
             this.Site = site;
-            this.status = status;
+            this.PreviousStatus = status;
         }
     }
 

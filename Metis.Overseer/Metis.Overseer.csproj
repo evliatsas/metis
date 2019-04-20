@@ -16,7 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Metis.Core.Entities\Metis.Core.Entities.csproj" />
     <ProjectReference Include="..\Metis.Guard.Entities\Metis.Guard.Entities.csproj" />
+    <ProjectReference Include="..\Metis.Guard\Metis.Guard.csproj" />
     <ProjectReference Include="..\Metis.Teamwork.Entities\Metis.Teamwork.Entities.csproj" />
   </ItemGroup>
 

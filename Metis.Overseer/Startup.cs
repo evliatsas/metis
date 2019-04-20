@@ -132,6 +132,9 @@ namespace Metis.Overseer
 
             app.UseAuthentication();
             app.UseMvc();
+
+            // start the site guards
+            var guardService = new GuardService(this.Configuration);
         }
     }
 }

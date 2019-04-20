@@ -96,8 +96,9 @@ namespace Metis.Guard
 
             if (_site.Status != Status.Maintenance)
             {
+                var previousStatus = _site.Status;
                 _site.Status = Status.Maintenance;
-                var args = new SiteStatusEventArgs(_site, Status.Maintenance);
+                var args = new SiteStatusEventArgs(_site, previousStatus);
                 OnSiteStatusChanged(args);
             }
         }
@@ -212,21 +213,23 @@ namespace Metis.Guard
         private void Monitor_PageStatusChanged(object sender, PageStatusEventArgs e)
         {
             // calculate overall site status
-            if (e.Status == Status.Alarm || e.Status == Status.NotFound)
+            if (e.Page.Status == Status.Alarm || e.Page.Status == Status.NotFound)
             {
                 if (_site.Status != Status.Alarm)
                 {
+                    var previousStatus = _site.Status;
                     _site.Status = Status.Alarm;
-                    var args = new SiteStatusEventArgs(_site, Status.Alarm);
+                    var args = new SiteStatusEventArgs(_site, previousStatus);
                     OnSiteStatusChanged(args);
                 }
             }
-            else if (e.Status == Status.Maintenance)
+            else if (e.Page.Status == Status.Maintenance)
             {
                 if (_site.Status != Status.Maintenance)
                 {
+                    var previousStatus = _site.Status;
                     _site.Status = Status.Maintenance;
-                    var args = new SiteStatusEventArgs(_site, Status.Maintenance);
+                    var args = new SiteStatusEventArgs(_site, previousStatus);
                     OnSiteStatusChanged(args);
                 }
             }
@@ -234,8 +237,9 @@ namespace Metis.Guard
             {
                 if (_site.Pages.All(p => p.Status == Status.Ok) && _site.Status != Status.Ok)
                 {
+                    var previousStatus = _site.Status;
                     _site.Status = Status.Ok;
-                    var args = new SiteStatusEventArgs(_site, Status.Ok);
+                    var args = new SiteStatusEventArgs(_site, previousStatus);
                     OnSiteStatusChanged(args);
                 }
             }

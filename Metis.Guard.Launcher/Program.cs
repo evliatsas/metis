@@ -1,9 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Metis.Guard
 {
@@ -13,14 +11,13 @@ namespace Metis.Guard
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-            var exists = File.Exists(args[0]);
-            if(!exists)
-            {
-                Console.WriteLine("You need to provide a valid configuration json file path as an argument.");
-            }
-
             try
             {
+                var exists = File.Exists(args[0]);
+                if (!exists)
+                {
+                    Console.WriteLine("You need to provide a valid configuration json file path as an argument.");
+                }
                 // read file into a string and deserialize JSON to a type
                 var configuration = JsonConvert.DeserializeObject<Entities.Configuration>(File.ReadAllText(args[0]));
 
@@ -40,6 +37,8 @@ namespace Metis.Guard
             catch(Exception exc)
             {
                 Console.WriteLine(exc.ToString());
+
+                Console.ReadLine();
             }           
         }
 
