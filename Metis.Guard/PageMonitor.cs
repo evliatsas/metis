@@ -19,22 +19,44 @@ namespace Metis.Guard
         const int MONITOR_THRESHOLD = 60; 
 
         private readonly Encoding _encoding;
+        private readonly Page _page;
 
         /// <summary>
         /// Provides the cancellation token for the monitor thread
         /// </summary>
         public CancellationTokenSource CancellationTokenSource { get; private set; }
+        /// <summary>
+        /// The status of the working monitor thread
+        /// </summary>
+        public WorkerStatus MonitorStatus { get; private set; }
 
         /// <summary>
-        /// Starts monitoring an Html Page
+        /// Initiate a page monitor.
+        /// Monitoring do not start until the Start() method is invoked
         /// </summary>
         /// <param name="page">The Page to monitor</param>
         /// <param name="encoding">The charset encoding of the Html Page</param>
         public PageMonitor(Page page, Encoding encoding)
         {
-            this.CancellationTokenSource = new CancellationTokenSource();
             this._encoding = encoding;
-            Task.Factory.StartNew(() => monitor(page, this.CancellationTokenSource.Token));
+            this._page = page;            
+        }
+
+        /// <summary>
+        /// Starts monitoring the Html Page
+        /// </summary>
+        public void Start()
+        {
+            this.CancellationTokenSource = new CancellationTokenSource();
+            Task.Factory.StartNew(() => monitor(_page, this.CancellationTokenSource.Token));            
+        }
+
+        /// <summary>
+        /// Stops monitoring the Html Page
+        /// </summary>
+        public void Stop()
+        {
+            this.CancellationTokenSource.Cancel();
         }
 
         /// <summary>
@@ -51,7 +73,7 @@ namespace Metis.Guard
             {
                 Exceptions = page.Exceptions,
                 MD5Hash = md5,
-                Status = Status.Ok,
+                Status = page.Status,
                 Title = page.Title,
                 Uri = page.Uri
             };
@@ -59,52 +81,80 @@ namespace Metis.Guard
             return snasphot;
         }
 
-        // worker thread that monitors the page content periodically
+        /// <summary>
+        /// Worker thread that monitors the page content periodically
+        /// </summary>
+        /// <param name="page">The Page to monitor</param>
+        /// <param name="token">The cancellation token</param>
+        /// <returns></returns>
         private async Task monitor(Page page, CancellationToken token)
         {
-            while(!token.IsCancellationRequested)
+            try
             {
-                var content = await parsePage(page);                
-
-                if(string.IsNullOrEmpty(content))
+                while (!token.IsCancellationRequested)
                 {
-                    //an exception has occured
-                    //an event should already notified the watcher
-                    //to safely cancel the monitor
-                    continue;
-                }
+                    this.MonitorStatus = WorkerStatus.Running;
 
-                var md5 = Utilities.CreateMD5(content, _encoding);
+                    var content = await parsePage(page);
 
-                ////if it is a new page
-                //if(string.IsNullOrEmpty(page.MD5Hash))
-                //{
-                //    //initialize the md5 hash of the content to the current one
-                //    page.MD5Hash = md5;
-                //    page.Status = Status.Ok;
-                //    //todo raise 
-                //}
-
-                if (string.Equals(page.MD5Hash, md5))
-                {
-                    if(page.Status != Status.Ok)
+                    if (string.IsNullOrEmpty(content))
                     {
-                        page.Status = Status.Ok;
-                        //todo raise status changed event
+                        // an exception has occured
+                        // an event should already notified the watcher to safely stop the monitor
+                        continue;
                     }
-                }
-                else
-                {
-                    page.Status = Status.Alarm;
-                    //todo raise status alarm event
+
+                    var md5 = Utilities.CreateMD5(content, _encoding);
+
+                    //if it is a new page
+                    if (string.IsNullOrEmpty(page.MD5Hash))
+                    {
+                        //initialize the md5 hash of the content to the current one
+                        page.MD5Hash = md5;
+                        page.Status = Status.Ok;
+                        // raise page status changed event
+                        var args = new PageStatusEventArgs(page, Status.Ok);
+                        OnPageStatusChanged(args);
+                    }
+
+                    if (string.Equals(page.MD5Hash, md5))
+                    {
+                        if (page.Status != Status.Ok)
+                        {
+                            page.Status = Status.Ok;
+                            // raise page status changed event
+                            var args = new PageStatusEventArgs(page, Status.Ok);
+                            OnPageStatusChanged(args);
+                        }
+                    }
+                    else
+                    {
+                        page.Status = Status.Alarm;
+                        // raise page status changed event
+                        var args = new PageStatusEventArgs(page, Status.Alarm);
+                        OnPageStatusChanged(args);
+                    }
+
+                    await Task.Delay(TimeSpan.FromSeconds(MONITOR_THRESHOLD), token);
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(MONITOR_THRESHOLD), token);
+                this.MonitorStatus = WorkerStatus.Stopped;
+            }
+            catch(Exception exception)
+            {
+                // raise page parse exception event
+                page.Status = Status.Alarm;
+                var args = new PageExceptionEventArgs(page, exception);
+                OnPageParseException(args);
             }
         }
 
-        // parses the html page, updates the page title and returns the content
-        // without the exception elements as an html string
+        /// <summary>
+        /// Parses the html page, updates the page title and returns the content 
+        /// without the exception elements as an html string
+        /// </summary>
+        /// <param name="page">The Page to parse</param>
+        /// <returns>Page content or string.Empty on exception</returns>
         private async Task<string> parsePage(Page page)
         {
             var web = new HtmlWeb();
@@ -138,18 +188,54 @@ namespace Metis.Guard
             }
             catch(System.Net.Http.HttpRequestException exception)
             {
-                //todo raise page not found event
-                //log exception
+                // raise page not found event
+                page.Status = Status.NotFound;
+                var args = new PageExceptionEventArgs(page, exception);
+                OnPageNotFound(args);
 
                 return string.Empty;
             }
             catch(Exception exception)
             {
-                //todo raise exception event
-                //log exception
+                // raise page parse exception event
+                page.Status = Status.Alarm;
+                var args = new PageExceptionEventArgs(page, exception);
+                OnPageParseException(args);
 
                 return string.Empty;
             }
         }
+
+        #region Events
+
+        /// <summary>
+        /// Raised when a page cannot be loaded from web
+        /// </summary>
+        public event PageNotFoundEventHandler PageNotFound;
+        /// <summary>
+        /// Raised when the content of the page cannot be parsed
+        /// </summary>
+        public event PageParseExceptionEventHandler PageParseException;
+        /// <summary>
+        /// Raised whenever the current status of a page changes
+        /// </summary>
+        public event PageStatusChangedEventHandler PageStatusChanged;
+
+        protected void OnPageNotFound(PageExceptionEventArgs e)
+        {
+            PageNotFound?.Invoke(this, e);
+        }
+
+        protected void OnPageParseException(PageExceptionEventArgs e)
+        {
+            PageParseException?.Invoke(this, e);
+        }
+
+        protected void OnPageStatusChanged(PageStatusEventArgs e)
+        {
+            PageStatusChanged?.Invoke(this, e);
+        }
+
+        #endregion
     }
 }

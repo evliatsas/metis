@@ -27,13 +27,9 @@ namespace Metis.Guard
                 Console.WriteLine($"Started guarding site {configuration.UiD}.");
 
                 var watcher = new Watcher(configuration);
+                watcher.SiteStatusChanged += Watcher_SiteStatusChanged;
+                watcher.SiteException += Watcher_SiteException;
                 watcher.Start();
-
-                var tasks = new List<Task>()
-                {
-                    Task.Run(()=>watcher.TakeSnapshot())
-                };
-                Task.WaitAll(tasks.ToArray());
 
                 Console.ReadLine();
                 Console.WriteLine("Stopping....");
@@ -45,6 +41,16 @@ namespace Metis.Guard
             {
                 Console.WriteLine(exc.ToString());
             }           
+        }
+
+        private static void Watcher_SiteException(object sender, Entities.SiteExceptionEventArgs e)
+        {
+            
+        }
+
+        private static void Watcher_SiteStatusChanged(object sender, Entities.SiteStatusEventArgs e)
+        {
+            
         }
     }
 }

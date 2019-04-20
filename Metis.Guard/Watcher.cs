@@ -39,8 +39,14 @@ namespace Metis.Guard
         {
             foreach (var page in _site.Pages)
             {
-                var pageMonitor = new PageMonitor(page, _encoding);
-                this._pageMonitors.Add(page.Uri, pageMonitor);                
+                var monitor = new PageMonitor(page, _encoding);
+                monitor.Start();
+                // subscribe to the event handlers
+                monitor.PageNotFound += Monitor_PageNotFound;
+                monitor.PageParseException += Monitor_PageParseException;
+                monitor.PageStatusChanged += Monitor_PageStatusChanged;
+                // keep a reference to the monitor
+                this._pageMonitors.Add(page.Uri, monitor);                
             }
         }
 
@@ -51,10 +57,64 @@ namespace Metis.Guard
         {
             foreach(var monitor in this._pageMonitors.Values)
             {
-                monitor.CancellationTokenSource.Cancel();
+                // stop running threads
+                if(monitor.MonitorStatus == WorkerStatus.Running)
+                {
+                    monitor.Stop();
+                }
+               
+                // unsubscribe from the event handlers
+                monitor.PageNotFound -= Monitor_PageNotFound;
+                monitor.PageParseException -= Monitor_PageParseException;
+                monitor.PageStatusChanged -= Monitor_PageStatusChanged;
             }
 
+            // release the reference to the monitor instances
             this._pageMonitors.Clear();
+        }
+
+        /// <summary>
+        /// Stop monitoring the site pages until the complete maintenance is called
+        /// Updates the site overall status to Maintenance
+        /// </summary>
+        /// <returns></returns>
+        public async Task StartMaintenance()
+        {
+            foreach (var monitor in this._pageMonitors.Values)
+            {
+                // stop running threads
+                if (monitor.MonitorStatus == WorkerStatus.Running)
+                {
+                    monitor.Stop();
+                }
+            }
+            foreach (var page in _site.Pages)
+            {
+                page.Status = Status.Maintenance;
+                await updateSitePage(page);
+            }
+
+            if (_site.Status != Status.Maintenance)
+            {
+                _site.Status = Status.Maintenance;
+                var args = new SiteStatusEventArgs(_site, Status.Maintenance);
+                OnSiteStatusChanged(args);
+            }
+        }
+
+        /// <summary>
+        /// Resumes monitoring the site pages after maintenance is complete
+        /// </summary>
+        /// <returns></returns>
+        public void CompleteMaintenance()
+        {            
+            foreach (var monitor in this._pageMonitors.Values)
+            {
+                if (monitor.MonitorStatus != WorkerStatus.Running)
+                {
+                    monitor.Start();
+                }
+            }
         }
 
         /// <summary>
@@ -62,16 +122,26 @@ namespace Metis.Guard
         /// </summary>
         public async Task TakeSnapshot()
         {
+            if(_site == null)
+            {
+                return;   
+            }
+
             foreach (var page in _site.Pages)
             {
                 var monitor = this._pageMonitors[page.Uri];
                 var snapshot = await monitor.TakeSnapshot(page);
 
-                await writeLastKnownImage(snapshot);
+                await updateSitePage(snapshot);
             }
         }
 
-        // read the stored site data from the database
+        #region Data Adapters
+
+        /// <summary>
+        /// read the stored site data from the database
+        /// </summary>
+        /// <param name="configuration">The configration containing the connection string</param>
         private async Task readSiteFromDb(Configuration configuration)
         {
             var client = new MongoClient(configuration.ConnectionString);
@@ -81,8 +151,11 @@ namespace Metis.Guard
             this._site = await query.SingleOrDefaultAsync();
         }
 
-        // update the site page data in the database
-        private async Task writeLastKnownImage(Page page)
+        /// <summary>
+        /// update the site page data in the database
+        /// </summary>
+        /// <param name="page">The page to update</param>
+        private async Task updateSitePage(Page page)
         {
             var client = new MongoClient(_connectionString);
             var database = client.GetDatabase("metis");
@@ -90,5 +163,127 @@ namespace Metis.Guard
             await siteCollection.FindOneAndUpdateAsync(s => s.Id == _site.Id && s.Pages.Any(p => p.Uri == page.Uri),
                 Builders<Site>.Update.Set(s=>s.Pages.ElementAt(-1), page));
         }
+
+        /// <summary>
+        /// update the site status in the database
+        /// </summary>
+        /// <param name="site">The site to update</param>
+        private async Task updateSiteStatus(Site site)
+        {
+            var client = new MongoClient(_connectionString);
+            var database = client.GetDatabase("metis");
+            var siteCollection = database.GetCollection<Site>("sites");
+            await siteCollection.FindOneAndUpdateAsync(s => s.Id == _site.Id, 
+                Builders<Site>.Update.Set(s => s.Status, site.Status));
+        }
+
+        #endregion
+
+        #region Events
+
+        /// <summary>
+        /// Raised whenever the site pages cannot be properly monitored
+        /// </summary>
+        public event SiteMonitorExceptionEventHandler SiteException;
+        /// <summary>
+        /// Raised when the site current overall status changed
+        /// </summary>
+        public event SiteStatusChangedEventHandler SiteStatusChanged;
+
+        protected void OnSiteException(SiteExceptionEventArgs e)
+        {
+            SiteException?.Invoke(this, e);
+
+            // TODO log the exception
+        }
+
+        protected void OnSiteStatusChanged(SiteStatusEventArgs e)
+        {
+            SiteStatusChanged?.Invoke(this, e);
+
+            // update the page status change to the database
+            Task.Run(() => updateSiteStatus(e.Site));
+        }
+
+        #endregion
+
+        #region Event Handlers
+
+        private void Monitor_PageStatusChanged(object sender, PageStatusEventArgs e)
+        {
+            // calculate overall site status
+            if (e.Status == Status.Alarm || e.Status == Status.NotFound)
+            {
+                if (_site.Status != Status.Alarm)
+                {
+                    _site.Status = Status.Alarm;
+                    var args = new SiteStatusEventArgs(_site, Status.Alarm);
+                    OnSiteStatusChanged(args);
+                }
+            }
+            else if (e.Status == Status.Maintenance)
+            {
+                if (_site.Status != Status.Maintenance)
+                {
+                    _site.Status = Status.Maintenance;
+                    var args = new SiteStatusEventArgs(_site, Status.Maintenance);
+                    OnSiteStatusChanged(args);
+                }
+            }
+            else
+            {
+                if (_site.Pages.All(p => p.Status == Status.Ok) && _site.Status != Status.Ok)
+                {
+                    _site.Status = Status.Ok;
+                    var args = new SiteStatusEventArgs(_site, Status.Ok);
+                    OnSiteStatusChanged(args);
+                }
+            }
+
+            // update the page status change to the database
+            Task.Run(() => updateSitePage(e.Page));
+        }
+
+        private void Monitor_PageParseException(object sender, PageExceptionEventArgs e)
+        {
+            // stop the monitoring thread until the exception is resolved
+            var monitor = sender as PageMonitor;
+            if (monitor.MonitorStatus == WorkerStatus.Running)
+            {
+                monitor.Stop();
+            }
+
+            if (_site.Status != Status.Alarm)
+            {
+                _site.Status = Status.Alarm;
+                var args = new SiteExceptionEventArgs(_site, e.Page, e.Exception);
+                OnSiteException(args);
+            }
+
+            // update the page status change to the database
+            Task.Run(() => updateSitePage(e.Page));
+        }
+
+        private void Monitor_PageNotFound(object sender, PageExceptionEventArgs e)
+        {
+            // stop the monitoring thread until the exception is resolved
+            var monitor = sender as PageMonitor;
+            if (monitor.MonitorStatus == WorkerStatus.Running)
+            {
+                monitor.Stop();
+            }
+
+            if (_site.Status != Status.Alarm)
+            {
+                _site.Status = Status.Alarm;
+                var args = new SiteExceptionEventArgs(_site, e.Page, e.Exception);
+                OnSiteException(args);
+            }
+
+            // update the page status change to the database
+            Task.Run(() => updateSitePage(e.Page));
+        }
+
+        #endregion
     }
 }

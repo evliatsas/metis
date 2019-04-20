@@ -7,6 +7,14 @@
     {
         Ok,
         Maintenance,
-        Alarm
+        Alarm,
+        NotFound
+    }
+
+    public enum WorkerStatus
+    {
+        None,
+        Running,
+        Stopped
     }
 }
