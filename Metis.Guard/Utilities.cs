@@ -4,6 +4,12 @@ namespace Metis.Guard
 {
     public class Utilities
     {
+        /// <summary>
+        /// Calculate the MD5 Hash for a given string
+        /// </summary>
+        /// <param name="input">The source string</param>
+        /// <param name="encoding">The text encoding (default is UTF-8)</param>
+        /// <returns>MD5 Hash</returns>
         public static string CreateMD5(string input, Encoding encoding = null)
         {
             if(encoding == null)

@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 
 namespace Metis.Guard
 {
+    /// <summary>
+    /// Responsible to monitor a single page in a seperate thread
+    /// and report any changes to the page content
+    /// </summary>
     public class PageMonitor
     {
         /// <summary>
@@ -16,16 +20,47 @@ namespace Metis.Guard
 
         private readonly Encoding _encoding;
 
-        public CancellationTokenSource CancellationToken { get; private set; }
+        /// <summary>
+        /// Provides the cancellation token for the monitor thread
+        /// </summary>
+        public CancellationTokenSource CancellationTokenSource { get; private set; }
 
+        /// <summary>
+        /// Starts monitoring an Html Page
+        /// </summary>
+        /// <param name="page">The Page to monitor</param>
+        /// <param name="encoding">The charset encoding of the Html Page</param>
         public PageMonitor(Page page, Encoding encoding)
         {
-            this.CancellationToken = new CancellationTokenSource();
+            this.CancellationTokenSource = new CancellationTokenSource();
             this._encoding = encoding;
-            Task.Factory.StartNew(() => Monitor(page, this.CancellationToken.Token));
+            Task.Factory.StartNew(() => monitor(page, this.CancellationTokenSource.Token));
         }
 
-        public async Task Monitor(Page page, CancellationToken token)
+        /// <summary>
+        /// Capture a Snapshot of the Page content
+        /// </summary>
+        /// <param name="page">The Page to capture</param>
+        /// <returns>The current data of the Page</returns>
+        internal async Task<Page> TakeSnapshot(Page page)
+        {
+            var content = await parsePage(page);
+            var md5 = Utilities.CreateMD5(content, _encoding);
+
+            var snasphot = new Page()
+            {
+                Exceptions = page.Exceptions,
+                MD5Hash = md5,
+                Status = Status.Ok,
+                Title = page.Title,
+                Uri = page.Uri
+            };
+
+            return snasphot;
+        }
+
+        // worker thread that monitors the page content periodically
+        private async Task monitor(Page page, CancellationToken token)
         {
             while(!token.IsCancellationRequested)
             {
@@ -41,13 +76,14 @@ namespace Metis.Guard
 
                 var md5 = Utilities.CreateMD5(content, _encoding);
 
-                //if it is a new page
-                if(string.IsNullOrEmpty(page.MD5Hash))
-                {
-                    //initialize the md5 hash of the content to the current one
-                    page.MD5Hash = md5;
-                    page.Status = Status.Ok;
-                }
+                ////if it is a new page
+                //if(string.IsNullOrEmpty(page.MD5Hash))
+                //{
+                //    //initialize the md5 hash of the content to the current one
+                //    page.MD5Hash = md5;
+                //    page.Status = Status.Ok;
+                //    //todo raise 
+                //}
 
                 if (string.Equals(page.MD5Hash, md5))
                 {
@@ -67,6 +103,8 @@ namespace Metis.Guard
             }
         }
 
+        // parses the html page, updates the page title and returns the content
+        // without the exception elements as an html string
         private async Task<string> parsePage(Page page)
         {
             var web = new HtmlWeb();

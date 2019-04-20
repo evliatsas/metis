@@ -7,13 +7,17 @@ using System.Threading.Tasks;
 
 namespace Metis.Guard
 {
+    /// <summary>
+    /// Watcher is responsible for guarding each individual Page
+    /// in the Site and report any Incidents
+    /// </summary>
     public class Watcher
     {
         private Site _site;
         private readonly string _connectionString;
         private readonly Encoding _encoding;
-        private readonly List<PageMonitor> _pageMonitors; 
-
+        private readonly Dictionary<string, PageMonitor> _pageMonitors; 
+                
         public Watcher(Configuration configuration)
         {           
             var task = Task.Run(async () => await readSiteFromDb(configuration));
@@ -25,28 +29,49 @@ namespace Metis.Guard
 
             this._connectionString = configuration.ConnectionString;
             this._encoding = Encoding.GetEncoding(_site.EncodingCode);
-            this._pageMonitors = new List<PageMonitor>();
+            this._pageMonitors = new Dictionary<string, PageMonitor>();
         }
 
+        /// <summary>
+        /// Start Watching the Pages of the Site for content changes
+        /// </summary>
         public void Start()
         {
             foreach (var page in _site.Pages)
             {
                 var pageMonitor = new PageMonitor(page, _encoding);
-                this._pageMonitors.Add(pageMonitor);                
+                this._pageMonitors.Add(page.Uri, pageMonitor);                
             }
         }
 
+        /// <summary>
+        /// Stop Watching the Pages of the Site for content changes
+        /// </summary>
         public void Stop()
         {
-            foreach(var monitor in this._pageMonitors)
+            foreach(var monitor in this._pageMonitors.Values)
             {
-                monitor.CancellationToken.Cancel();
+                monitor.CancellationTokenSource.Cancel();
             }
 
             this._pageMonitors.Clear();
         }
 
+        /// <summary>
+        /// Take a snapshot of the Pages of the Site and upadate the Database
+        /// </summary>
+        public async Task TakeSnapshot()
+        {
+            foreach (var page in _site.Pages)
+            {
+                var monitor = this._pageMonitors[page.Uri];
+                var snapshot = await monitor.TakeSnapshot(page);
+
+                await writeLastKnownImage(snapshot);
+            }
+        }
+
+        // read the stored site data from the database
         private async Task readSiteFromDb(Configuration configuration)
         {
             var client = new MongoClient(configuration.ConnectionString);
@@ -56,6 +81,7 @@ namespace Metis.Guard
             this._site = await query.SingleOrDefaultAsync();
         }
 
+        // update the site page data in the database
         private async Task writeLastKnownImage(Page page)
         {
             var client = new MongoClient(_connectionString);

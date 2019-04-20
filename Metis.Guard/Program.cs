@@ -29,6 +29,12 @@ namespace Metis.Guard
                 var watcher = new Watcher(configuration);
                 watcher.Start();
 
+                var tasks = new List<Task>()
+                {
+                    Task.Run(()=>watcher.TakeSnapshot())
+                };
+                Task.WaitAll(tasks.ToArray());
+
                 Console.ReadLine();
                 Console.WriteLine("Stopping....");
                 watcher.Stop();
