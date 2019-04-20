@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Metis.Overseer.Models;
+using Metis.Core.Entities;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 

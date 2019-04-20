@@ -22,4 +22,8 @@
     <ProjectReference Include="..\Metis.Teamwork.Entities\Metis.Teamwork.Entities.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+
 </Project>

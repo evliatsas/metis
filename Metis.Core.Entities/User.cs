@@ -1,9 +1,8 @@
-using System.Collections.Generic;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.ComponentModel.DataAnnotations;
 
-namespace Metis.Overseer.Models
+namespace Metis.Core.Entities
 {
     public class User
     {
@@ -18,5 +17,12 @@ namespace Metis.Overseer.Models
         [Required]
         [BsonElement("password")]
         public string Password { get; set; }
+
+        [Required]
+        [BsonElement("email")]
+        public string Email { get; set; }
+
+        [BsonElement("title")]
+        public string Title { get; set; }
     }
 }

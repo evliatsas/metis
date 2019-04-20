@@ -1,8 +1,7 @@
-using Metis.Overseer.Models;
+using Metis.Core.Entities;
 using Metis.Overseer.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;

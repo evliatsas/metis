@@ -34,6 +34,73 @@ namespace Metis.Overseer.Services
             }
         }
 
+        public void StartGuard(string siteId)
+        {
+            var exists = _guards.ContainsKey(siteId);
+            if(exists)
+            {
+                Watcher watcher;
+                _guards.TryGetValue(siteId, out watcher);
+                watcher.Start();
+            }
+            else
+            {
+                var config = new Configuration() { UiD = siteId, ConnectionString = _connectionString };
+                var watcher = new Watcher(config);
+                watcher.SiteStatusChanged += Watcher_SiteStatusChanged;
+                watcher.SiteException += Watcher_SiteException;
+                watcher.Start();
+
+                _guards.TryAdd(siteId, watcher);
+            }
+        }
+
+        public void StopGuard(string siteId)
+        {
+            var exists = _guards.ContainsKey(siteId);
+            if (exists)
+            {
+                Watcher watcher;
+                _guards.TryGetValue(siteId, out watcher);
+                watcher.Stop();
+            }
+            else
+            {
+                throw new KeyNotFoundException("This site is not being watched by the guard service.");
+            }
+        }
+
+        public void StartMaintenance(string siteId)
+        {
+            var exists = _guards.ContainsKey(siteId);
+            if (exists)
+            {
+                Watcher watcher;
+                _guards.TryGetValue(siteId, out watcher);
+                var tasks = new List<Task>() { Task.Run(() => watcher.StartMaintenance()) };
+                Task.WaitAll(tasks.ToArray());
+            }
+            else
+            {
+                throw new KeyNotFoundException("This site is not being watched by the guard service.");
+            }
+        }
+
+        public void EndMaintenance(string siteId)
+        {
+            var exists = _guards.ContainsKey(siteId);
+            if (exists)
+            {
+                Watcher watcher;
+                _guards.TryGetValue(siteId, out watcher);
+                watcher.CompleteMaintenance();
+            }
+            else
+            {
+                throw new KeyNotFoundException("This site is not being watched by the guard service.");
+            }
+        }
+
         private async Task startGuards()
         {
             var siteIds = await getSitesFromDb();
