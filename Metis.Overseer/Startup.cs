@@ -1,4 +1,5 @@
 ﻿using Metis.Core.Entities;
+using Metis.Overseer.Hubs;
 using Metis.Overseer.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -14,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Serilog;
+using System;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -78,6 +80,12 @@ namespace Metis.Overseer
                     .Build();
                 o.Filters.Add(new AuthorizeFilter(policy));
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddSignalR(hubOptions =>
+            {
+                hubOptions.EnableDetailedErrors = true;
+                hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(1);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -130,6 +138,12 @@ namespace Metis.Overseer
             });
 
             app.UseAuthentication();
+
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<ChatHub>("/chat");
+            });
+
             app.UseMvc();
 
             // start the site guards
