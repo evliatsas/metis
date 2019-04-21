@@ -2,6 +2,7 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Metis.Teamwork.Entities
 {
@@ -11,13 +12,21 @@ namespace Metis.Teamwork.Entities
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
         /// <summary>
+        /// The id of the log book that this entry belongs to
+        /// </summary>
+        [Required]
+        [BsonElement("logBookId")]
+        public string LogBookId { get; set; }
+        /// <summary>
         /// The Issuer of the entry
         /// </summary>
+        [Required]
         [BsonElement("issuer")]
         public User Issuer { get; set; }
         /// <summary>
         /// Date Time Given
         /// </summary>
+        [Required]
         [BsonElement("dtg")]
         public DateTime DTG { get; set; }
         /// <summary>
@@ -39,6 +48,12 @@ namespace Metis.Teamwork.Entities
         /// <summary>
         /// Description of the issue
         /// </summary>
+        [Required]
+        [BsonElement("title")]
+        public string Title { get; set; }
+        /// <summary>
+        /// Description of the issue
+        /// </summary>
         [BsonElement("description")]
         public string Description { get; set; }
         /// <summary>
@@ -46,5 +61,12 @@ namespace Metis.Teamwork.Entities
         /// </summary>
         [BsonElement("actions")]
         public string Actions { get; set; }
+
+        public LogEntry()
+        {
+            this.DTG = DateTime.Today.ToUniversalTime();
+            this.ECT = DateTime.Today.AddHours(2).ToUniversalTime();
+            this.Title = "Νέα Ανακοίνωση";
+        }
     }
 }
