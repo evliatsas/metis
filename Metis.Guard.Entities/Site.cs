@@ -12,21 +12,29 @@ namespace Metis.Guard.Entities
         /// <summary>
         /// Unique Identifier
         /// </summary>
-        //[BsonId(IdGenerator = typeof(StringObjectIdGenerator))]
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
+        [BsonElement("name")]
         public string Name { get; set; }
         /// <summary>
         /// The charset encoding code for the pages of the site
         /// (like ISO-8859-7, ASCII etc.), default is UTF-8
         /// </summary>
+        [BsonElement("encodingCode")]
         public string EncodingCode { get; set; } = "UTF-8";
         /// <summary>
         /// The overall status of the site pages
         /// </summary>
+        [BsonElement("status")]
+        [BsonRepresentation(BsonType.String)]
         public Status Status { get; set; }
+        [BsonElement("pages")]
         public IEnumerable<Page> Pages { get; set; }
+        [BsonElement("latitude")]
+        public decimal Latitude { get; set; }
+        [BsonElement("longitude")]
+        public decimal Longitude { get; set; }
 
         public Site()
         {
