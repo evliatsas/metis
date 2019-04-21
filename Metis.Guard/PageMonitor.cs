@@ -176,7 +176,7 @@ namespace Metis.Guard
                     {
                         foreach (HtmlNode node in nodes)
                         {
-                            node.Remove();
+                            node.ParentNode.RemoveChild(node);
                         }
                     }
                     else
@@ -185,7 +185,7 @@ namespace Metis.Guard
                     }
                 }
 
-                var content = doc.ParsedText;
+                var content = doc.DocumentNode.InnerHtml;
 
                 return content;
             }
