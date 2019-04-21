@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "antd": "^3.16.2",
+    "@aspnet/signalr": "^1.1.4",
+    "antd": "^3.16.4",
     "babel-plugin-import": "^1.11.0",
     "customize-cra": "^0.2.12",
     "jsonwebtoken": "^8.5.1",
