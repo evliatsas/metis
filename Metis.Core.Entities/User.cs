@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Metis.Core.Entities
@@ -24,5 +25,8 @@ namespace Metis.Core.Entities
 
         [BsonElement("title")]
         public string Title { get; set; }
+
+        [BsonIgnore]
+        public HashSet<string> ConnectionIds { get; set; }
     }
 }
