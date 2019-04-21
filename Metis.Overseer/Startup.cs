@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Metis.Core.Entities;
 using Metis.Overseer.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -16,11 +11,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Serilog;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Metis.Overseer
 {
@@ -38,6 +34,8 @@ namespace Metis.Overseer
         {
             services.AddScoped<UserService>();
             services.AddSingleton(new GuardService(this.Configuration));
+            services.AddSingleton<IEmailConfiguration>(Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>());
+            services.AddTransient<IEmailService, EmailService>();
 
             services.AddAuthentication(options =>
             {
