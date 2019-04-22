@@ -15,6 +15,8 @@ namespace Metis.Overseer.Services
         private readonly string _connectionString;
         private readonly ConcurrentDictionary<string, Watcher> _guards;
 
+        public IEnumerable<Watcher> Watchers { get { return _guards.Values; } }
+
         public GuardService(IConfiguration config)
         {
             _connectionString = config.GetConnectionString("Metis");

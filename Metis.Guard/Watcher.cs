@@ -13,22 +13,26 @@ namespace Metis.Guard
     /// </summary>
     public class Watcher
     {
-        private Site _site;
         private readonly string _connectionString;
         private readonly Encoding _encoding;
-        private readonly Dictionary<string, PageMonitor> _pageMonitors; 
-                
+        private readonly Dictionary<string, PageMonitor> _pageMonitors;
+
+        /// <summary>
+        /// The Site assigned to the watcher to guard
+        /// </summary>
+        public Site Site { get; private set; }
+
         public Watcher(Configuration configuration)
         {           
             var task = Task.Run(async () => await readSiteFromDb(configuration));
             task.Wait();
-            if (this._site == null)
+            if (this.Site == null)
             {
                 //throw site not found in db exception
             }
 
             this._connectionString = configuration.ConnectionString;
-            this._encoding = Encoding.GetEncoding(_site.EncodingCode);
+            this._encoding = Encoding.GetEncoding(Site.EncodingCode);
             this._pageMonitors = new Dictionary<string, PageMonitor>();
         }
 
@@ -37,7 +41,7 @@ namespace Metis.Guard
         /// </summary>
         public void Start()
         {
-            foreach (var page in _site.Pages)
+            foreach (var page in Site.Pages)
             {
                 var monitor = new PageMonitor(page, _encoding);
                 monitor.Start();
@@ -88,17 +92,17 @@ namespace Metis.Guard
                     monitor.Stop();
                 }
             }
-            foreach (var page in _site.Pages)
+            foreach (var page in Site.Pages)
             {
                 page.Status = Status.Maintenance;
                 await updateSitePage(page);
             }
 
-            if (_site.Status != Status.Maintenance)
+            if (Site.Status != Status.Maintenance)
             {
-                var previousStatus = _site.Status;
-                _site.Status = Status.Maintenance;
-                var args = new SiteStatusEventArgs(_site, previousStatus);
+                var previousStatus = Site.Status;
+                Site.Status = Status.Maintenance;
+                var args = new SiteStatusEventArgs(Site, previousStatus);
                 OnSiteStatusChanged(args);
             }
         }
@@ -107,14 +111,18 @@ namespace Metis.Guard
         /// Resumes monitoring the site pages after maintenance is complete
         /// </summary>
         /// <returns></returns>
-        public void CompleteMaintenance()
-        {            
-            foreach (var monitor in this._pageMonitors.Values)
+        public async Task CompleteMaintenance()
+        {
+            foreach (var page in Site.Pages)
             {
+                var monitor = _pageMonitors[page.Uri];
                 if (monitor.MonitorStatus != WorkerStatus.Running)
                 {
+                    var snapshot = await monitor.TakeSnapshot(page);
+                    snapshot.Status = Status.Ok;
+                    monitor.UpdatePage(snapshot);
                     monitor.Start();
-                }
+                }                
             }
         }
 
@@ -123,17 +131,36 @@ namespace Metis.Guard
         /// </summary>
         public async Task TakeSnapshot()
         {
-            if(_site == null)
+            if(Site == null)
             {
                 return;   
             }
 
-            foreach (var page in _site.Pages)
+            foreach (var page in Site.Pages)
             {
                 var monitor = this._pageMonitors[page.Uri];
                 var snapshot = await monitor.TakeSnapshot(page);
+                snapshot.Status = Status.Ok;
 
                 await updateSitePage(snapshot);
+                monitor.UpdatePage(snapshot);
+            }
+        }
+
+        /// <summary>
+        /// Get the guard proccess status for a single page
+        /// </summary>
+        /// <param name="uri">The Uri of the page</param>
+        /// <returns>The WorkerStatus enum</returns>
+        public WorkerStatus GetPageWorkerStatus(string uri)
+        {
+            if (_pageMonitors.ContainsKey(uri))
+            {
+                return _pageMonitors[uri].MonitorStatus;
+            }
+            else
+            {
+                return WorkerStatus.None;
             }
         }
 
@@ -149,7 +176,7 @@ namespace Metis.Guard
             var database = client.GetDatabase("metis");
             var siteCollection = database.GetCollection<Site>("sites");
             var query = await siteCollection.FindAsync(Builders<Site>.Filter.Eq(x => x.Id, configuration.UiD));
-            this._site = await query.SingleOrDefaultAsync();
+            this.Site = await query.SingleOrDefaultAsync();
         }
 
         /// <summary>
@@ -161,7 +188,7 @@ namespace Metis.Guard
             var client = new MongoClient(_connectionString);
             var database = client.GetDatabase("metis");
             var siteCollection = database.GetCollection<Site>("sites");
-            await siteCollection.FindOneAndUpdateAsync(s => s.Id == _site.Id && s.Pages.Any(p => p.Uri == page.Uri),
+            await siteCollection.FindOneAndUpdateAsync(s => s.Id == Site.Id && s.Pages.Any(p => p.Uri == page.Uri),
                 Builders<Site>.Update.Set(s=>s.Pages.ElementAt(-1), page));
         }
 
@@ -174,7 +201,7 @@ namespace Metis.Guard
             var client = new MongoClient(_connectionString);
             var database = client.GetDatabase("metis");
             var siteCollection = database.GetCollection<Site>("sites");
-            await siteCollection.FindOneAndUpdateAsync(s => s.Id == _site.Id, 
+            await siteCollection.FindOneAndUpdateAsync(s => s.Id == Site.Id, 
                 Builders<Site>.Update.Set(s => s.Status, site.Status));
         }
 
@@ -215,31 +242,31 @@ namespace Metis.Guard
             // calculate overall site status
             if (e.Page.Status == Status.Alarm || e.Page.Status == Status.NotFound)
             {
-                if (_site.Status != Status.Alarm)
+                if (Site.Status != Status.Alarm)
                 {
-                    var previousStatus = _site.Status;
-                    _site.Status = Status.Alarm;
-                    var args = new SiteStatusEventArgs(_site, previousStatus);
+                    var previousStatus = Site.Status;
+                    Site.Status = Status.Alarm;
+                    var args = new SiteStatusEventArgs(Site, previousStatus);
                     OnSiteStatusChanged(args);
                 }
             }
             else if (e.Page.Status == Status.Maintenance)
             {
-                if (_site.Status != Status.Maintenance)
+                if (Site.Status != Status.Maintenance)
                 {
-                    var previousStatus = _site.Status;
-                    _site.Status = Status.Maintenance;
-                    var args = new SiteStatusEventArgs(_site, previousStatus);
+                    var previousStatus = Site.Status;
+                    Site.Status = Status.Maintenance;
+                    var args = new SiteStatusEventArgs(Site, previousStatus);
                     OnSiteStatusChanged(args);
                 }
             }
             else
             {
-                if (_site.Pages.All(p => p.Status == Status.Ok) && _site.Status != Status.Ok)
+                if (Site.Pages.All(p => p.Status == Status.Ok) && Site.Status != Status.Ok)
                 {
-                    var previousStatus = _site.Status;
-                    _site.Status = Status.Ok;
-                    var args = new SiteStatusEventArgs(_site, previousStatus);
+                    var previousStatus = Site.Status;
+                    Site.Status = Status.Ok;
+                    var args = new SiteStatusEventArgs(Site, previousStatus);
                     OnSiteStatusChanged(args);
                 }
             }
@@ -257,10 +284,10 @@ namespace Metis.Guard
                 monitor.Stop();
             }
 
-            if (_site.Status != Status.Alarm)
+            if (Site.Status != Status.Alarm)
             {
-                _site.Status = Status.Alarm;
-                var args = new SiteExceptionEventArgs(_site, e.Page, e.Exception);
+                Site.Status = Status.Alarm;
+                var args = new SiteExceptionEventArgs(Site, e.Page, e.Exception);
                 OnSiteException(args);
             }
 
@@ -277,10 +304,10 @@ namespace Metis.Guard
                 monitor.Stop();
             }
 
-            if (_site.Status != Status.Alarm)
+            if (Site.Status != Status.Alarm)
             {
-                _site.Status = Status.Alarm;
-                var args = new SiteExceptionEventArgs(_site, e.Page, e.Exception);
+                Site.Status = Status.Alarm;
+                var args = new SiteExceptionEventArgs(Site, e.Page, e.Exception);
                 OnSiteException(args);
             }
 

@@ -19,7 +19,7 @@ namespace Metis.Guard
         const int MONITOR_THRESHOLD = 60; 
 
         private readonly Encoding _encoding;
-        private readonly Page _page;
+        private Page _page;
 
         /// <summary>
         /// Provides the cancellation token for the monitor thread
@@ -81,12 +81,15 @@ namespace Metis.Guard
             return snasphot;
         }
 
-        /// <summary>
-        /// Worker thread that monitors the page content periodically
-        /// </summary>
-        /// <param name="page">The Page to monitor</param>
-        /// <param name="token">The cancellation token</param>
-        /// <returns></returns>
+        internal void UpdatePage(Page snapshot)
+        {
+            _page.Exceptions = snapshot.Exceptions;
+            _page.MD5Hash = snapshot.MD5Hash;
+            _page.Status = snapshot.Status;
+            _page.Title = snapshot.Title;
+            _page.Uri = snapshot.Uri;
+        }
+
         private async Task monitor(Page page, CancellationToken token)
         {
             try
