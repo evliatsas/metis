@@ -138,12 +138,22 @@ namespace Metis.Guard
 
             foreach (var page in Site.Pages)
             {
-                var monitor = this._pageMonitors[page.Uri];
+                PageMonitor monitor;
+                if(_pageMonitors.ContainsKey(page.Uri))
+                {
+                    monitor = this._pageMonitors[page.Uri];
+                }
+                else
+                {
+                    monitor = new PageMonitor(page, _encoding);
+                }
                 var snapshot = await monitor.TakeSnapshot(page);
                 snapshot.Status = Status.Ok;
 
                 await updateSitePage(snapshot);
                 monitor.UpdatePage(snapshot);
+                Site.Status = Status.Ok;
+                await updateSiteStatus(Site);
             }
         }
 
