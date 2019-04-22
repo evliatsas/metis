@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Layout, Menu, Icon } from 'antd';
 import { NavLink } from 'react-router-dom';
 import './Layout';
+import logo from '../../assets/badge-png-vector-5-transparent.png';
 const { Sider } = Layout;
 const Sidebar = props => {
     const [collapsed, setCollapsed] = useState(false);
@@ -9,20 +10,28 @@ const Sidebar = props => {
         setCollapsed(!collapsed);
     }
     return (
-        <Sider className="sidebar" collapsed={collapsed}>
+        <Sider collapsed={collapsed}>
             <Menu selectable={false}
                 mode="vertical"
-                className="is-fullheight">
+                className="is-fullheight sidebar">
                 <div className="logo-item" key="0">
-                    {/* <img src={logo}  alt='..'/> */}
-                    <span className="logo" >Metis</span>
+                    <img className="logo" src={logo} alt="..." />
+                    <span className="ml-1 line" >Metis</span>
                 </div>
-                <Menu.Item key="1" onClick={toggleCollapsed}>
-                    <Icon type={collapsed ? 'menu-unfold' : 'menu-fold'} />
-                    <span>Ελαχιστοποίηση</span>
+                <Menu.Item key="name" className="mb-5">
+                    <a className="user-profile">
+                        <Icon type="user" />
+                        <span>Nikos Perperidis</span>
+                    </a>
                 </Menu.Item>
-                <Menu.Item key="2">
-                    <NavLink to="/">
+                <Menu.Item key="1" onClick={toggleCollapsed}>
+                    <a>
+                        <Icon type={collapsed ? 'menu-unfold' : 'menu-fold'} />
+                        <span>Ελαχιστοποίηση</span>
+                    </a>
+                </Menu.Item>
+                <Menu.Item key="2" >
+                    <NavLink to="/" >
                         <Icon type="home" />
                         <span>Αρχική</span>
                     </NavLink>
@@ -32,7 +41,7 @@ const Sidebar = props => {
                         <Icon type="global" />
                         <span>Τεστ Χαρτης</span>
                     </NavLink>
-                </Menu.Item>               
+                </Menu.Item>
             </Menu>
         </Sider>
     );
