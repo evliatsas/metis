@@ -14,17 +14,17 @@ const App = props => {
   const authContext = useContext(AuthContext)
   const routes = authContext.isAuthenticated ? fullAccess : unAuthorized
 
-  const connection = new HubConnectionBuilder()
-    .withUrl(config.urls.srv + '/chat', {
-      transport: HttpTransportType.WebSockets,
-      accessTokenFactory: () => localStorage.getItem('token')
-    })
-    .configureLogging(LogLevel.Information)
-    .build()
-  connection.serverTimeoutInMilliseconds = 2 * 60 * 1000
-  connection.onclose(() => {
-    setTimeout(() => connection.start(), 60000)
-  })
+  // const connection = new HubConnectionBuilder()
+  //   .withUrl(config.urls.srv + '/chat', {
+  //     transport: HttpTransportType.WebSockets,
+  //     accessTokenFactory: () => localStorage.getItem('token')
+  //   })
+  //   .configureLogging(LogLevel.Information)
+  //   .build()
+  // connection.serverTimeoutInMilliseconds = 2 * 60 * 1000
+  // connection.onclose(() => {
+  //   setTimeout(() => connection.start(), 60000)
+  // })
 
   return (
     <LayoutContainer className="is-fullheight">
