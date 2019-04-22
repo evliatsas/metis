@@ -38,7 +38,7 @@ namespace Metis.Overseer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<UserService>();
-            services.AddSingleton(new GuardService(this.Configuration));
+            services.AddSingleton<GuardService>();
             services.AddSingleton<IEmailConfiguration>(Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>());
             services.AddTransient<IEmailService, EmailService>();
 
@@ -67,7 +67,7 @@ namespace Metis.Overseer
 
                         var path = context.HttpContext.Request.Path;
                         if (!string.IsNullOrEmpty(accessToken) &&
-                            (path.StartsWithSegments("/chat")))
+                            (path.StartsWithSegments("/chat") || path.StartsWithSegments("/guard")))
                         {
                             context.Token = accessToken;
                         }
@@ -152,6 +152,7 @@ namespace Metis.Overseer
             app.UseSignalR(routes =>
             {
                 routes.MapHub<ChatHub>("/chat");
+                routes.MapHub<GuardHub>("/guard");
             });
 
             app.UseSwagger();
@@ -161,9 +162,6 @@ namespace Metis.Overseer
             });
 
             app.UseMvc();
-
-            // start the site guards
-            //var guardService = new GuardService(this.Configuration);
         }
     }
 }

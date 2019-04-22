@@ -9,11 +9,13 @@ namespace Metis.Guard.Entities
     {
         public Site Site { get; }
         public Status PreviousStatus { get; }
+        public string Reason { get; }
 
-        public SiteStatusEventArgs(Site site, Status status)
+        public SiteStatusEventArgs(Site site, Status status, string reason)
         {
             this.Site = site;
             this.PreviousStatus = status;
+            this.Reason = reason;
         }
     }
 

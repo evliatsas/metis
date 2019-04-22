@@ -3,7 +3,6 @@ using Metis.Overseer.Extensions;
 using Metis.Overseer.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -65,7 +64,11 @@ namespace Metis.Overseer.Hubs
             //     }
             // }).Select(x => x.Value);
             return Users
-                .Select(x => new { Title = x.Value.Title, UserName = x.Value.Username, Key = x.Value.Username })
+                .Select(x => new {
+                    Title = x.Value.Title,
+                    UserName = x.Value.Username,
+                    Key = x.Value.Username
+                })
                 .OrderBy(t => t.Title);
         }
 
