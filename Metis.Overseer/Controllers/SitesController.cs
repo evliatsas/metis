@@ -1,11 +1,14 @@
 ﻿using Metis.Overseer.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Metis.Overseer.Controllers
 {
+    [AllowAnonymous]
     [ApiController]
     [Route("api/sites")]
     public class SitesController : ControllerBase
@@ -38,7 +41,7 @@ namespace Metis.Overseer.Controllers
                 
             if(guard == null)
             {
-                return this.BadRequest("Το Site που ζητήσατε δεν παρακολουθείται.");
+                return this.BadRequest(new Exception($"Το Site {id} που ζητήσατε δεν παρακολουθείται."));
             }
 
             guard.Start();
@@ -54,7 +57,7 @@ namespace Metis.Overseer.Controllers
 
             if (guard == null)
             {
-                return this.BadRequest("Το Site που ζητήσατε δεν παρακολουθείται.");
+                return this.BadRequest(new Exception($"Το Site {id} που ζητήσατε δεν παρακολουθείται."));
             }
 
             guard.Stop();
@@ -70,7 +73,7 @@ namespace Metis.Overseer.Controllers
 
             if (guard == null)
             {
-                return this.BadRequest("Το Site που ζητήσατε δεν παρακολουθείται.");
+                return this.BadRequest(new Exception($"Το Site {id} που ζητήσατε δεν παρακολουθείται."));
             }
 
             guard.Stop();
@@ -88,7 +91,7 @@ namespace Metis.Overseer.Controllers
 
             if (guard == null)
             {
-                return this.BadRequest("Το Site που ζητήσατε δεν παρακολουθείται.");
+                return this.BadRequest(new Exception($"Το Site {id} που ζητήσατε δεν παρακολουθείται."));
             }
 
             await guard.StartMaintenance();
@@ -104,7 +107,7 @@ namespace Metis.Overseer.Controllers
 
             if (guard == null)
             {
-                return this.BadRequest("Το Site που ζητήσατε δεν παρακολουθείται.");
+                return this.BadRequest(new Exception($"Το Site {id} που ζητήσατε δεν παρακολουθείται."));
             }
 
             await guard.CompleteMaintenance();
