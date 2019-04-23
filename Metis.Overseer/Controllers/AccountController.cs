@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Metis.Overseer.Controllers
 {
@@ -17,25 +18,25 @@ namespace Metis.Overseer.Controllers
     [Route("api/token")]
     public class AccountController : ControllerBase
     {
-        private readonly UserService _budgetService;
+        private readonly UserService _userService;
         private readonly IConfiguration _config;
 
-        public AccountController(UserService budgetService, IConfiguration config)
+        public AccountController(UserService userService, IConfiguration config)
         {
-            _budgetService = budgetService;
+            _userService = userService;
             _config = config;
         }
 
         [AllowAnonymous]
         [HttpPost]
-        public IActionResult Token([FromBody] UserLoginView model)
+        public async Task<IActionResult> Token([FromBody] UserLoginView model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest("Could not create token");
             }
 
-            var dbUser = _budgetService.Login(model);
+            var dbUser = await _userService.Login(model);
             if (dbUser == null)
             {
                 return Unauthorized(new Exception("Λάθος username ή password"));

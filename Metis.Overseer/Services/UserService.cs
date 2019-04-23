@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Metis.Core.Entities;
 using Metis.Overseer.Models.DTO;
 using Microsoft.Extensions.Configuration;
@@ -20,45 +21,52 @@ namespace Metis.Overseer.Services
         }
         #endregion
 
-        public List<User> Get()
+        public async Task<IEnumerable<User>> GetAll()
         {
-            return _Users.Find(User => true).ToList();
+            return await _Users.Find(User => true).ToListAsync();
         }
 
-        public User Get(string id)
+        public async Task<IEnumerable<User>> GetForMembers()
         {
-            return _Users.Find<User>(User => User.Id == id).FirstOrDefault();
+            return await _Users.Find(User => true)
+                .Project<User>(Builders<User>.Projection
+                    .Include(x => x.Id)
+                    .Include(x => x.Title)
+                    .Include(x => x.Email))
+                .ToListAsync();
         }
 
-        public User Create(User User)
+        public async Task<User> Get(string id)
         {
-            _Users.InsertOne(User);
+            return await _Users.Find<User>(User => User.Id == id)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<User> Create(User User)
+        {
+            await _Users.InsertOneAsync(User);
             return User;
         }
 
-        public void Update(string id, User UserIn)
+        public async Task Update(string id, User UserIn)
         {
-            _Users.ReplaceOne(User => User.Id == id, UserIn);
+            await _Users.ReplaceOneAsync(User => User.Id == id, UserIn);
         }
 
-        public void Remove(User UserIn)
+        public async Task Remove(User UserIn)
         {
-            _Users.DeleteOne(User => User.Id == UserIn.Id);
+            await _Users.DeleteOneAsync(User => User.Id == UserIn.Id);
         }
 
-        public void Remove(string id)
+        public async Task Remove(string id)
         {
-            _Users.DeleteOne(User => User.Id == id);
+            await _Users.DeleteOneAsync(User => User.Id == id);
         }
 
-        public User Login(UserLoginView user)
+        public async Task<User> Login(UserLoginView user)
         {
-            return _Users.Find<User>(t => t.Username == user.Username && t.Password == user.Password).SingleOrDefault();
+            return await _Users.Find<User>(t => t.Username == user.Username && t.Password == user.Password)
+                .SingleOrDefaultAsync();
         }
-
-        //public bool Login(User user)
-        //{
-        //    return _Users.Find<User>(t => t.Username == user.Username && t.Password == user.Password).Any();
-        //}
     }
 }

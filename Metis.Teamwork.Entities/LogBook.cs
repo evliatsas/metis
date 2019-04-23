@@ -1,5 +1,4 @@
-﻿using Metis.Core.Entities;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
@@ -17,28 +16,23 @@ namespace Metis.Teamwork.Entities
         /// </summary>        
         [Required]
         [BsonElement("owner")]        
-        public User Owner { get; set; }
+        public Member Owner { get; set; }
         /// <summary>
         /// Book last update Date Time
         /// </summary>
         [BsonElement("lastUpdate")]
         public DateTime LastUpdate { get; set; }
         /// <summary>
-        /// Book activation Date Time
-        /// </summary>
-        [BsonElement("activeFrom")]
-        public DateTime ActiveFrom { get; set; }
-        /// <summary>
         /// Book is active until Date Time
         /// book should be locked after this date
         /// </summary>
-        [BsonElement("activeTo")]
-        public DateTime ActiveTo { get; set; }
+        [BsonElement("close")]
+        public DateTime Close { get; set; }
         /// <summary>
         /// The users that can view/edit the entries in the book
         /// </summary>
         [BsonElement("members")]
-        public IEnumerable<User> Members { get; set; }
+        public IEnumerable<Member> Members { get; set; }
         /// <summary>
         /// The name of the book
         /// </summary>
@@ -54,11 +48,10 @@ namespace Metis.Teamwork.Entities
 
         public LogBook()
         {
-            this.Members = new List<User>();
+            this.Members = new List<Member>();
             this.Entries = new List<LogEntry>();
             this.LastUpdate = DateTime.Today.ToUniversalTime();
-            this.ActiveFrom = DateTime.Today.ToUniversalTime();
-            this.ActiveTo = DateTime.Today.AddDays(90).ToUniversalTime();
+            this.Close = DateTime.Today.AddDays(90).ToUniversalTime();
         }
     }
 }

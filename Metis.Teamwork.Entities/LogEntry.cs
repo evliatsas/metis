@@ -1,5 +1,4 @@
-﻿using Metis.Core.Entities;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -22,7 +21,7 @@ namespace Metis.Teamwork.Entities
         /// </summary>
         [Required]
         [BsonElement("issuer")]
-        public User Issuer { get; set; }
+        public Member Issuer { get; set; }
         /// <summary>
         /// Date Time Given
         /// </summary>
@@ -38,7 +37,7 @@ namespace Metis.Teamwork.Entities
         /// The action recipient
         /// </summary>
         [BsonElement("recipient")]
-        public User Recipient { get; set; }
+        public Member Recipient { get; set; }
         [BsonElement("completionTime")]
         public DateTime CompletionTime { get; set; }
         [BsonElement("status")]
@@ -66,7 +65,7 @@ namespace Metis.Teamwork.Entities
         {
             this.DTG = DateTime.Today.ToUniversalTime();
             this.ECT = DateTime.Today.AddHours(2).ToUniversalTime();
-            this.Title = "Νέα Ανακοίνωση";
+            this.Title = "Νέα Εγγραφή";
         }
     }
 }

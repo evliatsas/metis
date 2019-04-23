@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -38,7 +39,7 @@ namespace Metis.Overseer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<UserService>();
-            services.AddSingleton<GuardService>();
+            services.AddScoped<LogService>();            
             services.AddSingleton<IEmailConfiguration>(Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>());
             services.AddTransient<IEmailService, EmailService>();
 
@@ -96,6 +97,10 @@ namespace Metis.Overseer
                 hubOptions.EnableDetailedErrors = true;
                 hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(1);
             });
+
+            var serviceProvider = services.BuildServiceProvider();
+            var guardHub = serviceProvider.GetService<IHubContext<GuardHub>>();
+            services.AddSingleton<GuardService>(new GuardService(guardHub, Configuration));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

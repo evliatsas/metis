@@ -1,6 +1,5 @@
 ﻿using Metis.Overseer.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,12 +9,10 @@ namespace Metis.Overseer.Controllers
     [Route("api/sites")]
     public class SitesController : ControllerBase
     {
-        private readonly IConfiguration _config;
         private readonly GuardService _guardService;        
 
-        public SitesController(IConfiguration config, GuardService guardService)
+        public SitesController(GuardService guardService)
         {
-            _config = config;
             _guardService = guardService;
         }
 
