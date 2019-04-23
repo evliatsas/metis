@@ -16,7 +16,7 @@ const Layout = props => {
             <LayoutC className="is-fullheight">
                 {sidebar}
                 <LayoutC>
-                    {navbar}
+                    {/* {navbar} */}
                     <Content className='calc-h'>
                         {props.children}
                     </Content>
