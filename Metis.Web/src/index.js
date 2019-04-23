@@ -6,10 +6,10 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import AuthProvider from './auth/AuthProvider';
 const app = (
-    <BrowserRouter>       
-            <AuthProvider>
-                <App />
-            </AuthProvider>       
+    <BrowserRouter>
+        <AuthProvider>
+            <App />
+        </AuthProvider>
     </BrowserRouter>
 );
 ReactDOM.render(app, document.getElementById('root'));

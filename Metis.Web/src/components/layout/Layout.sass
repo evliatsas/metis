@@ -1,6 +1,10 @@
 @import  '../../styles/variables.sass'
 .ant-layout-sider
     background: transparent
+    box-shadow: 2px 0px 20px 0px #001010
+    z-index: 1
+.ant-drawer-header-no-title,.ant-drawer-body,.ant-drawer-close
+    color: white!important
 .menu 
     line-height: $header-heaight
     background-color: #f4f3ef
@@ -18,8 +22,13 @@
     color: white
 .sidebar, .sidebar > li.ant-menu-item > a
     color: white
-.sidebar
-    background: linear-gradient(#66615b,#191919  80%)
+.sidebar,
+    //background: linear-gradient(to right, #1b1b1d 20%, #042a2a 70% , #063535)
+    background: #2d2d2d
+.ant-drawer-content
+    background: rgba(27, 27, 29, .95)!important
+.ant-menu-vertical
+    border-right: 1px solid #1b1b1d
 .ant-menu-item > a > i,.ant-menu-item > span > i
     font-size: 20px!important
     opacity: .5

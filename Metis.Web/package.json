@@ -12,6 +12,7 @@
     "less-loader": "^4.1.0",
     "node-sass": "^4.11.0",
     "ol": "^5.3.2",
+    "ol-mapbox-style": "^4.3.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-highlight-words": "^0.16.0",
