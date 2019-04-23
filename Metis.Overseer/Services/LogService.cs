@@ -26,11 +26,11 @@ namespace Metis.Overseer.Services
             var result = await _LogBooks
                 .Find(x => true)
                 .Project<LogBook>(Builders<LogBook>.Projection
-                    .Include("_id")
-                    .Include("close")
-                    .Include("members._id")
-                    .Include("owner._id")
-                    .Include("name"))
+                    .Include(x => x.Id)
+                    .Include(x => x.Close)
+                    .Include(x => x.Members)
+                    .Include(x => x.Owner)
+                    .Include(x => x.Name))
                 .SortByDescending(x => x.Close)
                 .ToListAsync();
 
