@@ -46,6 +46,8 @@ namespace Metis.Overseer.Controllers
             claims.Add(new Claim("email", dbUser.Email));
             claims.Add(new Claim("title", dbUser.Title));
             claims.Add(new Claim("userid", dbUser.Id));
+            claims.Add(new Claim("role", dbUser.Role.ToString()));
+            claims.Add(new Claim("sites", string.Join(';', dbUser.Sites)));
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

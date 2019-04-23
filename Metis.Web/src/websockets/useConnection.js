@@ -29,8 +29,20 @@ function useConnection(url, token) {
       })
       .configureLogging(LogLevel.Information)
       .build()
+      .start()
+      .then(() => {
+        console.log('connected')
+      })
+      .catch(err => {
+        setError(err)
+        console.error(err)
+      })
 
-    setConnection(connection)
+    _connection.onclose(() => {
+      connection.start()
+    })
+
+    setConnection(_connection)
 
     return () => {
       connection.stop()

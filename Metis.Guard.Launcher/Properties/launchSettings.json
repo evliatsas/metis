@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Metis.Guard": {
+      "commandName": "Project",
+      "commandLineArgs": "config.json --file"
+    }
+  }
+}
