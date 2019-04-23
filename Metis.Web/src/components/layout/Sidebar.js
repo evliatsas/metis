@@ -3,8 +3,10 @@ import { Layout, Menu, Icon } from 'antd';
 import { NavLink } from 'react-router-dom';
 import './Layout';
 import logo from '../../assets/badge-png-vector-5-transparent.png';
+import storage from '../../services//LocalStorage';
 const { Sider } = Layout;
 const Sidebar = props => {
+    const username = storage.get('auth');
     const [collapsed, setCollapsed] = useState(false);
     const toggleCollapsed = () => {
         setCollapsed(!collapsed);
@@ -19,16 +21,16 @@ const Sidebar = props => {
                     <span className="ml-1 line" >Metis</span>
                 </div>
                 <Menu.Item key="name" className="mb-5">
-                    <a className="user-profile">
+                    <span className="user-profile">
                         <Icon type="user" />
-                        <span>Nikos Perperidis</span>
-                    </a>
+                        <span>{username.title}</span>
+                    </span>
                 </Menu.Item>
                 <Menu.Item key="1" onClick={toggleCollapsed}>
-                    <a>
+                    <span>
                         <Icon type={collapsed ? 'menu-unfold' : 'menu-fold'} />
                         <span>Ελαχιστοποίηση</span>
-                    </a>
+                    </span>
                 </Menu.Item>
                 <Menu.Item key="2" >
                     <NavLink to="/" >

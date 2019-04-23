@@ -29,12 +29,12 @@ const AuthProvider = props => {
     const initAuthentication = () => {
         session = getSession();
         const check = session && session.username && !isExpired();
-        return true;
+        return check;
     }
     const signIn = (token) => {
-        // const session = jwt.decode(token)
-        // storage.set(tokenSuffix, token)
-        // storage.set(sessionSuffix, session)
+        const session = jwt.decode(token)
+        storage.set(tokenSuffix, token)
+        storage.set(sessionSuffix, session)
         setIsAuthenticated(true);
     }
     const signOut = () => {

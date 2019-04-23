@@ -1,5 +1,6 @@
 @import  '../../styles/variables.sass'
-
+.ant-layout-sider
+    background: transparent
 .menu 
     line-height: $header-heaight
     background-color: #f4f3ef
@@ -14,15 +15,16 @@
 .ant-menu-vertical .ant-menu-item:hover
     background-color: $info-color
     transition: linear .2s
+    color: white
 .sidebar, .sidebar > li.ant-menu-item > a
     color: white
 .sidebar
     background: linear-gradient(#66615b,#191919  80%)
-.ant-menu-item > a > i
+.ant-menu-item > a > i,.ant-menu-item > span > i
     font-size: 20px!important
     opacity: .5
     text-align: center
-.ant-menu-item > a 
+.ant-menu-item > a,.ant-menu-item > span 
     font-size: 14px
     margin: 0
     position: relative

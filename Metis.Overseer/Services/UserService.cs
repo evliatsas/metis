@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Metis.Core.Entities;
+using Metis.Overseer.Models.DTO;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 
@@ -50,9 +51,14 @@ namespace Metis.Overseer.Services
             _Users.DeleteOne(User => User.Id == id);
         }
 
-        public bool Login(User user)
+        public User Login(UserLoginView user)
         {
-            return _Users.Find<User>(t => t.Username == user.Username && t.Password == user.Password).Any();
+            return _Users.Find<User>(t => t.Username == user.Username && t.Password == user.Password).SingleOrDefault();
         }
+
+        //public bool Login(User user)
+        //{
+        //    return _Users.Find<User>(t => t.Username == user.Username && t.Password == user.Password).Any();
+        //}
     }
 }

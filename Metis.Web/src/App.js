@@ -4,9 +4,9 @@ import LayoutContainer from './components/layout/Layout'
 import { AuthContext } from './auth/AuthProvider'
 import { fullAccess, unAuthorized } from './services/Routes'
 import {
-  HubConnectionBuilder,
-  HttpTransportType,
-  LogLevel
+  // HubConnectionBuilder,
+  // HttpTransportType,
+  // LogLevel
 } from '@aspnet/signalr'
 import './styles/Utilities.sass'
 

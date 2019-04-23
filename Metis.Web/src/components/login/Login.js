@@ -23,16 +23,15 @@ const Login = props => {
     }
     const formItemLayout = { labelCol: { span: 24 }, wrapperCol: { span: 24 } };
     const loginHandler = async () => {
-        authContext.signIn();
-        // const body = {
-        //     username: loginModel.username,
-        //     password: loginModel.password
-        // }
-        // callFetch('http://localhost:50971/api/auth/token', 'POST', body).then(res => {
-        //     if (res && res.token) {
-        //         authContext.signIn(res.token);
-        //     }
-        // });
+        const body = {
+            username: loginModel.username,
+            password: loginModel.password
+        }
+        callFetch('token', 'POST', body).then(res => {
+            if (res && res.token) {
+                authContext.signIn(res.token);
+            }
+        });
 
     }
     const clearButton = loginModel.username ? <Icon type="close-circle" onClick={clearUsernameHandler} /> : null;

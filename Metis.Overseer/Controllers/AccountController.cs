@@ -1,4 +1,4 @@
-using Metis.Core.Entities;
+using Metis.Overseer.Models.DTO;
 using Metis.Overseer.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Metis.Overseer.Controllers
 {
@@ -29,7 +28,7 @@ namespace Metis.Overseer.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public IActionResult Token([FromBody] User model)
+        public IActionResult Token([FromBody] UserLoginView model)
         {
             if (!ModelState.IsValid)
             {
@@ -37,16 +36,16 @@ namespace Metis.Overseer.Controllers
             }
 
             var dbUser = _budgetService.Login(model);
-            if (!dbUser)
+            if (dbUser == null)
             {
                 return Unauthorized(new Exception("Λάθος username ή password"));
             }
 
             var claims = new List<Claim>();
-            claims.Add(new Claim("username", model.Username));
-            claims.Add(new Claim("email", model.Email));
-            claims.Add(new Claim("title", model.Title));
-            claims.Add(new Claim("userid", model.Id));
+            claims.Add(new Claim("username", dbUser.Username));
+            claims.Add(new Claim("email", dbUser.Email));
+            claims.Add(new Claim("title", dbUser.Title));
+            claims.Add(new Claim("userid", dbUser.Id));
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
