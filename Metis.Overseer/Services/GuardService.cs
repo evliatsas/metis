@@ -1,5 +1,7 @@
 ﻿using Metis.Guard;
 using Metis.Guard.Entities;
+using Metis.Overseer.Hubs;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 using Serilog;
@@ -12,13 +14,15 @@ namespace Metis.Overseer.Services
 {
     public class GuardService
     {
+        private readonly IHubContext<GuardHub> _guardHubContext;
         private readonly string _connectionString;
         private readonly ConcurrentDictionary<string, Watcher> _guards;
 
         public IEnumerable<Watcher> Watchers { get { return _guards.Values; } }
 
-        public GuardService(IConfiguration config)
+        public GuardService(IHubContext<GuardHub> guardHubContext, IConfiguration config)
         {
+            _guardHubContext = guardHubContext;
             _connectionString = config.GetConnectionString("Metis");
             _guards = new ConcurrentDictionary<string, Watcher>();
 
@@ -72,15 +76,16 @@ namespace Metis.Overseer.Services
             }
         }
 
-        public void StartMaintenance(string siteId)
+        public async Task RefreshSite(string siteId)
         {
             var exists = _guards.ContainsKey(siteId);
             if (exists)
             {
                 Watcher watcher;
                 _guards.TryGetValue(siteId, out watcher);
-                var tasks = new List<Task>() { Task.Run(() => watcher.StartMaintenance()) };
-                Task.WaitAll(tasks.ToArray());
+                watcher.Stop();
+                await watcher.TakeSnapshot();
+                watcher.Start();
             }
             else
             {
@@ -88,14 +93,29 @@ namespace Metis.Overseer.Services
             }
         }
 
-        public void EndMaintenance(string siteId)
+        public async Task StartMaintenance(string siteId)
         {
             var exists = _guards.ContainsKey(siteId);
             if (exists)
             {
                 Watcher watcher;
                 _guards.TryGetValue(siteId, out watcher);
-                watcher.CompleteMaintenance();
+                await watcher.StartMaintenance();
+            }
+            else
+            {
+                throw new KeyNotFoundException("This site is not being watched by the guard service.");
+            }
+        }
+
+        public async Task EndMaintenance(string siteId)
+        {
+            var exists = _guards.ContainsKey(siteId);
+            if (exists)
+            {
+                Watcher watcher;
+                _guards.TryGetValue(siteId, out watcher);
+                await watcher.CompleteMaintenance();
             }
             else
             {

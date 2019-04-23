@@ -102,7 +102,7 @@ namespace Metis.Guard
             {
                 var previousStatus = Site.Status;
                 Site.Status = Status.Maintenance;
-                var args = new SiteStatusEventArgs(Site, previousStatus);
+                var args = new SiteStatusEventArgs(Site, previousStatus, "Maintenance");
                 OnSiteStatusChanged(args);
             }
         }
@@ -249,37 +249,30 @@ namespace Metis.Guard
 
         private void Monitor_PageStatusChanged(object sender, PageStatusEventArgs e)
         {
+            var previousStatus = Site.Status;
+            string reason = string.Empty;
             // calculate overall site status
             if (e.Page.Status == Status.Alarm || e.Page.Status == Status.NotFound)
             {
-                if (Site.Status != Status.Alarm)
-                {
-                    var previousStatus = Site.Status;
-                    Site.Status = Status.Alarm;
-                    var args = new SiteStatusEventArgs(Site, previousStatus);
-                    OnSiteStatusChanged(args);
-                }
+                Site.Status = Status.Alarm;
+                reason = $"Page {e.Page.Title} {e.Page.Uri} content has been changed";
             }
             else if (e.Page.Status == Status.Maintenance)
             {
-                if (Site.Status != Status.Maintenance)
-                {
-                    var previousStatus = Site.Status;
-                    Site.Status = Status.Maintenance;
-                    var args = new SiteStatusEventArgs(Site, previousStatus);
-                    OnSiteStatusChanged(args);
-                }
+                Site.Status = Status.Maintenance;
+                reason = $"Page {e.Page.Title} {e.Page.Uri} has gone to maintenance";
             }
             else
             {
-                if (Site.Pages.All(p => p.Status == Status.Ok) && Site.Status != Status.Ok)
+                if (Site.Pages.All(p => p.Status == Status.Ok))
                 {
-                    var previousStatus = Site.Status;
                     Site.Status = Status.Ok;
-                    var args = new SiteStatusEventArgs(Site, previousStatus);
-                    OnSiteStatusChanged(args);
                 }
+                reason = $"Page {e.Page.Title} {e.Page.Uri} status is now {e.Page.Status.ToString()}";
             }
+
+            var args = new SiteStatusEventArgs(Site, previousStatus, reason);
+            OnSiteStatusChanged(args);
 
             // update the page status change to the database
             Task.Run(() => updateSitePage(e.Page));

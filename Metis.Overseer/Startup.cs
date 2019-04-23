@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using Metis.Core.Entities;
+﻿using Metis.Core.Entities;
 using Metis.Overseer.Hubs;
 using Metis.Overseer.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -22,6 +16,12 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Serilog;
 using Swashbuckle.AspNetCore.Swagger;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Metis.Overseer
 {
@@ -38,7 +38,7 @@ namespace Metis.Overseer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<UserService>();
-            services.AddSingleton(new GuardService(this.Configuration));
+            services.AddSingleton<GuardService>();
             services.AddSingleton<IEmailConfiguration>(Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>());
             services.AddTransient<IEmailService, EmailService>();
 
@@ -47,34 +47,34 @@ namespace Metis.Overseer
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-                .AddJwtBearer(cfg =>
+            .AddJwtBearer(cfg =>
+            {
+                cfg.TokenValidationParameters = new TokenValidationParameters()
                 {
-                    cfg.TokenValidationParameters = new TokenValidationParameters()
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = Configuration["Jwt:Issuer"],
+                    ValidAudience = Configuration["Jwt:Issuer"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                };
+                cfg.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
                     {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = Configuration["Jwt:Issuer"],
-                        ValidAudience = Configuration["Jwt:Issuer"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
-                    };
-                    cfg.Events = new JwtBearerEvents
-                    {
-                        OnMessageReceived = context =>
-                        {
-                            var accessToken = context.Request.Query["access_token"];
+                        var accessToken = context.Request.Query["access_token"];
 
-                            var path = context.HttpContext.Request.Path;
-                            if (!string.IsNullOrEmpty(accessToken) &&
-                                (path.StartsWithSegments("/chat")))
-                            {
-                                context.Token = accessToken;
-                            }
-                            return Task.CompletedTask;
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            (path.StartsWithSegments("/chat") || path.StartsWithSegments("/guard")))
+                        {
+                            context.Token = accessToken;
                         }
-                    };
-                });
+                        return Task.CompletedTask;
+                    }
+                };
+            });
 
             services.AddSwaggerGen(c =>
             {
@@ -153,6 +153,7 @@ namespace Metis.Overseer
             app.UseSignalR(routes =>
             {
                 routes.MapHub<ChatHub>("/chat");
+                routes.MapHub<GuardHub>("/guard");
             });
 
             app.UseSwagger();
@@ -162,9 +163,6 @@ namespace Metis.Overseer
             });
 
             app.UseMvc();
-
-            // start the site guards
-            //var guardService = new GuardService(this.Configuration);
         }
     }
 }
