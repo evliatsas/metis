@@ -15,7 +15,11 @@ import { Circle as CircleStyle, Fill, Icon, Stroke, Style, Image } from 'ol/styl
 import 'ol/ol.css';
 import darklayer from './darklayer.json'
 const MapLayer = props => {
-
+    const baseMapLayer = new TileLayer({
+        source: new XYZ({
+            url: 'https://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+        })
+    });
     const styles = {
         'geoMarker': new Style({
             image: new CircleStyle({
@@ -34,6 +38,7 @@ const MapLayer = props => {
     };
 
     const createMarkers = () => {
+        console.log(props.sites);
         return props.sites.map(s => {
             return new Feature({
                 type: 'geoMarker',
@@ -42,9 +47,17 @@ const MapLayer = props => {
         });
 
     }
+    // const map = new Map({
+    //     target: 'genericmap',
+    //     layers: [baseMapLayer],
+    //     view: new View({
+    //         center: fromLonLat([25.00, 37.58]),
+    //         zoom: 8
 
+    //     })
+    // });
     var map = new Map({
-        target: 'map',
+        target: 'genericmap',
         view: new View({
             center: fromLonLat([25.00, 37.58]),
             zoom: 7
@@ -61,15 +74,16 @@ const MapLayer = props => {
                 return styles[feature.get('type')];
             }
         });
+        map.addLayer(markerVectorLayer);
                // return () => {
         //     const features = vectorLayer.getSource().getFeatures();
         //     features.forEach((feature) => {
         //         vectorLayer.getSource().removeFeature(feature);
         //     })
         // }
-    }, []);
+    }, [props.sites]);
     return <div style={{ height: props.height, width: props.width }}
-        id="map"></div>;
+        id="genericmap"></div>;
 };
 
 export default MapLayer;
