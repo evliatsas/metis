@@ -1,21 +1,21 @@
 @import  '../../styles/variables.sass'
+.ant-drawer-header 
+    position: relative
+    padding: 15px!important
+    border-bottom: 1px solid grey!important
+    background: rgba(27, 27, 29, .95)!important
+    border-radius: 0!important
 .ant-layout-sider
     background: transparent
     box-shadow: 2px 0px 20px 0px #001010
     z-index: 1
 .ant-drawer-header-no-title,.ant-drawer-body,.ant-drawer-close
     color: white!important
-.menu 
-    line-height: $header-heaight
-    background-color: #f4f3ef
-.ant-menu-horizontal
-    border-color: #cfcfcf
-.header
-    height: $header-heaight  
-    padding: 0
-    background: $dark    
-.menu-item:hover
-    border-color: $info-color!important
+.bottom-menu-item
+    position: absolute!important
+    bottom: 0
+    left: 0
+    width: 100% 
 .ant-menu-vertical .ant-menu-item:hover
     background-color: $info-color
     transition: linear .2s
@@ -23,7 +23,6 @@
 .sidebar, .sidebar > li.ant-menu-item > a
     color: white
 .sidebar,
-    //background: linear-gradient(to right, #1b1b1d 20%, #042a2a 70% , #063535)
     background: #2d2d2d
 .ant-drawer-content
     background: rgba(27, 27, 29, .95)!important
@@ -41,7 +40,6 @@
     height: auto
     white-space: nowrap
     font-weight: 600
-
 .user-profile
     position: relative
     &:after
@@ -52,7 +50,6 @@
         height: 1px
         width: 100%
         background-color: hsla(0,0%,100%,.3)
-
 .ant-menu-inline-collapsed > .logo-item
     margin-left: 15px
     > span
@@ -77,3 +74,9 @@
     margin-left: 10px
     width: 32px
     height: 32px
+
+.title-flex
+    display: flex
+    align-items: center
+    & > i
+        margin-right: 10px

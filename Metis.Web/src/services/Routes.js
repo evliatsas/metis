@@ -7,7 +7,7 @@ import MapMonitor from '../components/MapMonitor/MapMonitor';
 export const fullAccess = (
     <Switch>
         <Route path="/" exact component={Home} />
-        <Route path="/eob" exact component={MapMonitor} />
+        <Route path="/surveillance" exact component={MapMonitor} />
         <Redirect to="/" />
     </Switch>
 );

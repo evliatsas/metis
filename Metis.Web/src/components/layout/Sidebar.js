@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Layout, Menu, Icon } from 'antd';
 import { NavLink } from 'react-router-dom';
-import './Layout';
 import logo from '../../assets/badge-png-vector-5-transparent.png';
 import storage from '../../services//LocalStorage';
+import { AuthContext } from '../../auth/AuthProvider';
+import './Layout.sass';
 const { Sider } = Layout;
+
 const Sidebar = props => {
+    const auth = useContext(AuthContext);
     const username = storage.get('auth');
     const [collapsed, setCollapsed] = useState(false);
     const toggleCollapsed = () => {
@@ -39,14 +42,20 @@ const Sidebar = props => {
                     </NavLink>
                 </Menu.Item>
                 <Menu.Item key="3">
-                    <NavLink to="/eob">
+                    <NavLink to="/surveillance">
                         <Icon type="global" />
                         <span>Τεστ Χαρτης</span>
                     </NavLink>
                 </Menu.Item>
+                <Menu.Item className="bottom-menu-item" key="99" onClick={auth.signOut}>
+                    <span>
+                        <Icon type="logout" />
+                        <span>Αποσύνδεση</span>
+                    </span>
+                </Menu.Item>
             </Menu>
         </Sider>
-    );
-};
-
+            );
+        };
+        
 export default Sidebar;
