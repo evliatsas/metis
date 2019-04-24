@@ -20,8 +20,7 @@ const MapMonitor = () => {
         callFetch('sites', 'GET').then(res => {
             const filterSites = res.filter(x => x.latitude !== 0)
             console.log(filterSites);
-            setSites(filterSites);
-            setSelected(filterSites[0]);
+            setSites(filterSites);           
         });
     }, []);
 

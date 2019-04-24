@@ -1,4 +1,6 @@
 @import  '../../styles/variables.sass'
+.ant-layout
+    background: #1a1a1a
 .ant-drawer-header 
     position: relative
     padding: 15px!important
@@ -23,7 +25,7 @@
 .sidebar, .sidebar > li.ant-menu-item > a
     color: white
 .sidebar,
-    background: #2d2d2d
+    background: $dark
 .ant-drawer-content
     background: rgba(27, 27, 29, .95)!important
 .ant-menu-vertical
@@ -80,3 +82,9 @@
     align-items: center
     & > i
         margin-right: 10px
+.ant-statistic-content-prefix 
+    margin-right: 10px!important
+
+//mobile
+.mobile-menu
+    display: none

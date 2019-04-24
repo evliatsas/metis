@@ -40,11 +40,11 @@ const Login = props => {
             <Col lg={{ span: 8 }} xl={{ span: 6 }} xxl={{ span: 4 }}>
                 <Card size="small" className="card-index">
                     <Form >
-                        <Typography.Title className=" mb-5" level={3}>
+                        <Typography.Title className=" mb-5 has-text-dark" level={3}>
                             <img className="logo-login" src={logo} alt="..." /> Σύνδεση
                             </Typography.Title>
                         <Form.Item className="m0 "
-                            label="Όνομα Χρήστη"
+                            label={<span className="has-text-dark">Όνομα Χρήστη</span>}
                             {...formItemLayout}>
                             <Input
                                 placeholder="Enter your username"
@@ -52,15 +52,17 @@ const Login = props => {
                                 autoComplete="username"
                                 prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
                                 suffix={clearButton}
+                                className="has-text-dark"
                                 value={loginModel.username}
                                 onChange={inputsHandler} />
                         </Form.Item>
                         <Form.Item
-                            className="m0 "
-                            label="Κωδικός"
+                            className="m0"
+                            label={<span className="has-text-dark">Κωδικός</span>}
                             {...formItemLayout}>
                             <Input.Password
                                 autoComplete="password"
+                                className="has-text-dark"
                                 name="password"
                                 prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
                                 value={loginModel.password}

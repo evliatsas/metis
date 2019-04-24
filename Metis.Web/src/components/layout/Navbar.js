@@ -1,21 +1,14 @@
-import React, { useContext } from 'react';
-import { AuthContext } from '../../auth/AuthProvider';
-import { Menu, Icon, Layout } from 'antd';
+import React from 'react';
+import { Menu, Icon } from 'antd';
 import './Layout.sass';
 import '../../styles/Utilities.sass';
-const { Header } = Layout;
 const Navbar = props => {
-    const auth = useContext(AuthContext);
     return (
-        <Header className="header">
-            <Menu mode="horizontal" className="menu" selectable={false}>
-                <Menu.Item key="99" className="menu-item is-right" onClick={auth.signOut}>
-                    <Icon type="logout" />Αποσύνδεση
-                </Menu.Item>
-               
-
-            </Menu>
-        </Header>
+        <Menu mode="horizontal" className="has-background-dark mobile-menu" selectable={false}>
+            <Menu.Item key="99" className="menu-item " onClick={props.openSidebar}>
+                <Icon type="menu" />
+            </Menu.Item>
+        </Menu>
 
     );
 };

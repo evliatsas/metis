@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { Layout, Menu, Icon } from 'antd';
 import { NavLink } from 'react-router-dom';
 import logo from '../../assets/badge-png-vector-5-transparent.png';
@@ -8,14 +8,20 @@ import './Layout.sass';
 const { Sider } = Layout;
 
 const Sidebar = props => {
+    const [width, setWidth] = useState(80);
     const auth = useContext(AuthContext);
     const username = storage.get('auth');
-    const [collapsed, setCollapsed] = useState(false);
-    const toggleCollapsed = () => {
-        setCollapsed(!collapsed);
-    }
+
     return (
-        <Sider collapsed={collapsed}>
+        <Sider collapsed={props.collapsed} collapsedWidth={width} breakpoint={{
+            xs: '480px',
+            sm: '576px',
+            md: '768px',
+            lg: '992px',
+            xl: '1200px',
+            xxl: '1600px',
+        }} onCollapse={(collapsed, type) => { console.log(collapsed, type) }}
+           onBreakpoint={(broken) => console.log(broken)}	>
             <Menu selectable={false}
                 mode="vertical"
                 className="is-fullheight sidebar">
@@ -29,14 +35,14 @@ const Sidebar = props => {
                         <span>{username.title}</span>
                     </span>
                 </Menu.Item>
-                <Menu.Item key="1" onClick={toggleCollapsed}>
+                <Menu.Item key="1" onClick={props.toggleCollapsed}>
                     <span>
-                        <Icon type={collapsed ? 'menu-unfold' : 'menu-fold'} />
+                        <Icon type={props.collapsed ? 'menu-unfold' : 'menu-fold'} />
                         <span>Ελαχιστοποίηση</span>
                     </span>
                 </Menu.Item>
                 <Menu.Item key="2" >
-                    <NavLink to="/" >
+                    <NavLink to="/dashboard" >
                         <Icon type="home" />
                         <span>Αρχική</span>
                     </NavLink>
@@ -54,8 +60,8 @@ const Sidebar = props => {
                     </span>
                 </Menu.Item>
             </Menu>
-        </Sider>
-            );
-        };
-        
+        </Sider >
+    );
+};
+
 export default Sidebar;
