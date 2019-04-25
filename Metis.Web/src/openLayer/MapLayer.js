@@ -36,7 +36,7 @@ const MapLayer = props => {
         map.addInteraction(select);
         featuresSource.addFeatures(addMarkers(props.sites));
         const clusterSource = new Cluster({
-            distance: 50,
+            distance: 20,
             source: featuresSource
         });
 

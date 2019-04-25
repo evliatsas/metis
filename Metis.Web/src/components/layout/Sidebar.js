@@ -7,7 +7,7 @@ import { AuthContext } from '../../auth/AuthProvider';
 import './Layout.sass';
 const { Sider } = Layout;
 
-const Sidebar = props => {   
+const Sidebar = props => {
     const auth = useContext(AuthContext);
     const username = storage.get('auth');
 
@@ -20,7 +20,7 @@ const Sidebar = props => {
             xl: '1200px',
             xxl: '1600px',
         }} onCollapse={(collapsed, type) => { console.log(collapsed, type) }}
-           onBreakpoint={(broken) => console.log(broken)}	>
+            onBreakpoint={(broken) => console.log(broken)}	>
             <Menu selectable={false}
                 mode="vertical"
                 className="is-fullheight sidebar">
@@ -52,6 +52,12 @@ const Sidebar = props => {
                         <span>Τεστ Χαρτης</span>
                     </NavLink>
                 </Menu.Item>
+                <Menu.Item key="4">
+                    <NavLink to="/events">
+                        <Icon type="notification" />
+                        <span>Συμβάντα</span>
+                    </NavLink>
+                </Menu.Item>
                 <Menu.Item className="bottom-menu-item" key="99" onClick={auth.signOut}>
                     <span>
                         <Icon type="logout" />
@@ -59,7 +65,7 @@ const Sidebar = props => {
                     </span>
                 </Menu.Item>
             </Menu>
-        </Sider >
+        </Sider>
     );
 };
 

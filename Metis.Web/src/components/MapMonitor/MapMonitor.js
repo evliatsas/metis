@@ -38,7 +38,7 @@ const MapMonitor = () => {
         <List className="list-map"
             size="small"
             header={<div className="has-text-primary">
-                <Icon type="alert" theme="twoTone" twoToneColor="#2abdbd" /> Κατάσταση</div>}
+                <Icon type="bell" theme="twoTone" twoToneColor="#2abdbd" /> Κατάσταση</div>}
             bordered
             dataSource={status}
             renderItem={item => (<List.Item>
