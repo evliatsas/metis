@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import { Layout, Menu, Icon } from 'antd';
 import { NavLink } from 'react-router-dom';
 import logo from '../../assets/badge-png-vector-5-transparent.png';
@@ -7,13 +7,12 @@ import { AuthContext } from '../../auth/AuthProvider';
 import './Layout.sass';
 const { Sider } = Layout;
 
-const Sidebar = props => {
-    const [width, setWidth] = useState(80);
+const Sidebar = props => {   
     const auth = useContext(AuthContext);
     const username = storage.get('auth');
 
     return (
-        <Sider collapsed={props.collapsed} collapsedWidth={width} breakpoint={{
+        <Sider collapsed={props.collapsed} collapsedWidth={80} breakpoint={{
             xs: '480px',
             sm: '576px',
             md: '768px',
