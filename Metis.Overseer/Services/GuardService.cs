@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 using Serilog;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Metis.Overseer.Services
 {
-    public class GuardService
+    public class GuardService : IDisposable
     {
         private readonly IHubContext<GuardHub> _guardHubContext;
         private readonly string _connectionString;
@@ -27,17 +28,8 @@ namespace Metis.Overseer.Services
             _guards = new ConcurrentDictionary<string, Watcher>();
 
             Task.Run(() => startGuards());
-        }
 
-        ~GuardService()  // finalizer
-        {
-            // cleanup statements...
-            foreach(var watcher in _guards.Values)
-            {
-                watcher.Stop();
-                watcher.SiteStatusChanged -= Watcher_SiteStatusChanged;
-                watcher.SiteException -= Watcher_SiteException;
-            }
+            Log.Debug("guard service successfully started");
         }
 
         public void StartGuard(string siteId)
@@ -135,6 +127,8 @@ namespace Metis.Overseer.Services
                 watcher.Start();
 
                 _guards.TryAdd(siteId, watcher);
+
+                Log.Debug("watcher of site {id} started.", watcher.Site.Id);
             });
         }
 
@@ -162,6 +156,20 @@ namespace Metis.Overseer.Services
                 .ToListAsync();
 
             return sites.Select(x => x.Id);
+        }
+
+        public void Dispose()
+        {
+            // cleanup statements...
+            foreach (var watcher in _guards.Values)
+            {
+                watcher.Stop();
+                watcher.SiteStatusChanged -= Watcher_SiteStatusChanged;
+                watcher.SiteException -= Watcher_SiteException;
+
+                Log.Debug("watcher of site {id} safely stopped.", watcher.Site.Id);
+            }
+            Log.Debug("guard service safely disposed");
         }
     }
 }

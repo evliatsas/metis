@@ -35,6 +35,8 @@ namespace Metis.Overseer
 
         public IConfiguration Configuration { get; }
 
+        private GuardService _guardService;
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -100,11 +102,12 @@ namespace Metis.Overseer
 
             var serviceProvider = services.BuildServiceProvider();
             var guardHub = serviceProvider.GetService<IHubContext<GuardHub>>();
-            services.AddSingleton<GuardService>(new GuardService(guardHub, Configuration));
+            _guardService = new GuardService(guardHub, Configuration);
+            services.AddSingleton<GuardService>(_guardService);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime applicationLifetime)
         {
             app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
             app.UseExceptionHandler(options =>
@@ -168,6 +171,13 @@ namespace Metis.Overseer
             });
 
             app.UseMvc();
+
+            applicationLifetime.ApplicationStopping.Register(OnShutdown);
+        }
+
+        private void OnShutdown()
+        {
+            _guardService.Dispose();
         }
     }
 }
