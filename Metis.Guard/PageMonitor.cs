@@ -16,7 +16,7 @@ namespace Metis.Guard
         /// <summary>
         /// The page refresh time in seconds
         /// </summary>
-        const int MONITOR_THRESHOLD = 10; 
+        const int MONITOR_THRESHOLD = 10;
 
         private readonly Encoding _encoding;
         private Page _page;
@@ -39,7 +39,7 @@ namespace Metis.Guard
         public PageMonitor(Page page, Encoding encoding)
         {
             this._encoding = encoding;
-            this._page = page;            
+            this._page = page;
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Metis.Guard
         public void Start()
         {
             this.CancellationTokenSource = new CancellationTokenSource();
-            Task.Factory.StartNew(() => monitor(_page, this.CancellationTokenSource.Token));            
+            Task.Factory.StartNew(() => monitor(_page, this.CancellationTokenSource.Token));
         }
 
         /// <summary>
@@ -134,11 +134,14 @@ namespace Metis.Guard
                     }
                     else
                     {
-                        var previousStatus = page.Status;
-                        page.Status = Status.Alarm;
-                        // raise page status changed event
-                        var args = new PageStatusEventArgs(page, previousStatus);
-                        OnPageStatusChanged(args);
+                        if (page.Status != Status.Alarm)
+                        {
+                            var previousStatus = page.Status;
+                            page.Status = Status.Alarm;
+                            // raise page status changed event
+                            var args = new PageStatusEventArgs(page, previousStatus);
+                            OnPageStatusChanged(args);
+                        }
                     }
 
                     await Task.Delay(TimeSpan.FromSeconds(MONITOR_THRESHOLD), token);
@@ -146,7 +149,7 @@ namespace Metis.Guard
 
                 this.MonitorStatus = WorkerStatus.Stopped;
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 // raise page parse exception event
                 page.Status = Status.Alarm;
@@ -173,7 +176,7 @@ namespace Metis.Guard
 
                 foreach (var exception in page.Exceptions)
                 {
-                    if(exception.Type == "script" && exception.Attribute == "text()")
+                    if (exception.Type == "script" && exception.Attribute == "text()")
                     {
                         removeScriptText(doc.DocumentNode, exception.Value);
                     }
@@ -198,7 +201,7 @@ namespace Metis.Guard
                         }
                         else
                         {
-                            Console.WriteLine($"Exception rule {path} has not been found.");
+                            Console.WriteLine($"Exception rule {path} has not been found in page {page.Uri}.");
                         }
                     }
                 }
@@ -207,7 +210,7 @@ namespace Metis.Guard
 
                 return content;
             }
-            catch(System.Net.Http.HttpRequestException exception)
+            catch (System.Net.Http.HttpRequestException exception)
             {
                 // raise page not found event
                 page.Status = Status.NotFound;
@@ -216,7 +219,7 @@ namespace Metis.Guard
 
                 return string.Empty;
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 // raise page parse exception event
                 page.Status = Status.Alarm;
@@ -231,9 +234,9 @@ namespace Metis.Guard
         {
             var path = "//script/text()";
             var nodes = node.SelectNodes(path);
-            foreach(var scriptNode in nodes)
+            foreach (var scriptNode in nodes)
             {
-                if(scriptNode.InnerText.Contains(contains))
+                if (scriptNode.InnerText.Contains(contains))
                 {
                     scriptNode.ParentNode.RemoveChild(scriptNode);
                 }
