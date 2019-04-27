@@ -15,7 +15,7 @@ namespace Metis.Teamwork.Entities
         /// The Owner of the book
         /// </summary>        
         [Required]
-        [BsonElement("owner")]        
+        [BsonElement("owner")]
         public Member Owner { get; set; }
         /// <summary>
         /// Book last update Date Time
@@ -45,6 +45,20 @@ namespace Metis.Teamwork.Entities
         /// </summary>
         [BsonIgnore]
         public IEnumerable<LogEntry> Entries { get; set; }
+
+        /// <summary>
+        /// The number of Entries that belong to the book
+        /// (Non persisted property)
+        /// </summary>
+        [BsonIgnore]
+        public long EntriesCount { get; set; }
+
+        /// <summary>
+        /// The number of users that can view/edit the entries in the book
+        /// (Non persisted property)
+        /// </summary>
+        [BsonIgnore]
+        public long MembersCount { get; set; }
 
         public LogBook()
         {

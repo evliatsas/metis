@@ -43,19 +43,29 @@ namespace Metis.Overseer.Services
                 .Find(x => x.Id == id)
                 .SingleOrDefaultAsync();
 
-            if(book == null)
+            if (book == null)
             {
                 throw new KeyNotFoundException($"The Log book {id} does not exist.");
             }
 
-            var entries = await _LogEntries
-                .Find(x => x.LogBookId == id)
-                .SortBy(x=>x.Status)
-                .ThenByDescending(x=>x.Priority)
-                .ThenByDescending(x=>x.DTG)
-                .ToListAsync();
+            // var entries = await _LogEntries
+            //     .Find(x => x.LogBookId == id)
+            //     .SortBy(x=>x.Status)
+            //     .ThenByDescending(x=>x.Priority)
+            //     .ThenByDescending(x=>x.DTG)
+            //     .ToListAsync();
 
-            book.Entries = entries;
+            var entriesCount = await _LogEntries
+                .Find(x => x.LogBookId == id)
+                .CountDocumentsAsync();
+
+            book.EntriesCount = entriesCount;
+
+            var membersCount = await _LogEntries
+                .Find(x => x.LogBookId == id)
+                .CountDocumentsAsync();
+
+            book.MembersCount = book.Members.Count();
 
             return book;
         }
@@ -81,13 +91,13 @@ namespace Metis.Overseer.Services
         }
 
         public async Task<LogEntry> Create(LogEntry entry)
-        {           
+        {
             if (string.IsNullOrEmpty(entry.LogBookId))
             {
                 throw new NullReferenceException("The Log entry must belong to an existing book");
             }
             var bookExists = await _LogBooks.CountDocumentsAsync(x => x.Id == entry.LogBookId);
-            if(bookExists < 1)
+            if (bookExists < 1)
             {
                 throw new NullReferenceException("The Log entry book does not exist");
             }
