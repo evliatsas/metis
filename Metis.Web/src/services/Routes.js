@@ -11,6 +11,7 @@ export const fullAccess = (
         <Route path="/surveillance" exact component={MapMonitor} />
         <Route path="/books" exact component={Books} />
         <Route path="/book/new" exact component={Book} />
+        <Route path="/book/:id" exact component={Book} />
         <Redirect to="/dashboard" />
     </Switch>
 );
