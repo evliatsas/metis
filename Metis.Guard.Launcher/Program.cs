@@ -31,6 +31,8 @@ namespace Metis.Guard
                 Console.ReadLine();
                 Console.WriteLine("Stopping....");
                 watcher.Stop();
+                watcher.SiteStatusChanged -= Watcher_SiteStatusChanged;
+                watcher.SiteException -= Watcher_SiteException;
                 Console.WriteLine("Stopped");
                 Console.ReadLine();
             }

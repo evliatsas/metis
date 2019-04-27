@@ -16,7 +16,7 @@ namespace Metis.Guard
         /// <summary>
         /// The page refresh time in seconds
         /// </summary>
-        const int MONITOR_THRESHOLD = 60; 
+        const int MONITOR_THRESHOLD = 10; 
 
         private readonly Encoding _encoding;
         private Page _page;
@@ -173,18 +173,33 @@ namespace Metis.Guard
 
                 foreach (var exception in page.Exceptions)
                 {
-                    var path = $"//{exception.Type}[@{exception.Attribute}='{exception.Value}']";
-                    var nodes = doc.DocumentNode.SelectNodes(path);
-                    if (nodes != null)
+                    if(exception.Type == "script" && exception.Attribute == "text()")
                     {
-                        foreach (HtmlNode node in nodes)
-                        {
-                            node.ParentNode.RemoveChild(node);
-                        }
+                        removeScriptText(doc.DocumentNode, exception.Value);
+                    }
+                    else if (exception.Type == "script" && exception.Attribute == "src()")
+                    {
+                        removeScriptSrc(doc.DocumentNode, exception.Value);
+                    }
+                    else if (exception.Attribute == "class()")
+                    {
+                        removePartialClass(doc.DocumentNode, exception.Type, exception.Value);
                     }
                     else
                     {
-                        Console.WriteLine($"Exception rule {path} has not been found.");
+                        var path = $"//{exception.Type}[@{exception.Attribute}='{exception.Value}']";
+                        var nodes = doc.DocumentNode.SelectNodes(path);
+                        if (nodes != null)
+                        {
+                            foreach (HtmlNode node in nodes)
+                            {
+                                node.ParentNode.RemoveChild(node);
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Exception rule {path} has not been found.");
+                        }
                     }
                 }
 
@@ -209,6 +224,42 @@ namespace Metis.Guard
                 OnPageParseException(args);
 
                 return string.Empty;
+            }
+        }
+
+        private void removeScriptText(HtmlNode node, string contains)
+        {
+            var path = "//script/text()";
+            var nodes = node.SelectNodes(path);
+            foreach(var scriptNode in nodes)
+            {
+                if(scriptNode.InnerText.Contains(contains))
+                {
+                    scriptNode.ParentNode.RemoveChild(scriptNode);
+                }
+            }
+        }
+
+        private void removeScriptSrc(HtmlNode node, string contains)
+        {
+            var path = "//script/src";
+            var nodes = node.SelectNodes(path);
+            foreach (var scriptNode in nodes)
+            {
+                if (scriptNode.Attributes["src"].Value.Contains(contains))
+                {
+                    scriptNode.ParentNode.RemoveChild(scriptNode);
+                }
+            }
+        }
+
+        private void removePartialClass(HtmlNode node, string elementType, string contains)
+        {
+            var path = $"//{elementType}[contains(@class, '{contains}')]";
+            var nodes = node.SelectNodes(path);
+            foreach (var elementNode in nodes)
+            {
+                elementNode.ParentNode.RemoveChild(elementNode);
             }
         }
 
