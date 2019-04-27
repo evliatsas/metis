@@ -11,7 +11,8 @@ const Dashboard = () => {
   ];
   const counterCards = counters.map((c, i) => <Col sm={12} xs={24} md={12} lg={6} xl={6} xxl={6} key={i} className="p-3">
     <Card className="has-background-dark">
-      <Statistic title={c.label} value={c.value} prefix={<Icon type={c.icon} theme="twoTone" twoToneColor={c.color} />} />
+      <Statistic  title={c.label} value={c.value}
+        prefix={<Icon type={c.icon} theme="twoTone" twoToneColor={c.color} />} />
     </Card>
   </Col>
   )

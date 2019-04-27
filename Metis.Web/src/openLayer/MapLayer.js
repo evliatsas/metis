@@ -77,10 +77,12 @@ const MapLayer = props => {
     }, [props.sites]);
 
     select.on('select', function (e) {
+        console.log(e);
         e.preventDefault();
         if (e.selected.length === 0) { return; }
+        if (e.selected[0].values_ && e.selected[0].values_.features.length > 1) { return; }
         if (e && e.selected && e.selected[0].values_) {
-            const site = e.selected[0];
+            const site = e.selected[0].values_.features[0];
             props.selectSite(site.values_.set.id);
         }
     });

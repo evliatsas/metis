@@ -21,12 +21,12 @@ const Sidebar = props => {
             xxl: '1600px',
         }} onCollapse={(collapsed, type) => { console.log(collapsed, type) }}
             onBreakpoint={(broken) => console.log(broken)}	>
-            <Menu selectable={false}
+            <Menu  selectable={false}
                 mode="vertical"
                 className="is-fullheight sidebar">
                 <div className="logo-item" key="0">
                     <img className="logo" src={logo} alt="..." />
-                    <span className="ml-1 line" >Metis</span>
+                    <span className="ml-1" >Metis</span>
                 </div>
                 <Menu.Item key="name" className="mb-5">
                     <span className="user-profile">
@@ -52,12 +52,15 @@ const Sidebar = props => {
                         <span>Τεστ Χαρτης</span>
                     </NavLink>
                 </Menu.Item>
-                <Menu.Item key="4">
-                    <NavLink to="/events">
-                        <Icon type="notification" />
-                        <span>Συμβάντα</span>
-                    </NavLink>
-                </Menu.Item>
+                <Menu.SubMenu key="4" title={<span>
+                    <Icon type="notification" />
+                    <span>Συμβάντα</span>
+                </span>}>
+                    <Menu.Item key="5">
+                        <NavLink to="/book/new">Νέο Συμβάν</NavLink></Menu.Item>
+                    <Menu.Item key="6">
+                        <NavLink to="/books">Συμβάντα</NavLink></Menu.Item>
+                </Menu.SubMenu>
                 <Menu.Item className="bottom-menu-item" key="99" onClick={auth.signOut}>
                     <span>
                         <Icon type="logout" />

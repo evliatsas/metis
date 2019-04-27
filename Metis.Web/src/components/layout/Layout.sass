@@ -1,33 +1,24 @@
 @import  '../../styles/variables.sass'
-.ant-layout
-    background: #1a1a1a
+// for mobile
 .ant-drawer-header 
     position: relative
     padding: 15px!important
     border-bottom: 1px solid grey!important
     background: rgba(27, 27, 29, .95)!important
     border-radius: 0!important
-.ant-layout-sider
-    background: transparent
-    box-shadow: 2px 0px 20px 0px #001010
-    z-index: 1
-.ant-drawer-header-no-title,.ant-drawer-body,.ant-drawer-close
-    color: white!important
+// .ant-drawer-header-no-title,.ant-drawer-body,.ant-drawer-close
+//     color: white!important
+.sidebar,.ant-menu-sub,.ant-menu-submenu-popup
+    background: $dark!important
 .bottom-menu-item
     position: absolute!important
     bottom: 0
     left: 0
     width: 100% 
-.ant-menu-vertical .ant-menu-item:hover
+li.ant-menu-item:hover,.ant-menu-item-active > a
     background-color: $info-color
     transition: linear .2s
-    color: white
-.sidebar, .sidebar > li.ant-menu-item > a
-    color: white
-.sidebar,
-    background: $dark
-.ant-drawer-content
-    background: rgba(27, 27, 29, .95)!important
+    color: white!important
 .ant-menu-vertical
     border-right: 1px solid #1b1b1d
 .ant-menu-item > a > i,.ant-menu-item > span > i
@@ -37,21 +28,14 @@
 .ant-menu-item > a,.ant-menu-item > span 
     font-size: 14px
     margin: 0
-    position: relative
     display: block
     height: auto
     white-space: nowrap
     font-weight: 600
+
 .user-profile
     position: relative
-    &:after
-        content: ""
-        position: absolute
-        bottom: 0
-        right: 0px
-        height: 1px
-        width: 100%
-        background-color: hsla(0,0%,100%,.3)
+  
 .ant-menu-inline-collapsed > .logo-item
     margin-left: 15px
     > span
@@ -60,14 +44,6 @@
     padding-bottom: 20px
     margin: 20px auto 0
     position: relative
-.line:after
-    content: ""
-    position: absolute
-    bottom: 0
-    right: 15px
-    height: 1px
-    width: calc(100% - 30px)
-    background-color: hsla(0,0%,100%,.3)
 .logo-item > span
     color: $info-color
     font-weight: 500

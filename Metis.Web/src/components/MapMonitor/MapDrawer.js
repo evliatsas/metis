@@ -21,16 +21,15 @@ const MapDrawer = props => {
         <Paragraph>
             <List itemLayout="horizontal" split={false}   >
                 <List.Item className="pb-0 pt-0">
-                    <List.Item.Meta style={{ fontWeight: 500 }} description="Site Status" />
+                    <List.Item.Meta style={{ fontWeight: 500, }}  description="Site Status" />
                     <div style={{ color: statusColor(props.selected.status) }}>{props.selected.status}</div>
                 </List.Item>
             </List>
-            <List
-                header={<div style={{ fontSize: 20 }} className="has-text-primary mb-0">
+            <List header={<div style={{ fontSize: 20 }} className="has-text-primary mb-0">
                     <Icon type="environment" style={{ fontSize: 20 }} /> Location</div>}
                 itemLayout="horizontal" split={false}   >
                 <List.Item className="pb-0 pt-0">
-                    <List.Item.Meta style={{ fontWeight: 500 }} description="Latitude:" />
+                    <List.Item.Meta style={{ fontWeight: 500 }}  description="Latitude:" />
                     <div>{props.selected.latitude}</div>
                 </List.Item>
                 <List.Item>

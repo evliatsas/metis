@@ -1,6 +1,6 @@
 import React from 'react';
 
-const EventChat = () => {
+const BookChat = () => {
     return (
         <div>
             EventChat
@@ -8,4 +8,4 @@ const EventChat = () => {
     );
 };
 
-export default EventChat;
+export default BookChat;
