@@ -1,14 +1,17 @@
 .ant-page-header
     background: $dark!important
-.ant-layout
+.ant-layout,.ant-transfer-list-header
     background: $background!important
 .ant-drawer-content
     background: rgba(27, 27, 29, .95)!important
 .ant-layout-sider
-    background: transparent
-    box-shadow: 2px 0px 20px 0px #001010
+    background: $sidebar!important
+    //box-shadow: 2px 0px 20px 0px #001010
     z-index: 1
-// Drawer
+.ant-menu-inline,.ant-menu-vertical
+    border-right: 1px solid  $border-color-base!important
+.ant-page-header
+    border-bottom: 1px solid $border-color-base
 .has-text-white > 
 .ant-list-item-meta-content >
 .ant-list-item-meta-description 
@@ -25,8 +28,18 @@
 .ant-table-thead > tr > th,
 .ant-pagination-prev .ant-pagination-item-link,
 .ant-calendar,.ant-calendar-input,
-.ant-transfer-list-header,
 .ant-pagination-next .ant-pagination-item-link,
 .ant-table-tbody > tr:hover:not(.ant-table-expanded-row) > td,
-.ant-input
+.ant-input,.ant-card
     background: $dark!important
+.sidebar,.ant-menu-sub,.ant-menu-submenu-popup
+    background: $sidebar!important
+.ant-card-bordered,.ant-card-head,.ant-transfer-list-header
+    border-color: $border-color-base!important
+.ant-card-head
+    background: $primary-color,
+.ant-transfer
+    display: flex
+    align-items: center
+.ant-transfer-list
+    flex: 1

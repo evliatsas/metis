@@ -1,19 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
     PageHeader, DatePicker, Typography, Row,
-    Form, Icon, Input, Button, Col, Transfer
+    Form, Icon, Input, Button, Col, Transfer, Card
 } from 'antd';
 import storage from '../../services/LocalStorage';
 import { callFetch } from '../../services/HttpService';
 import './Books.sass';
 import moment from 'moment';
-const { Paragraph } = Typography;
 const formItemLayout = {
     xs: { span: 24 },
-    md: { span: 22 },
-    lg: { span: 20 },
-    xl: { span: 18 },
-    xxl: { span: 18 }
+    lg: { span: 22 },
+    xl: { span: 11 },
+    xxl: { span: 10 }
 };
 const locale = {
     itemUnit: 'Χρήστες',
@@ -76,44 +74,44 @@ const Book = props => {
         });
     }
 
-
     return (
         <Form onSubmit={handleSubmit}>
-            <Row type="flex" justify="center">
-                <Col {...formItemLayout}>
+            <Row type="flex" justify="center" gutter={16}>
+                <Col span={24}>
                     <PageHeader title={title} breadcrumb={{ routes }}>
-                        <Paragraph>
-                            Δημιουργία νέου Συμβάντος ή επεξεργασία παλαιότερου
-                </Paragraph>
                     </PageHeader>
                 </Col>
-                <Col {...formItemLayout} className="mt-2">
-                    <Form.Item label="Τίτλος">
-                        <Input prefix={<Icon type="folder-open" />} className="input-width"
-                            placeholder="Τίτλος Συμβάν" ref={nameRef} />
-                    </Form.Item>
-                    <Form.Item label="Ημ/νια Λήξης">
-                        <DatePicker value={moment(date, 'L')} placeholder="Επιλογή Ημ/νιας"
-                            onChange={dateHandler} className="input-width" />
-                    </Form.Item>
-                    <Form.Item label="Μέλη για προβολή/επεξεργασία">
-                        <Transfer
-                            locale={locale}
-                            titles={['Επιλογή', 'Επιλεγμένοι']}
-                            rowKey={record => record.userId}
-                            dataSource={usersToSelect}
-                            showSearch
-                            listStyle={{
-                                width: 250,
-                                height: 300,
-                            }}
-                            targetKeys={usersSelected}
-                            onChange={usersHandler}
-                            render={item => `${item.name}`}
-                        /></Form.Item>
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit">Αποθήκευση</Button>
-                    </Form.Item>
+                <Col {...formItemLayout}
+                    className="mt-2" >
+                    <Card title="Λεπτομέρειες" size="small" >
+                        <Form.Item label="Τίτλος">
+                            <Input prefix={<Icon type="folder-open" />}
+                                placeholder="Τίτλος Συμβάν" ref={nameRef} />
+                        </Form.Item>
+                        <Form.Item label="Ημ/νια Λήξης">
+                            <DatePicker value={moment(date, 'L')} placeholder="Επιλογή Ημ/νιας"
+                                onChange={dateHandler} className="is-fullwidth" />
+                        </Form.Item>
+                        <Button type="primary is-right" htmlType="submit">Αποθήκευση</Button>
+                    </Card></Col>
+                <Col {...formItemLayout}
+                    className="mt-2">
+                    <Card title="Επιλογή μέλών για προβολή/επεξεργασία" size="small" >
+                        <Form.Item label="">
+                            <Transfer
+                                locale={locale}
+                                titles={['Επιλογή', 'Επιλεγμένοι']}
+                                rowKey={record => record.userId}
+                                dataSource={usersToSelect}
+                                showSearch
+                                listStyle={{
+                                    height: 400
+                                }}
+                                targetKeys={usersSelected}
+                                onChange={usersHandler}
+                                render={item => `${item.name}`}
+                            /></Form.Item>
+                    </Card>
                 </Col>
 
             </Row>
