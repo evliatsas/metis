@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, Tag, PageHeader, Typography as T, Tabs, Button, Statistic } from 'antd';
-import BookEnties from './BookEnties';
+import BookEntries from './BookEntries';
 import BookChat from './BookChat';
 import { callFetch } from '../../services/HttpService';
 import moment from 'moment';
@@ -60,7 +60,7 @@ const BookContainer = props => {
                     }> {content} </PageHeader>
             </Col>
             <Col span={16}>
-                <BookEnties />
+                <BookEntries />
             </Col>
             <Col span={8}>
                 <BookChat />

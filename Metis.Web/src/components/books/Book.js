@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     PageHeader, DatePicker, Typography, Row,
     Form, Icon, Input, Button, Col, Transfer, Card
@@ -20,7 +20,9 @@ const locale = {
 }
 const user = storage.get('auth');
 const member = { userId: user.userid, email: user.email, name: user.title }
+
 const Book = props => {
+
     const id = props.match.params.id ? props.match.params.id : null;
     const title = id ? 'Επεξεργασία Συμβάν' : 'Νέο Συμβάν';
     const routes = [
@@ -29,9 +31,17 @@ const Book = props => {
     ];
     const [usersToSelect, setUsersToSelect] = useState([]);
     const [usersSelected, setUsersSelected] = useState([]);
-    const [date, setDate] = useState(new Date());
-    const nameRef = useRef();
+    const [book, setBook] = useState({
+        date: new Date(), title: null
+    });
 
+    const bookHandler = (event) => {
+        console.log(event);
+        setBook({
+            ...book,
+            title: event.target.value
+        })
+    }
     const usersHandler = (nextTargetKeys, direction, moveKeys) => {
         if (direction === 'right') {
             setUsersSelected([...nextTargetKeys, usersSelected]);
@@ -41,7 +51,7 @@ const Book = props => {
     }
     const dateHandler = (d) => {
         if (!d._d) { return; }
-        setDate(d._d);
+        setBook({ ...book, date: d._d });
     }
 
     useEffect(() => {
@@ -50,8 +60,11 @@ const Book = props => {
                 const d = new Date(res.close);
                 const m = res.members.map(x => { return x.userId });
                 setUsersSelected(last => [...m])
-                console.log(m);
-                setDate(d)
+                console.log(res);
+                setBook({
+                    title: res.name,
+                    date: d
+                });
 
             });
         }
@@ -59,14 +72,16 @@ const Book = props => {
             // TODO Message 
             setUsersToSelect(prev => res);
         });
-    }, [])
+
+    }, []);
+
     const handleSubmit = (e) => {
         e.preventDefault();
         const body = {
             owner: member,
-            close: date,
+            close: book.date,
             members: usersToSelect.filter(f => usersSelected.some(s => s === f.key)),
-            name: nameRef.current.state.value
+            name: book.title
         }
         callFetch('logbooks', 'POST', body).then(res => {
             // TODO Message 
@@ -85,11 +100,11 @@ const Book = props => {
                     className="mt-2" >
                     <Card title="Λεπτομέρειες" size="small" >
                         <Form.Item label="Τίτλος">
-                            <Input prefix={<Icon type="folder-open" />}
-                                placeholder="Τίτλος Συμβάν" ref={nameRef} />
+                            <Input prefix={<Icon type="folder-open" />} name="title" value={book.title}
+                                placeholder="Τίτλος Συμβάν" onChange={bookHandler} />
                         </Form.Item>
                         <Form.Item label="Ημ/νια Λήξης">
-                            <DatePicker value={moment(date, 'L')} placeholder="Επιλογή Ημ/νιας"
+                            <DatePicker value={moment(book.date, 'L')} placeholder="Επιλογή Ημ/νιας"
                                 onChange={dateHandler} className="is-fullwidth" />
                         </Form.Item>
                         <Button type="primary is-right" htmlType="submit">Αποθήκευση</Button>

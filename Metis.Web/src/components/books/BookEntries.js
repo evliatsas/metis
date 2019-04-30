@@ -1,6 +1,6 @@
 import React from 'react';
 
-const BookEnties = () => {
+const BookEntries = () => {
     return (
         <div>
            asdsa 
@@ -8,4 +8,4 @@ const BookEnties = () => {
     );
 };
 
-export default BookEnties;
+export default BookEntries;
