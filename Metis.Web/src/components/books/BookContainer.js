@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, PageHeader, Typography as T, Tabs, Button } from 'antd';
-
+import { Row, Col, PageHeader, Tabs, Button, Modal } from 'antd';
+import LogEntry from './LogEntry';
 import BookEntries from './BookEntries';
 import BookChat from './BookChat';
 import { callFetch } from '../../services/HttpService';
@@ -11,6 +11,7 @@ const TabPane = Tabs.TabPane;
 const BookContainer = props => {
     const id = props.match.params.id ? props.match.params.id : null;
     const [book, setBook] = useState({ members: [], entries: [] });
+    const [logEntry, setLogEntry] = useState(null);
 
     useEffect(() => {
         if (id) {
@@ -21,7 +22,11 @@ const BookContainer = props => {
         }
     }, []);
 
-    const lastupdate = moment(book.lastUpdate).fromNow() 
+    const handleLogEntry = (entry) => {
+        setLogEntry(entry)
+    }
+
+    const lastupdate = moment(book.lastUpdate).fromNow()
     return (
         <Row className="is-fullheight">
             <Col span={24}>
@@ -30,9 +35,10 @@ const BookContainer = props => {
                     title={book.name}
                     subTitle={lastupdate + " ενημερώθηκε"}
                     tags={calculateStatus(book.close)}
-                    extra={[
-                        <Button key="1" type="primary" size="small" onClick={() => props.history.push('/book/' + book.id)}
-                        > επεξεργασία </Button>]}
+                    extra={[<Button key="1" className="has-text-primary" size="small"
+                        onClick={() => handleLogEntry({})}> Νεο Γεγονός </Button>,
+                    <Button key="2" type="primary" size="small"
+                        onClick={() => props.history.push('/book/' + book.id)}> Eπεξεργασία </Button>]}
                     footer={
                         <Tabs defaultActiveKey="1">
                             <TabPane tab="Γεγονότα" key="1" />
@@ -46,6 +52,12 @@ const BookContainer = props => {
             <Col span={8} className="chat-container">
                 <BookChat />
             </Col>
+            <Modal
+                title={logEntry && logEntry.id ? 'Νέο Γεγονός' : 'Επεξεργασία'}
+                visible={logEntry !== null}
+                onOk={null}
+                onCancel={() => handleLogEntry(null)}
+            > <LogEntry/></Modal>
         </Row>
     );
 };

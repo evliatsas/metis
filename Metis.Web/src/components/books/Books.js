@@ -11,10 +11,6 @@ const formItemLayout = {
     xl: { span: 20 },
     xxl: { span: 18 },
 };
-const routes = [
-    { path: 'dashboard', breadcrumbName: 'Αρχική' },
-    { path: '', breadcrumbName: 'Συμβάντα' }
-];
 const Books = () => {
     const [data, setData] = useState([]);
     const columns = [{
@@ -68,7 +64,7 @@ const Books = () => {
         <Row type="flex" justify="center">
             <Col span={24}>
                 <PageHeader subTitle=" Σύντομη ανασκόπηση συμβάντων ταξινομημένα κατα ημερομηνία"
-                    title="Συμβάντα" breadcrumb={{ routes }}>
+                    title="Συμβάντα"  onBack={() => window.history.back()}>
                 </PageHeader></Col>
             <Col {...formItemLayout} className="mt-2">
                 <Table rowKey="id" columns={columns} dataSource={data} />

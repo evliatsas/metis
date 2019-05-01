@@ -3,6 +3,7 @@ import {
     PageHeader, DatePicker, Row,
     Form, Icon, Input, Button, Col, Transfer, Card
 } from 'antd';
+import { NavLink } from 'react-router-dom';
 import { callFetch } from '../../services/HttpService';
 import { getCurrentMember } from '../../services/CommonFunctions';
 import './Books.sass';
@@ -18,17 +19,11 @@ const locale = {
     itemsUnit: 'Χρήστες',
     searchPlaceholder: 'Αναζήτηση'
 }
-
-const member = getCurrentMember()
-
+const member = getCurrentMember();
 const Book = props => {
 
     const id = props.match.params.id ? props.match.params.id : null;
-    const title = id ? 'Επεξεργασία Συμβάν' : 'Νέο Συμβάν';
-    const routes = [
-        { path: 'dashboard', breadcrumbName: 'Αρχική', },
-        { path: '', breadcrumbName: title }
-    ];
+    const title = id ? 'Επεξεργασία Συμβάν' : 'Νέο Συμβάν';   
     const [usersToSelect, setUsersToSelect] = useState([]);
     const [usersSelected, setUsersSelected] = useState([]);
     const [book, setBook] = useState({
@@ -89,7 +84,9 @@ const Book = props => {
             props.history.push('/books');
         });
     }
-    const deleteButton = id ? <Button type="danger mr-2 is-right" onClick={handleDelete}>Διαγραφή</Button> : null
+    const deleteButton = id ? <Button type="danger" className="mr-2 is-right" onClick={handleDelete}>Διαγραφή</Button> : null
+    const bookMonitorLink = id ? <Button className="has-text-primary mr-2 is-right"
+        onClick={() => { props.history.push('/book/monitor/' + id) }}> Προβολή</Button> : null
     const createBody = () => {
         if (id) {
             setBook({
@@ -108,7 +105,7 @@ const Book = props => {
         <Form onSubmit={handleSubmit}>
             <Row type="flex" justify="center" gutter={16}>
                 <Col span={24}>
-                    <PageHeader title={title} breadcrumb={{ routes }}>
+                    <PageHeader onBack={() => window.history.back()} title={title}>
                     </PageHeader>
                 </Col>
                 <Col {...formItemLayout}
@@ -124,6 +121,7 @@ const Book = props => {
                         </Form.Item>
                         <Button type="primary is-right" htmlType="submit">Αποθήκευση</Button>
                         {deleteButton}
+                        {bookMonitorLink}
                     </Card></Col>
                 <Col {...formItemLayout}
                     className="mt-2">
