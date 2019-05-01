@@ -1,5 +1,6 @@
 ﻿using Metis.Teamwork.Entities;
 using Microsoft.Extensions.Configuration;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,22 @@ namespace Metis.Overseer.Services
                 .SortByDescending(x => x.Close)
                 .ToListAsync();
 
+            var pipeline = new BsonDocument[] {
+                new BsonDocument{{"$group", new BsonDocument{
+                            {"_id", "logBookId"},
+                            {"count",new BsonDocument{
+                                    {"$sum",1}}
+                            }}
+                    }}
+            };
+            var counts = await _LogEntries.Aggregate<BsonDocument>(pipeline).ToListAsync();
+
+            foreach (var b in result)
+            {
+                b.EntriesCount = (Int64)counts.FirstOrDefault(t => t.GetValue("_id") == b.Id)?.GetValue("count");
+                b.MembersCount = b.Members.Count();
+            }
+
             return result;
         }
 
@@ -60,10 +77,6 @@ namespace Metis.Overseer.Services
                 .CountDocumentsAsync();
 
             book.EntriesCount = entriesCount;
-
-            var membersCount = await _LogEntries
-                .Find(x => x.LogBookId == id)
-                .CountDocumentsAsync();
 
             book.MembersCount = book.Members.Count();
 
