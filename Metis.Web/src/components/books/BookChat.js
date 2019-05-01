@@ -14,6 +14,9 @@ const BookChat = () => {
         messageRef.current.input.state.value = '';
         setMessages([...messages, m])
     }
+    const clearMessages = () => {
+        setMessages([]);
+    }
     const empty = <div style={{ textAlign: 'center' }}>
         <Icon type="wechat" style={{ fontSize: 30 }} />
         <p>Δεν υπάρχουν μηνύματα</p>
@@ -38,7 +41,11 @@ const BookChat = () => {
     const content = messages.length === 0 ? empty : chat;
     return (
         <div className={'chat-sidedrawer ' + hasChat}>
-            <div className="is-fullwidth"> {content}</div>
+            <div className="chat-header"><span className="chat-header-title">Chat</span>
+                <span className="is-link is-right" onClick={clearMessages}>καθαρισμός</span></div>
+            <div className="is-fullwidth">
+                {content}
+            </div>
 
             <Input.Search className="chat-input"
                 placeholder="Το μηνυμά σας"

@@ -3,8 +3,8 @@ import {
     PageHeader, DatePicker, Row,
     Form, Icon, Input, Button, Col, Transfer, Card
 } from 'antd';
-import storage from '../../services/LocalStorage';
 import { callFetch } from '../../services/HttpService';
+import { getCurrentMember } from '../../services/CommonFunctions';
 import './Books.sass';
 import moment from 'moment';
 const formItemLayout = {
@@ -18,8 +18,8 @@ const locale = {
     itemsUnit: 'Χρήστες',
     searchPlaceholder: 'Αναζήτηση'
 }
-const user = storage.get('auth');
-const member = { userId: user.userid, email: user.email, name: user.title }
+
+const member = getCurrentMember()
 
 const Book = props => {
 
