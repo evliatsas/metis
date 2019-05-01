@@ -47,7 +47,11 @@ namespace Metis.Overseer.Services
 
             foreach (var b in result)
             {
-                b.EntriesCount = (Int64)counts.FirstOrDefault(t => t.GetValue("_id") == b.Id)?.GetValue("count");
+                var v = counts.FirstOrDefault(t => t.GetValue("_id") == b.Id);
+                if (v != null)
+                {
+                    b.EntriesCount = (Int64)v.GetValue("count");
+                }
                 b.MembersCount = b.Members.Count();
             }
 
