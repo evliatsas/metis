@@ -1,16 +1,17 @@
-import React from 'react';
-import { Menu, Icon } from 'antd';
-import './Layout.sass';
-import '../../styles/Utilities.sass';
-const Navbar = props => {
-    return (
-        <Menu mode="horizontal" className="has-background-dark mobile-menu" selectable={false}>
-            <Menu.Item key="99" className="menu-item " onClick={props.openSidebar}>
-                <Icon type="menu" />
-            </Menu.Item>
-        </Menu>
+import React from 'react'
+import { Menu as AntdMenu, Icon as AntdIcon } from 'antd'
+import './Layout.sass'
+import '../../styles/Utilities.sass'
 
-    );
-};
+const Navbar = ({ openSidebar }) => (
+  <AntdMenu
+    mode="horizontal"
+    className="has-background-dark mobile-menu"
+    selectable={false}>
+    <AntdMenu.Item key="99" className="menu-item " onClick={openSidebar}>
+      <AntdIcon type="menu" />
+    </AntdMenu.Item>
+  </AntdMenu>
+)
 
-export default Navbar;
+export default Navbar

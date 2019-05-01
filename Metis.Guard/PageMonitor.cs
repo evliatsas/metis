@@ -159,7 +159,7 @@ namespace Metis.Guard
         }
 
         /// <summary>
-        /// Parses the html page, updates the page title and returns the content 
+        /// Parses the html page, updates the page title and returns the content
         /// without the exception elements as an html string
         /// </summary>
         /// <param name="page">The Page to parse</param>
@@ -201,7 +201,8 @@ namespace Metis.Guard
                         }
                         else
                         {
-                            Console.WriteLine($"Exception rule {path} has not been found in page {page.Uri}.");
+                            // TODO: commented out to avoid console spam, what to do with it?
+                            //Console.WriteLine($"Exception rule {path} has not been found in page {page.Uri}.");
                         }
                     }
                 }

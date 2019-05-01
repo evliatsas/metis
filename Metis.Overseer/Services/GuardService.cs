@@ -35,7 +35,7 @@ namespace Metis.Overseer.Services
         public void StartGuard(string siteId)
         {
             var exists = _guards.ContainsKey(siteId);
-            if(exists)
+            if (exists)
             {
                 Watcher watcher;
                 _guards.TryGetValue(siteId, out watcher);
@@ -119,7 +119,8 @@ namespace Metis.Overseer.Services
         {
             var siteIds = await getSitesFromDb();
 
-            Parallel.ForEach(siteIds, (siteId) => {
+            Parallel.ForEach(siteIds, (siteId) =>
+            {
                 var config = new Configuration() { UiD = siteId, ConnectionString = _connectionString };
                 var watcher = new Watcher(config);
                 watcher.SiteStatusChanged += Watcher_SiteStatusChanged;
@@ -128,13 +129,13 @@ namespace Metis.Overseer.Services
 
                 _guards.TryAdd(siteId, watcher);
 
-                Log.Debug("watcher of site {id} started.", watcher.Site.Id);
+                Log.Debug("watcher of site {name} started.", watcher.Site.Name);
             });
         }
 
         private void Watcher_SiteException(object sender, SiteExceptionEventArgs e)
         {
-            Log.Error(e.Exception, "Exception while watching site {@name} {@id} page {@title} {@uri}", 
+            Log.Error(e.Exception, "Exception while watching site {@name} {@id} page {@title} {@uri}",
                 e.Site.Name, e.Site.Id, e.Page.Title, e.Page.Uri);
         }
 
@@ -151,8 +152,8 @@ namespace Metis.Overseer.Services
             var client = new MongoClient(_connectionString);
             var database = client.GetDatabase("metis");
             var siteCollection = database.GetCollection<Site>("sites");
-            var sites = await siteCollection.Find(x=>true)
-                .Project<Site>(Builders<Site>.Projection.Include(x=>x.Id))
+            var sites = await siteCollection.Find(x => true)
+                .Project<Site>(Builders<Site>.Projection.Include(x => x.Id))
                 .ToListAsync();
 
             return sites.Select(x => x.Id);
