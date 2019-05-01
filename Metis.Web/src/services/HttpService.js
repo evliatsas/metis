@@ -14,6 +14,7 @@ export const callFetch = async (url, method, data) => {
         } else {
             const message = await res.json();
             notification['error']({
+                placement:'bottomRight',
                 message: 'Σφάλμα',
                 description: message.Message
             });

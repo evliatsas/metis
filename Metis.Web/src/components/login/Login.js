@@ -21,7 +21,6 @@ const Login = () => {
     const clearUsernameHandler = () => {
         setLoginModel({ ...loginModel, username: '' });
     }
-    const formItemLayout = { labelCol: { span: 24 }, wrapperCol: { span: 24 } };
     const loginHandler = async () => {
         const body = {
             username: loginModel.username,

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-    PageHeader, DatePicker, Typography, Row,
+    PageHeader, DatePicker, Row,
     Form, Icon, Input, Button, Col, Transfer, Card
 } from 'antd';
 import storage from '../../services/LocalStorage';
@@ -32,21 +32,20 @@ const Book = props => {
     const [usersToSelect, setUsersToSelect] = useState([]);
     const [usersSelected, setUsersSelected] = useState([]);
     const [book, setBook] = useState({
-        date: new Date(), title: null
+        date: new Date(), name: null
     });
 
     const bookHandler = (event) => {
-        console.log(event);
         setBook({
             ...book,
-            title: event.target.value
+            name: event.target.value
         })
     }
     const usersHandler = (nextTargetKeys, direction, moveKeys) => {
         if (direction === 'right') {
-            setUsersSelected([...nextTargetKeys, usersSelected]);
+            setUsersSelected(last => [...nextTargetKeys, usersSelected]);
         } else {
-            setUsersSelected([...nextTargetKeys]);
+            setUsersSelected(last => [...nextTargetKeys]);
         }
     }
     const dateHandler = (d) => {
@@ -57,38 +56,54 @@ const Book = props => {
     useEffect(() => {
         if (id) {
             callFetch('logbooks/' + id, 'GET').then(res => {
-                const d = new Date(res.close);
-                const m = res.members.map(x => { return x.userId });
-                setUsersSelected(last => [...m])
-                console.log(res);
-                setBook({
-                    title: res.name,
-                    date: d
-                });
-
+                if (res) {
+                    const d = new Date(res.close);
+                    const m = res.members.map(x => { return x.userId });
+                    setUsersSelected([...m])
+                    setBook({
+                        ...res,
+                        date: d
+                    });
+                } else { props.history.push('/books'); }
             });
         }
         callFetch('logbooks/members', 'GET').then(res => {
-            // TODO Message 
-            setUsersToSelect(prev => res);
+            setUsersToSelect([...res]);
         });
-
     }, []);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const body = {
-            owner: member,
-            close: book.date,
-            members: usersToSelect.filter(f => usersSelected.some(s => s === f.key)),
-            name: book.title
-        }
-        callFetch('logbooks', 'POST', body).then(res => {
-            // TODO Message 
-            console.log(res);
+        const body = id ? book : createBody();
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `logbooks/${id}` : 'logbooks'
+        callFetch(url, method, body).then(res => {
+            if (res && res.id) {
+                props.history.push('/book/' + res.id);
+            }
         });
     }
-
+    const handleDelete = () => {
+        const url = `logbooks/${id}`;
+        callFetch(url, 'Delete').then(res => {
+            props.history.push('/books');
+        });
+    }
+    const deleteButton = id ? <Button type="danger mr-2 is-right" onClick={handleDelete}>Διαγραφή</Button> : null
+    const createBody = () => {
+        if (id) {
+            setBook({
+                ...book, members: usersToSelect.filter(f => usersSelected.some(s => s === f.key))
+            })
+        } else {
+            return {
+                owner: member,
+                close: book.date,
+                members: usersToSelect.filter(f => usersSelected.some(s => s === f.key)),
+                name: book.name
+            }
+        }
+    }
     return (
         <Form onSubmit={handleSubmit}>
             <Row type="flex" justify="center" gutter={16}>
@@ -100,7 +115,7 @@ const Book = props => {
                     className="mt-2" >
                     <Card title="Λεπτομέρειες" size="small" >
                         <Form.Item label="Τίτλος">
-                            <Input prefix={<Icon type="folder-open" />} name="title" value={book.title}
+                            <Input prefix={<Icon type="folder-open" />} name="name" value={book.name}
                                 placeholder="Τίτλος Συμβάν" onChange={bookHandler} />
                         </Form.Item>
                         <Form.Item label="Ημ/νια Λήξης">
@@ -108,6 +123,7 @@ const Book = props => {
                                 onChange={dateHandler} className="is-fullwidth" />
                         </Form.Item>
                         <Button type="primary is-right" htmlType="submit">Αποθήκευση</Button>
+                        {deleteButton}
                     </Card></Col>
                 <Col {...formItemLayout}
                     className="mt-2">

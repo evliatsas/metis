@@ -1,25 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Tag, PageHeader, Typography as T, Tabs, Button, Statistic } from 'antd';
+import { Row, Col, PageHeader, Typography as T, Tabs, Button } from 'antd';
+
 import BookEntries from './BookEntries';
 import BookChat from './BookChat';
 import { callFetch } from '../../services/HttpService';
 import moment from 'moment';
 import { calculateStatus } from '../../services/CommonFunctions';
-const routes = [
-    { path: 'dashboard', breadcrumbName: 'Αρχική' },
-    { path: '', breadcrumbName: 'Συμβάν' }
-];
 const TabPane = Tabs.TabPane;
-
-const Description = ({ term, children }) => (
-    <Col span={24}>
-        <div>
-            <T.Text strong >{term}:</T.Text>
-            <span>{children}</span>
-        </div>
-    </Col>
-);
-
 
 const BookContainer = props => {
     const id = props.match.params.id ? props.match.params.id : null;
@@ -34,15 +21,9 @@ const BookContainer = props => {
         }
     }, []);
 
-    const lastupdate = moment(book.lastUpdate).fromNow()
-    const content = (
-        <Row>
-            <Description term="Μέλη"> {book.members.length}</Description>
-            <Description term="Γεγονότα"> {book.entries.length}</Description>
-        </Row>
-    );
+    const lastupdate = moment(book.lastUpdate).fromNow() 
     return (
-        <Row>
+        <Row className="is-fullheight">
             <Col span={24}>
                 <PageHeader
                     onBack={() => window.history.back()}
@@ -57,12 +38,12 @@ const BookContainer = props => {
                             <TabPane tab="Γεγονότα" key="1" />
                             <TabPane tab="Μέλη" key="2" />
                         </Tabs>
-                    }> {content} </PageHeader>
+                    }></PageHeader>
             </Col>
             <Col span={16}>
-                <BookEntries />
+                <BookEntries data={props.data} />
             </Col>
-            <Col span={8}>
+            <Col span={8} className="chat-container">
                 <BookChat />
             </Col>
         </Row>

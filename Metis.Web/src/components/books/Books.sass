@@ -1,0 +1,21 @@
+@import '../../styles/Variables.sass'
+.chat-container
+    height: calc(100vh - 98px)
+    border-left: 1px solid $border-color-base
+.chat-sidedrawer
+    display: flex
+    justify-content: center
+    align-items: center
+    height: 100%
+    background: $dark
+    padding: 10px 10px 40px
+.chat-flexend
+    align-items: flex-end!important
+.chat-input
+    position: absolute   
+    bottom: 0
+    & .ant-input-wrapper > .ant-input
+       border: none
+    & .ant-input-wrapper 
+        border-top: 1px solid $border-color-base
+        padding: 10px
