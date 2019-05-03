@@ -8,7 +8,7 @@ import '../../styles/Utilities.sass'
 const { Content } = AntdLayout
 
 const Layout = props => {
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(true)
   const toggleCollapsed = () => setCollapsed(!collapsed)
 
   const auth = useContext(AuthContext)

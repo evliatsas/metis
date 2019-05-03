@@ -9,34 +9,25 @@ import { apply } from 'ol-mapbox-style'
 import darklayer from './darklayer.json'
 import dot from '../../assets/dot.png'
 
-const statusToColor = status => {
-  //return '#ffcd46'
-  switch (status) {
-    case 'Alarm':
-      return '#f5222d'
-    case 'Ok':
-      return '#52c41a'
-    case 'NotFount':
-      return '#1890ff'
-    case 'Maintenance':
-      return '#faad14'
-    case 'selected':
-      return 'blue'
-    default:
-      return '#52c41a'
-  }
+export const statusColor = {
+  Alarm: '#f5222d',
+  Ok: '#52c41a',
+  NotFound: '#1890ff',
+  Maintenance: '#faad14',
+  Selected: 'cyan'
 }
 
 const siteToMarker = site => {
   const marker = new OLFeature({
-    set: { id: site.id, status: site.status },
     geometry: new OLPoint(OLfromLonLat([site.longitude, site.latitude])),
-    color: 'red'
+    label: site.name
   })
+  marker.setId(site.id)
+  marker.set('status', site.status)
   marker.setStyle(
     new OLStyle({
       image: new OLIcon({
-        color: statusToColor(site.status),
+        color: statusColor[site.status],
         src: dot
       })
     })
@@ -44,7 +35,7 @@ const siteToMarker = site => {
   return marker
 }
 
-export const buildMap = sites => {
+export const buildMap = (sites, onSelect) => {
   const map = new OLMap({
     target: 'map',
     controls: [],
@@ -53,6 +44,7 @@ export const buildMap = sites => {
       zoom: 7
     })
   })
+
   apply(map, darklayer)
 
   const markers = sites.map(site => siteToMarker(site))
@@ -71,7 +63,7 @@ export const buildMap = sites => {
     evt.deselected.forEach(marker =>
       marker.getStyle().setImage(
         new OLIcon({
-          color: statusToColor(marker.get('status')),
+          color: statusColor[marker.get('status')],
           src: dot
         })
       )
@@ -80,10 +72,16 @@ export const buildMap = sites => {
     select.getFeatures().forEach(marker =>
       marker.getStyle().setImage(
         new OLIcon({
-          color: statusToColor('selected'),
+          color: statusColor['Selected'],
           src: dot
         })
       )
     )
+
+    if (onSelect) {
+      const marker = select.getFeatures().getArray()[0]
+      const key = marker && marker.getId()
+      onSelect(key)
+    }
   })
 }

@@ -7,10 +7,10 @@ import Books from '../components/books/Books'
 import Book from '../components/books/Book'
 import BookContainer from '../components/books/BookContainer'
 
-export const fullAccess = (
+export const Authorizedroutes = (
   <Switch>
     <Route path="/dashboard" exact component={Dashboard} />
-    <Route path="/surveillance" exact component={Map} />
+    <Route path="/map" exact component={Map} />
     <Route path="/books" exact component={Books} />
     <Route path="/book/monitor/:id" exact component={BookContainer} />
     <Route path="/book/new" exact component={Book} />
@@ -20,7 +20,7 @@ export const fullAccess = (
   </Switch>
 )
 
-export const unAuthorized = (
+export const UnauthorizedRoutes = (
   <Switch>
     <Route path="/login" exact component={Login} />
     <Redirect to="/login" />

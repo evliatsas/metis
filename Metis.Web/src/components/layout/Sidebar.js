@@ -16,6 +16,34 @@ const breakpoints = {
   xxl: '1600px'
 }
 
+const links = [
+  {
+    path: '/dashboard',
+    icon: 'home',
+    label: 'Αρχική'
+  },
+  {
+    path: '/map',
+    icon: 'global',
+    label: 'Αρχική'
+  },
+  {
+    path: 'books',
+    icon: 'notification',
+    label: 'Συμβάντα',
+    items: [
+      {
+        path: '/books/new',
+        label: 'Νέο Συμβάν'
+      },
+      {
+        path: '/books',
+        label: 'Προβολή Όλων'
+      }
+    ]
+  }
+]
+
 const Sidebar = ({ collapsed, toggleCollapsed }) => {
   const auth = useContext(AuthContext)
   const username = storage.get('auth')
@@ -43,12 +71,12 @@ const Sidebar = ({ collapsed, toggleCollapsed }) => {
             <span>{username.title}</span>
           </span>
         </AntdMenu.Item>
-        <AntdMenu.Item key="1" onClick={toggleCollapsed}>
+        {/* <AntdMenu.Item key="1" onClick={toggleCollapsed}>
           <span>
             <AntdIcon type={collapsed ? 'menu-unfold' : 'menu-fold'} />
             <span>Ελαχιστοποίηση</span>
           </span>
-        </AntdMenu.Item>
+        </AntdMenu.Item> */}
         <AntdMenu.Item key="2">
           <NavLink to="/dashboard">
             <AntdIcon type="home" />
@@ -56,9 +84,9 @@ const Sidebar = ({ collapsed, toggleCollapsed }) => {
           </NavLink>
         </AntdMenu.Item>
         <AntdMenu.Item key="3">
-          <NavLink to="/surveillance">
+          <NavLink to="/map">
             <AntdIcon type="global" />
-            <span>Τεστ Χαρτης</span>
+            <span>Χάρτης</span>
           </NavLink>
         </AntdMenu.Item>
         <AntdMenu.SubMenu
