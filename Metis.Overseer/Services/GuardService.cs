@@ -137,6 +137,9 @@ namespace Metis.Overseer.Services
         {
             Log.Error(e.Exception, "Exception while watching site {@name} {@id} page {@title} {@uri}",
                 e.Site.Name, e.Site.Id, e.Page.Title, e.Page.Uri);
+
+            var message = GuardHub._CreateMessage(e);
+            Task.Run(() => _guardHubContext.Clients.All.SendAsync("SiteStatusChanged", message));
         }
 
         private void Watcher_SiteStatusChanged(object sender, SiteStatusEventArgs e)
@@ -144,7 +147,11 @@ namespace Metis.Overseer.Services
             var site = e.Site;
             var s = e.PreviousStatus;
 
-            Log.Information("Status changed for site {@name} {@id} from {@previous} to {@status}", e.Site.Name, e.Site.Id, e.PreviousStatus, e.Site.Status);
+            Log.Information("Status changed for site {@name} {@id} from {@previous} to {@status}", 
+                e.Site.Name, e.Site.Id, e.PreviousStatus, e.Site.Status);
+
+            var message = GuardHub._CreateMessage(e);
+            Task.Run(() => _guardHubContext.Clients.All.SendAsync("SiteGuardingException", message));
         }
 
         private async Task<IEnumerable<string>> getSitesFromDb()

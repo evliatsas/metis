@@ -8,20 +8,21 @@ namespace Metis.Overseer.Hubs
     [Authorize]
     public class GuardHub : Hub
     {
-        public async Task SendStatusChangedMessage(SiteStatusEventArgs args)
+        internal static object _CreateMessage(SiteStatusEventArgs args)
         {
             var message = new
             {
                 id = args.Site.Id,
                 name = args.Site.Name,
                 currentStatus = args.Site.Status.ToString(),
-                previousStatus = args.PreviousStatus.ToString()  ,
+                previousStatus = args.PreviousStatus.ToString(),
                 message = args.Reason
             };
-            await Clients.All.SendAsync("SiteStatusChanged", message);
+
+            return message;
         }
 
-        public async Task SendExceptionMessage(SiteExceptionEventArgs args)
+        internal static object _CreateMessage(SiteExceptionEventArgs args)
         {
             var message = new
             {
@@ -32,7 +33,8 @@ namespace Metis.Overseer.Hubs
                 pageUri = args.Page.Uri,
                 message = args.Exception.Message
             };
-            await Clients.All.SendAsync("SiteGuardingException", message);
+
+            return message;
         }
     }
 }
