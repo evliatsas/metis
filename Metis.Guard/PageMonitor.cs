@@ -117,18 +117,17 @@ namespace Metis.Guard
                         var previousStatus = page.Status;
                         page.Status = Status.Ok;
                         // raise page status changed event
-                        var args = new PageStatusEventArgs(page, previousStatus);
+                        var args = new PageStatusEventArgs(page, previousStatus, content);
                         OnPageStatusChanged(args);
                     }
-
-                    if (string.Equals(page.MD5Hash, md5))
+                    else if (string.Equals(page.MD5Hash, md5))
                     {
                         if (page.Status != Status.Ok)
                         {
                             var previousStatus = page.Status;
                             page.Status = Status.Ok;
                             // raise page status changed event
-                            var args = new PageStatusEventArgs(page, previousStatus);
+                            var args = new PageStatusEventArgs(page, previousStatus, content);
                             OnPageStatusChanged(args);
                         }
                     }
@@ -139,7 +138,7 @@ namespace Metis.Guard
                             var previousStatus = page.Status;
                             page.Status = Status.Alarm;
                             // raise page status changed event
-                            var args = new PageStatusEventArgs(page, previousStatus);
+                            var args = new PageStatusEventArgs(page, previousStatus, content);
                             OnPageStatusChanged(args);
                         }
                     }
@@ -183,6 +182,10 @@ namespace Metis.Guard
                     else if (exception.Type == "script" && exception.Attribute == "src()")
                     {
                         removeScriptSrc(doc.DocumentNode, exception.Value);
+                    }
+                    else if (exception.Attribute == "id()")
+                    {
+                        removePartialId(doc.DocumentNode, exception.Type, exception.Value);
                     }
                     else if (exception.Attribute == "class()")
                     {
@@ -246,7 +249,7 @@ namespace Metis.Guard
 
         private void removeScriptSrc(HtmlNode node, string contains)
         {
-            var path = "//script/src";
+            var path = $"//script[contains(@src, '{contains}')]";
             var nodes = node.SelectNodes(path);
             foreach (var scriptNode in nodes)
             {
@@ -260,6 +263,16 @@ namespace Metis.Guard
         private void removePartialClass(HtmlNode node, string elementType, string contains)
         {
             var path = $"//{elementType}[contains(@class, '{contains}')]";
+            var nodes = node.SelectNodes(path);
+            foreach (var elementNode in nodes)
+            {
+                elementNode.ParentNode.RemoveChild(elementNode);
+            }
+        }
+
+        private void removePartialId(HtmlNode node, string elementType, string contains)
+        {
+            var path = $"//{elementType}[contains(@id, '{contains}')]";
             var nodes = node.SelectNodes(path);
             foreach (var elementNode in nodes)
             {
