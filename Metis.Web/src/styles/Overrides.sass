@@ -32,6 +32,7 @@
 .ant-table-tbody > tr:hover:not(.ant-table-expanded-row) > td,
 .ant-input,.ant-card,.ant-table-placeholder,
 .ant-notification-notice,
+.ant-select-selection,
 .ant-modal-content,.ant-modal-header
     background: $dark!important
 .sidebar,.ant-menu-sub,.ant-menu-submenu-popup
@@ -39,9 +40,16 @@
 .ant-card-bordered,.ant-card-head,.ant-transfer-list-header
     border-color: $border-color-base!important
 .ant-card-head,
-    background: $primary-color,
+    background: $primary-color!important
 .ant-transfer
     display: flex
     align-items: center
 .ant-transfer-list
     flex: 1
+.ant-select-dropdown-menu-item.ant-select-dropdown-menu-item-selected,
+.ant-select-dropdown-menu-item-active:hover,
+.ant-select-dropdown-menu-item-active,
+.ant-select-selection--multiple .ant-select-selection__choice
+    background: $dark-primary!important
+.ant-select-dropdown.ant-select-dropdown--multiple .ant-select-dropdown-menu-item-selected .ant-select-selected-icon
+    color: white!important
