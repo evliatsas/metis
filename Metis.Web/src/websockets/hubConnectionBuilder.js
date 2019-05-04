@@ -18,6 +18,14 @@ async function hubConnectionBuilder(url, getTokenFn) {
     }
   }
 
+  connection.on('SiteStatusChanged', message => {
+    console.log('raw con', message)
+  })
+
+  connection.on('SiteGuardingException', message => {
+    console.log('raw con', message)
+  })
+
   connection.onclose(async () => {
     console.log('disconnected from ', url)
     console.log('reconnecting...')
