@@ -41,7 +41,7 @@ namespace Metis.Overseer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<UserService>();
-            services.AddScoped<LogService>();            
+            services.AddScoped<LogService>();
             services.AddSingleton<IEmailConfiguration>(Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>());
             services.AddTransient<IEmailService, EmailService>();
 
@@ -109,7 +109,7 @@ namespace Metis.Overseer
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime applicationLifetime)
         {
-            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+            app.UseCors(builder => builder.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod().AllowCredentials());
             app.UseExceptionHandler(options =>
             {
                 options.Run(
