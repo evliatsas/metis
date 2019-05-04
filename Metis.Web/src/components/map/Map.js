@@ -1,12 +1,31 @@
 import React, { useEffect, useState } from 'react'
-import { Row as AntdRow, Col as AntdCol, Icon as AntdIcon } from 'antd'
+import {
+  Row as AntdRow,
+  Col as AntdCol,
+  Icon as AntdIcon,
+  Select,
+  Typography as AntdTyp,
+  Button,
+  Divider
+} from 'antd'
 import { buildMap, statusColor } from './mapBuilder'
 import { callFetch } from '../../services/HttpService'
-
+import classes from './Map.module.sass'
+import MapAlarms from './MapAlarms'
+const Option = Select.Option
+const viewFilter = [
+  { id: 0, title: 'ΟΚ' },
+  { id: 1, title: 'Maintenance' },
+  { id: 2, title: 'Alarm' },
+  { id: 3, title: 'NotFound' }
+]
 const Map = () => {
   const [sites, setSites] = useState([])
   const [selected, setSelected] = useState(null)
-
+  const handleSelect = id => {
+    const site = sites.find(x => x.id === id)
+    setSelected(site)
+  }
   useEffect(() => {
     callFetch('sites', 'GET').then(res => {
       const filtered = res.filter(x => x.latitude !== 0)
@@ -14,25 +33,70 @@ const Map = () => {
       setSites(res)
     })
   }, [])
-
+  const testAlarms = [
+    {
+      message: 'The Stutus of Δήμος Αβδήρων has change from ',
+      lastStatus: 'Alarm',
+      newStatus: 'OK'
+    },
+    {
+      message: 'The Stutus of Δήμος Δέλτα has change from ',
+      lastStatus: 'Alarm',
+      newStatus: 'OK'
+    },
+    {
+      message: 'The Stutus of Δήμος Μαρώνειας - Σαπών has change from ',
+      lastStatus: 'OK',
+      newStatus: 'Alarm'
+    },
+    {
+      message: 'The Stutus of Δήμος Διδυμοτείχου has change from ',
+      lastStatus: 'Alarm',
+      newStatus: 'NotFound'
+    },
+    {
+      message: 'The Stutus of Δήμος Διδυμοτείχου has change from ',
+      lastStatus: 'Alarm',
+      newStatus: 'NotFound'
+    },
+    {
+      message: 'The Stutus of Δήμος Διδυμοτείχου has change from ',
+      lastStatus: 'Alarm',
+      newStatus: 'NotFound'
+    }
+  ]
+  const handleChange = value => {
+    console.log(`selected ${value}`)
+  }
+  const options = viewFilter.map(o => <Option key={o.id}>{o.title}</Option>)
   return (
     <div style={{ height: '100%', width: '100%' }}>
       <AntdRow style={{ height: '100%' }}>
-        <AntdCol span={18} style={{ height: '100%' }}>
+        <AntdCol xxl={20} xl={19} lg={18} md={16} style={{ height: '100%' }}>
           <div style={{ height: '100%', width: '100%' }} id="map" />
         </AntdCol>
-        <AntdCol span={6} style={{ height: '100%' }}>
-          <div
-            style={{
-              maxHeight: '60%',
-              overflowY: 'scroll',
-              scrollbarWidth: '0px',
-              scrollbarColor: 'black'
-            }}>
+        <AntdCol xxl={4} xl={5} lg={6} md={8} style={{ height: '100%' }}>
+          <div className={classes.DropdownInput}>
+            <Select
+              dropdownClassName={classes.Dropdown}
+              mode="tags"
+              style={{ width: '100%' }}
+              placeholder="Επιλέξτε Προβολή"
+              onChange={handleChange}
+              allowClear={true}>
+              {options}
+            </Select>
+          </div>
+          <div className={classes.StatusContainer}>
             {sites
               .filter(x => x.status !== 'Ok')
               .map(site => (
-                <div key={site.id}>
+                <div
+                  key={site.id}
+                  className={classes.SiteRow}
+                  onClick={() => {
+                    handleSelect(site.id)
+                  }}>
                   <AntdIcon
                     type={
                       site.status === 'Alarm'
@@ -42,13 +106,60 @@ const Map = () => {
                     theme="twoTone"
                     twoToneColor={statusColor[site.status]}
                   />
-                  <span>{' ' + site.name}</span>
+                  <span className="is-link">{' ' + site.name}</span>
                 </div>
               ))}
           </div>
-          {selected && <div>{JSON.stringify(selected)}</div>}
+          {selected && (
+            <div className={classes.SiteView}>
+              <AntdTyp.Title level={4} className={classes.SiteViewHeader}>
+                {selected.name}
+                <span
+                  className="is-right is-link"
+                  onClick={() => setSelected(null)}>
+                  <AntdIcon type="close" />
+                </span>
+              </AntdTyp.Title>
+              <AntdTyp.Paragraph className={classes.SiteViewParagraph}>
+                <span style={{ fontSize: 18 }}>
+                  <AntdIcon
+                    type="environment"
+                    theme="twoTone"
+                    twoToneColor={statusColor[selected.status]}
+                  />{' '}
+                  Status {selected.status}
+                </span>
+                <div style={{ marginTop: 10 }}>
+                  <AntdTyp.Text>Σελίδες</AntdTyp.Text>
+                </div>
+                <ul>
+                  {selected.pages.map((s, i) => (
+                    <li key={i}>
+                      <a target="blank" href={s.uri}>
+                        {s.uri}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+                <p>
+                  <span className="is-link">
+                    <AntdIcon type="redo" /> Restart
+                  </span>{' '}
+                  <Divider type="vertical" />
+                  <span className="is-link">
+                    <AntdIcon type="play-circle" /> Start
+                  </span>{' '}
+                  <Divider type="vertical" />
+                  <span className="is-link">
+                    <AntdIcon type="border" /> Stop
+                  </span>
+                </p>
+              </AntdTyp.Paragraph>
+            </div>
+          )}
         </AntdCol>
       </AntdRow>
+      <MapAlarms alarms={testAlarms} />
     </div>
   )
 }
