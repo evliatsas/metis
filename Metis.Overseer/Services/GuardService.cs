@@ -151,6 +151,7 @@ namespace Metis.Overseer.Services
                 e.Site.Name, e.Site.Id, e.PreviousStatus, e.Site.Status);
 
             var message = GuardHub._CreateMessage(e);
+
             Task.Run(() => _guardHubContext.Clients.All.SendAsync("SiteStatusChanged", message));
         }
 

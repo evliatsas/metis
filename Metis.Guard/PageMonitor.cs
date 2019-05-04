@@ -122,25 +122,25 @@ namespace Metis.Guard
                     }
                     else if (string.Equals(page.MD5Hash, md5))
                     {
-                        if (page.Status != Status.Ok)
-                        {
-                            var previousStatus = page.Status;
-                            page.Status = Status.Ok;
-                            // raise page status changed event
-                            var args = new PageStatusEventArgs(page, previousStatus, content);
-                            OnPageStatusChanged(args);
-                        }
+                        // if (page.Status != Status.Ok)
+                        //{
+                        var previousStatus = page.Status;
+                        page.Status = Status.Ok;
+                        // raise page status changed event
+                        var args = new PageStatusEventArgs(page, previousStatus, content);
+                        OnPageStatusChanged(args);
+                        //}
                     }
                     else
                     {
-                        if (page.Status != Status.Alarm)
-                        {
-                            var previousStatus = page.Status;
-                            page.Status = Status.Alarm;
-                            // raise page status changed event
-                            var args = new PageStatusEventArgs(page, previousStatus, content);
-                            OnPageStatusChanged(args);
-                        }
+                        // if (page.Status != Status.Alarm)
+                        // {
+                        var previousStatus = page.Status;
+                        page.Status = Status.Alarm;
+                        // raise page status changed event
+                        var args = new PageStatusEventArgs(page, previousStatus, content);
+                        OnPageStatusChanged(args);
+                        // }
                     }
 
                     await Task.Delay(TimeSpan.FromSeconds(MONITOR_THRESHOLD), token);
@@ -179,7 +179,7 @@ namespace Metis.Guard
                     {
                         removeScriptText(doc.DocumentNode, exception.Value);
                     }
-                    else if(exception.Attribute.EndsWith("()"))
+                    else if (exception.Attribute.EndsWith("()"))
                     {
                         var attr = exception.Attribute.Replace("()", string.Empty);
                         removePartialMatch(doc.DocumentNode, exception.Type, attr, exception.Value);
