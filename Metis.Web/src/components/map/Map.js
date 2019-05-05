@@ -43,14 +43,6 @@ const Map = () => {
     if (!guard || !guard.isConnected) {
       return
     }
-<<<<<<< HEAD
-    guard.connection.on('SiteStatusChanged', evt => {
-      //console.log(evt)
-    })
-
-    guard.connection.on('SiteGuardingException', evt => {
-      //console.log(evt)
-=======
     guard.connection.on('SiteStatusChanged', message => {
       // if (message.currentStatus === message.previousStatus) {
       //   return
@@ -60,7 +52,6 @@ const Map = () => {
 
     guard.connection.on('SiteGuardingException', message => {
       console.log(message)
->>>>>>> 6f1e4f5e675b0fff1f3f2ea35425179f72488714
     })
   }, [guard])
 
