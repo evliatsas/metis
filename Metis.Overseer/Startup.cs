@@ -100,10 +100,11 @@ namespace Metis.Overseer
                 hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(1);
             });
 
-            var serviceProvider = services.BuildServiceProvider();
-            var guardHub = serviceProvider.GetService<IHubContext<GuardHub>>();
-            _guardService = new GuardService(guardHub, Configuration);
-            services.AddSingleton<GuardService>(_guardService);
+            // var serviceProvider = services.BuildServiceProvider();
+            // var guardHub = serviceProvider.GetService<IHubContext<GuardHub>>();
+            // _guardService = new GuardService(guardHub, Configuration);
+            // services.AddSingleton<GuardService>(_guardService);
+            services.AddHostedService<GuardService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -3,7 +3,7 @@ import { HubConnectionBuilder, LogLevel } from '@aspnet/signalr'
 async function hubConnectionBuilder(url, getTokenFn) {
   const connection = new HubConnectionBuilder()
     .withUrl(url, { accessTokenFactory: () => getTokenFn })
-    .configureLogging(LogLevel.Information)
+    .configureLogging(LogLevel.Debug)
     .build()
 
   connection.serverTimeoutInMilliseconds = 2 * 60 * 1000
