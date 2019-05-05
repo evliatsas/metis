@@ -5,7 +5,6 @@ import {
   Icon as AntdIcon,
   Select,
   Typography as AntdTyp,
-  Button,
   Divider
 } from 'antd'
 import { buildMap, statusColor } from './mapBuilder'
@@ -31,9 +30,9 @@ const Map = () => {
   }
   useEffect(() => {
     callFetch('sites', 'GET').then(res => {
-      const filtered = res.filter(x => x.latitude !== 0)
-      buildMap(filtered, id => setSelected(filtered.find(s => s.id === id)))
-      setSites(res)
+      //const filtered = res.filter(x => x.latitude !== 0)
+      // buildMap(filtered, id => setSelected(filtered.find(s => s.id === id)))
+      //setSites(res)
     })
   }, [])
 
@@ -49,39 +48,6 @@ const Map = () => {
       console.log(evt)
     })
   }, [guard])
-  const testAlarms = [
-    {
-      message: 'Status changed for site Δήμος Αβδήρων has change from ',
-      lastStatus: 'Alarm',
-      newStatus: 'Ok'
-    },
-    {
-      message: 'Status changed for site Δήμος Δέλτα has change from ',
-      lastStatus: 'Alarm',
-      newStatus: 'Ok'
-    },
-    {
-      message:
-        'Status changed for site Δήμος Μαρώνειας - Σαπών has change from ',
-      lastStatus: 'Ok',
-      newStatus: 'Alarm'
-    },
-    {
-      message: 'Status changed for site Δήμος Διδυμοτείχου has change from ',
-      lastStatus: 'Alarm',
-      newStatus: 'NotFound'
-    },
-    {
-      message: 'Status changed for site Δήμος Διδυμοτείχου has change from ',
-      lastStatus: 'Alarm',
-      newStatus: 'NotFound'
-    },
-    {
-      message: 'Status changed for site Δήμος Διδυμοτείχου has change from ',
-      lastStatus: 'Alarm',
-      newStatus: 'NotFound'
-    }
-  ]
   const handleChange = value => {
     console.log(`selected ${value}`)
   }
@@ -176,7 +142,7 @@ const Map = () => {
           )}
         </AntdCol>
       </AntdRow>
-      <MapAlarms alarms={testAlarms} />
+      <MapAlarms alarms={[]} />
     </div>
   )
 }
