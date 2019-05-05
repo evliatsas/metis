@@ -12,7 +12,7 @@ const formItemLayout = {
     sm: { span: 16 }
   }
 }
-const LogEntry = () => {
+const LogEntry = props => {
   const [recipients, setRecipients] = useState([])
   const [log, setLog] = useState({
     dTG: null,
@@ -29,10 +29,6 @@ const LogEntry = () => {
     })
   }, [])
 
-  const filterRecipients = value => {
-    // const filterRecipients = recipients.filter(x => x.name.includes(value));
-    // setRecipients(last => [...filterRecipients]);
-  }
   const handleFields = (value, field) => {
     setLog({
       ...log,
@@ -44,9 +40,10 @@ const LogEntry = () => {
       {rec.name}
     </Option>
   ))
-  console.log(children)
+
+
   return (
-    <Form {...formItemLayout}>
+    <Form {...formItemLayout} onSubmit={submitHandler}>
       <Form.Item label="Τίτλος">
         <Input
           value={log.title}
@@ -64,8 +61,7 @@ const LogEntry = () => {
           showSearch
           placeholder="Επιλογή παραλήπτη"
           optionFilterProp="name"
-          onSearch={filterRecipients}
-          filterOption={(input, option) => console.log(input, option)}>
+          filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}>
           {children}
         </Select>
       </Form.Item>

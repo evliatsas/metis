@@ -41,11 +41,11 @@ const Map = () => {
       return
     }
     guard.connection.on('SiteStatusChanged', evt => {
-      console.log(evt)
+      //console.log(evt)
     })
 
     guard.connection.on('SiteGuardingException', evt => {
-      console.log(evt)
+      //console.log(evt)
     })
   }, [guard])
   const handleChange = value => {
@@ -124,7 +124,7 @@ const Map = () => {
                     </li>
                   ))}
                 </ul>
-                <p>
+                <div>
                   <span className="is-link">
                     <AntdIcon type="redo" /> Restart
                   </span>{' '}
@@ -136,7 +136,7 @@ const Map = () => {
                   <span className="is-link">
                     <AntdIcon type="border" /> Stop
                   </span>
-                </p>
+                </div>
               </AntdTyp.Paragraph>
             </div>
           )}

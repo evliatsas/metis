@@ -11,19 +11,27 @@ const TabPane = Tabs.TabPane
 const BookContainer = props => {
   const id = props.match.params.id ? props.match.params.id : null
   const [book, setBook] = useState({ members: [], entries: [] })
-  const [logEntry, setLogEntry] = useState(null)
+  const [logEntry, setLogEntry] = useState({
+    dTG: null,
+    eCT: null,
+    recipient: null,
+    priority: null,
+    title: '',
+    description: ''
+  }
+  )
 
   useEffect(() => {
     if (id) {
       callFetch('logbooks/' + id, 'GET').then(res => {
-        console.log(res)
         setBook(res)
       })
     }
   }, [])
 
   const handleLogEntry = entry => {
-    setLogEntry(entry)
+    //setLogEntry(entry)
+    console.log(entry)
   }
 
   const lastupdate = moment(book.lastUpdate).fromNow()
@@ -70,9 +78,8 @@ const BookContainer = props => {
       <Modal
         title={logEntry && logEntry.id ? 'Νέο Γεγονός' : 'Επεξεργασία'}
         visible={logEntry !== null}
-        onOk={null}
+        onOk={() => handleLogEntry(null)}
         onCancel={() => handleLogEntry(null)}>
-        {' '}
         <LogEntry />
       </Modal>
     </Row>
