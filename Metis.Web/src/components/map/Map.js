@@ -30,9 +30,9 @@ const Map = () => {
   }
   useEffect(() => {
     callFetch('sites', 'GET').then(res => {
-      //const filtered = res.filter(x => x.latitude !== 0)
-      // buildMap(filtered, id => setSelected(filtered.find(s => s.id === id)))
-      //setSites(res)
+      const filtered = res.filter(x => x.latitude !== 0)
+      buildMap(filtered, id => setSelected(filtered.find(s => s.id === id)))
+      setSites(res)
     })
   }, [])
 
