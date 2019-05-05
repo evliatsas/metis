@@ -1,20 +1,24 @@
 import React from 'react'
 import classes from './Map.module.sass'
 import { statusColor } from './mapBuilder'
-const MapAlarms = props => {
+
+const MapAlarms = ({ alarms }) => {
   return (
     <div className={classes.AlarmsContainer}>
       <div className={classes.AlarmsContent}>
-        {props.alarms.map((alarm, idx) => (
+        {alarms.map((alarm, idx) => (
           <p key={idx} style={{ fontSize: 12 }}>
+            <span style={{ color: 'white' }}>
+              [{new Date().toLocaleTimeString('el-GR')}]
+            </span>{' '}
             {alarm.message}{' '}
-            <span style={{ color: statusColor[alarm.lastStatus] }}>
-              {alarm.lastStatus}{' '}
+            <span style={{ color: statusColor[alarm.previousStatus] }}>
+              {alarm.previousStatus}{' '}
             </span>
             to{' '}
-            <span style={{ color: statusColor[alarm.newStatus] }}>
+            <span style={{ color: statusColor[alarm.currentStatus] }}>
               {' '}
-              {alarm.newStatus}
+              {alarm.currentStatus}
             </span>
           </p>
         ))}

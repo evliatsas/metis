@@ -24,10 +24,13 @@ const Map = () => {
   const guard = useContext(GuardHubContext)
   const [sites, setSites] = useState([])
   const [selected, setSelected] = useState(null)
+  const [alarms, setAlarms] = useState([])
+
   const handleSelect = id => {
     const site = sites.find(x => x.id === id)
     setSelected(site)
   }
+
   useEffect(() => {
     callFetch('sites', 'GET').then(res => {
       const filtered = res.filter(x => x.latitude !== 0)
@@ -40,18 +43,32 @@ const Map = () => {
     if (!guard || !guard.isConnected) {
       return
     }
+<<<<<<< HEAD
     guard.connection.on('SiteStatusChanged', evt => {
       //console.log(evt)
     })
 
     guard.connection.on('SiteGuardingException', evt => {
       //console.log(evt)
+=======
+    guard.connection.on('SiteStatusChanged', message => {
+      // if (message.currentStatus === message.previousStatus) {
+      //   return
+      // }
+      setAlarms(alarms => [message, ...alarms.slice(-100)])
+    })
+
+    guard.connection.on('SiteGuardingException', message => {
+      console.log(message)
+>>>>>>> 6f1e4f5e675b0fff1f3f2ea35425179f72488714
     })
   }, [guard])
+
   const handleChange = value => {
     console.log(`selected ${value}`)
   }
   const options = viewFilter.map(o => <Option key={o.id}>{o.title}</Option>)
+
   return (
     <div style={{ height: '100%', width: '100%' }}>
       <AntdRow style={{ height: '100%' }}>
@@ -142,7 +159,7 @@ const Map = () => {
           )}
         </AntdCol>
       </AntdRow>
-      <MapAlarms alarms={[]} />
+      <MapAlarms alarms={alarms} />
     </div>
   )
 }
