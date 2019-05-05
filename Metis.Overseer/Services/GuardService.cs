@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace Metis.Overseer.Services
 {
-    public class GuardService : IHostedService, IDisposable
+    public class GuardService : IDisposable
     {
         private readonly IHubContext<GuardHub> _guardHubContext;
         private readonly string _connectionString;
