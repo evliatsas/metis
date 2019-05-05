@@ -35,32 +35,33 @@ const Map = () => {
   }, [])
   const testAlarms = [
     {
-      message: 'The Stutus of Δήμος Αβδήρων has change from ',
+      message: 'Status changed for site Δήμος Αβδήρων has change from ',
       lastStatus: 'Alarm',
-      newStatus: 'OK'
+      newStatus: 'Ok'
     },
     {
-      message: 'The Stutus of Δήμος Δέλτα has change from ',
+      message: 'Status changed for site Δήμος Δέλτα has change from ',
       lastStatus: 'Alarm',
-      newStatus: 'OK'
+      newStatus: 'Ok'
     },
     {
-      message: 'The Stutus of Δήμος Μαρώνειας - Σαπών has change from ',
-      lastStatus: 'OK',
+      message:
+        'Status changed for site Δήμος Μαρώνειας - Σαπών has change from ',
+      lastStatus: 'Ok',
       newStatus: 'Alarm'
     },
     {
-      message: 'The Stutus of Δήμος Διδυμοτείχου has change from ',
+      message: 'Status changed for site Δήμος Διδυμοτείχου has change from ',
       lastStatus: 'Alarm',
       newStatus: 'NotFound'
     },
     {
-      message: 'The Stutus of Δήμος Διδυμοτείχου has change from ',
+      message: 'Status changed for site Δήμος Διδυμοτείχου has change from ',
       lastStatus: 'Alarm',
       newStatus: 'NotFound'
     },
     {
-      message: 'The Stutus of Δήμος Διδυμοτείχου has change from ',
+      message: 'Status changed for site Δήμος Διδυμοτείχου has change from ',
       lastStatus: 'Alarm',
       newStatus: 'NotFound'
     }
