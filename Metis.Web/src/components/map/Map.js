@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import {
   Row as AntdRow,
   Col as AntdCol,
@@ -12,7 +12,9 @@ import { buildMap, statusColor } from './mapBuilder'
 import { callFetch } from '../../services/HttpService'
 import classes from './Map.module.sass'
 import MapAlarms from './MapAlarms'
+import { GuardHubContext } from '../../websockets/GuardHubProvider'
 const Option = Select.Option
+
 const viewFilter = [
   { id: 0, title: 'ΟΚ' },
   { id: 1, title: 'Maintenance' },
@@ -20,6 +22,7 @@ const viewFilter = [
   { id: 3, title: 'NotFound' }
 ]
 const Map = () => {
+  const guard = useContext(GuardHubContext)
   const [sites, setSites] = useState([])
   const [selected, setSelected] = useState(null)
   const handleSelect = id => {
@@ -33,6 +36,19 @@ const Map = () => {
       setSites(res)
     })
   }, [])
+
+  useEffect(() => {
+    if (!guard || !guard.isConnected) {
+      return
+    }
+    guard.connection.on('SiteStatusChanged', evt => {
+      console.log(evt)
+    })
+
+    guard.connection.on('SiteGuardingException', evt => {
+      console.log(evt)
+    })
+  }, [guard])
   const testAlarms = [
     {
       message: 'Status changed for site Δήμος Αβδήρων has change from ',

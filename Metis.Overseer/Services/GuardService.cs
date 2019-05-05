@@ -3,17 +3,19 @@ using Metis.Guard.Entities;
 using Metis.Overseer.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using MongoDB.Driver;
 using Serilog;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Metis.Overseer.Services
 {
-    public class GuardService : IDisposable
+    public class GuardService : IHostedService, IDisposable
     {
         private readonly IHubContext<GuardHub> _guardHubContext;
         private readonly string _connectionString;
@@ -26,10 +28,18 @@ namespace Metis.Overseer.Services
             _guardHubContext = guardHubContext;
             _connectionString = config.GetConnectionString("Metis");
             _guards = new ConcurrentDictionary<string, Watcher>();
+        }
 
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
             Task.Run(() => startGuards());
-
             Log.Debug("guard service successfully started");
+            return Task.CompletedTask;
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
         }
 
         public void StartGuard(string siteId)
@@ -139,7 +149,7 @@ namespace Metis.Overseer.Services
                 e.Site.Name, e.Site.Id, e.Page.Title, e.Page.Uri);
 
             var message = GuardHub._CreateMessage(e);
-            Task.Run(() => _guardHubContext.Clients.All.SendAsync("SiteStatusChanged", message));
+            Task.Run(() => _guardHubContext.Clients.All.SendAsync("SiteGuardingException", message));
         }
 
         private void Watcher_SiteStatusChanged(object sender, SiteStatusEventArgs e)
@@ -147,11 +157,12 @@ namespace Metis.Overseer.Services
             var site = e.Site;
             var s = e.PreviousStatus;
 
-            Log.Information("Status changed for site {@name} {@id} from {@previous} to {@status}", 
+            Log.Information("Status changed for site {@name} {@id} from {@previous} to {@status}",
                 e.Site.Name, e.Site.Id, e.PreviousStatus, e.Site.Status);
 
             var message = GuardHub._CreateMessage(e);
-            Task.Run(() => _guardHubContext.Clients.All.SendAsync("SiteGuardingException", message));
+
+            Task.Run(() => _guardHubContext.Clients.All.SendAsync("SiteStatusChanged", message));
         }
 
         private async Task<IEnumerable<string>> getSitesFromDb()

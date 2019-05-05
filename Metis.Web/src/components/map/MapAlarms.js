@@ -8,12 +8,6 @@ const MapAlarms = props => {
       <div className={classes.AlarmsContent}>
         {props.alarms.map(alarm => (
           <p style={{ fontSize: 12 }}>
-            {/* <AntdIcon
-              type="code"
-              twoToneColor="#2abbbb"
-              theme="twoTone"
-              className="mr-2"
-            />  */}
             {alarm.message}{' '}
             <span style={{ color: statusColor[alarm.lastStatus] }}>
               {alarm.lastStatus}{' '}

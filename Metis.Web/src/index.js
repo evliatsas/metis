@@ -5,11 +5,14 @@ import './styles/Index.sass'
 import App from './App'
 import * as serviceWorker from './serviceWorker'
 import AuthProvider from './auth/AuthProvider'
+import GuardHubProvider from './websockets/GuardHubProvider'
 
 const Root = (
   <BrowserRouter>
     <AuthProvider>
-      <App />
+      <GuardHubProvider>
+        <App />
+      </GuardHubProvider>
     </AuthProvider>
   </BrowserRouter>
 )

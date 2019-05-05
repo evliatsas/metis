@@ -41,7 +41,7 @@ namespace Metis.Overseer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<UserService>();
-            services.AddScoped<LogService>();            
+            services.AddScoped<LogService>();
             services.AddSingleton<IEmailConfiguration>(Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>());
             services.AddTransient<IEmailService, EmailService>();
 
@@ -100,16 +100,17 @@ namespace Metis.Overseer
                 hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(1);
             });
 
-            var serviceProvider = services.BuildServiceProvider();
-            var guardHub = serviceProvider.GetService<IHubContext<GuardHub>>();
-            _guardService = new GuardService(guardHub, Configuration);
-            services.AddSingleton<GuardService>(_guardService);
+            // var serviceProvider = services.BuildServiceProvider();
+            // var guardHub = serviceProvider.GetService<IHubContext<GuardHub>>();
+            // _guardService = new GuardService(guardHub, Configuration);
+            // services.AddSingleton<GuardService>(_guardService);
+            services.AddHostedService<GuardService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime applicationLifetime)
         {
-            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+            app.UseCors(builder => builder.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod().AllowCredentials());
             app.UseExceptionHandler(options =>
             {
                 options.Run(

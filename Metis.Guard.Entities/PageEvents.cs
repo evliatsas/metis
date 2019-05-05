@@ -9,7 +9,7 @@ namespace Metis.Guard.Entities
     public class PageExceptionEventArgs : EventArgs
     {
         public Page Page { get; }
-        public Exception Exception { get; }
+        public Exception Exception { get; }        
 
         public PageExceptionEventArgs(Page page, Exception exception = null)
         {
@@ -22,11 +22,13 @@ namespace Metis.Guard.Entities
     {
         public Page Page { get; }
         public Status PreviousStatus { get; }
+        public string Html { get; }
 
-        public PageStatusEventArgs(Page page, Status status)
+        public PageStatusEventArgs(Page page, Status status, string html)
         {
             this.Page = page;
             this.PreviousStatus = status;
+            this.Html = html;
         }
     }
 }

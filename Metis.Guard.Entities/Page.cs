@@ -9,8 +9,14 @@ namespace Metis.Guard.Entities
     /// </summary>
     public class Page
     {
+        /// <summary>
+        /// The Html title of the page
+        /// </summary>
         [BsonElement("title")]
         public string Title { get; set; }
+        /// <summary>
+        /// The page unique Uniform Resource Identifier
+        /// </summary>
         [BsonElement("uri")]
         public string Uri { get; set; }
         /// <summary>
@@ -24,6 +30,9 @@ namespace Metis.Guard.Entities
         /// </summary>
         [BsonElement("exceptions")]
         public IEnumerable<PageElement> Exceptions { get; set; }
+        /// <summary>
+        /// The current status of a guarded page
+        /// </summary>
         [BsonElement("status")]
         [BsonRepresentation(BsonType.String)]
         public Status Status { get; set; }

@@ -16,7 +16,7 @@ namespace Metis.Guard
         /// <summary>
         /// The page refresh time in seconds
         /// </summary>
-        const int MONITOR_THRESHOLD = 10;
+        const int MONITOR_THRESHOLD = 60;
 
         private readonly Encoding _encoding;
         private Page _page;
@@ -117,31 +117,30 @@ namespace Metis.Guard
                         var previousStatus = page.Status;
                         page.Status = Status.Ok;
                         // raise page status changed event
-                        var args = new PageStatusEventArgs(page, previousStatus);
+                        var args = new PageStatusEventArgs(page, previousStatus, content);
                         OnPageStatusChanged(args);
                     }
-
-                    if (string.Equals(page.MD5Hash, md5))
+                    else if (string.Equals(page.MD5Hash, md5))
                     {
-                        if (page.Status != Status.Ok)
-                        {
-                            var previousStatus = page.Status;
-                            page.Status = Status.Ok;
-                            // raise page status changed event
-                            var args = new PageStatusEventArgs(page, previousStatus);
-                            OnPageStatusChanged(args);
-                        }
+                        // if (page.Status != Status.Ok)
+                        //{
+                        var previousStatus = page.Status;
+                        page.Status = Status.Ok;
+                        // raise page status changed event
+                        var args = new PageStatusEventArgs(page, previousStatus, content);
+                        OnPageStatusChanged(args);
+                        //}
                     }
                     else
                     {
-                        if (page.Status != Status.Alarm)
-                        {
-                            var previousStatus = page.Status;
-                            page.Status = Status.Alarm;
-                            // raise page status changed event
-                            var args = new PageStatusEventArgs(page, previousStatus);
-                            OnPageStatusChanged(args);
-                        }
+                        // if (page.Status != Status.Alarm)
+                        // {
+                        var previousStatus = page.Status;
+                        page.Status = Status.Alarm;
+                        // raise page status changed event
+                        var args = new PageStatusEventArgs(page, previousStatus, content);
+                        OnPageStatusChanged(args);
+                        // }
                     }
 
                     await Task.Delay(TimeSpan.FromSeconds(MONITOR_THRESHOLD), token);
@@ -180,13 +179,10 @@ namespace Metis.Guard
                     {
                         removeScriptText(doc.DocumentNode, exception.Value);
                     }
-                    else if (exception.Type == "script" && exception.Attribute == "src()")
+                    else if (exception.Attribute.EndsWith("()"))
                     {
-                        removeScriptSrc(doc.DocumentNode, exception.Value);
-                    }
-                    else if (exception.Attribute == "class()")
-                    {
-                        removePartialClass(doc.DocumentNode, exception.Type, exception.Value);
+                        var attr = exception.Attribute.Replace("()", string.Empty);
+                        removePartialMatch(doc.DocumentNode, exception.Type, attr, exception.Value);
                     }
                     else
                     {
@@ -202,7 +198,7 @@ namespace Metis.Guard
                         else
                         {
                             // TODO: commented out to avoid console spam, what to do with it?
-                            //Console.WriteLine($"Exception rule {path} has not been found in page {page.Uri}.");
+                            Console.WriteLine($"Exception rule {path} has not been found in page {page.Uri}.");
                         }
                     }
                 }
@@ -244,22 +240,9 @@ namespace Metis.Guard
             }
         }
 
-        private void removeScriptSrc(HtmlNode node, string contains)
+        private void removePartialMatch(HtmlNode node, string elementType, string attribute, string contains)
         {
-            var path = "//script/src";
-            var nodes = node.SelectNodes(path);
-            foreach (var scriptNode in nodes)
-            {
-                if (scriptNode.Attributes["src"].Value.Contains(contains))
-                {
-                    scriptNode.ParentNode.RemoveChild(scriptNode);
-                }
-            }
-        }
-
-        private void removePartialClass(HtmlNode node, string elementType, string contains)
-        {
-            var path = $"//{elementType}[contains(@class, '{contains}')]";
+            var path = $"//{elementType}[contains(@{attribute}, '{contains}')]";
             var nodes = node.SelectNodes(path);
             foreach (var elementNode in nodes)
             {

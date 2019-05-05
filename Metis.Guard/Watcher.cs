@@ -203,6 +203,55 @@ namespace Metis.Guard
         }
 
         /// <summary>
+        /// update the site page data in the database
+        /// </summary>
+        /// <param name="page">The page to update</param>
+        /// <param name="content">The Html content read by the parser</param>
+        /// <returns></returns>
+        private async Task updateSitePageContent(Page page, string content)
+        {
+            var client = new MongoClient(_connectionString);
+            var database = client.GetDatabase("metis");
+            var contentCollection = database.GetCollection<PageContent>("pagesContent");
+            var pageContent = await contentCollection.Find(Builders<PageContent>.Filter.Eq(x => x.PageUri, page.Uri))
+                .FirstOrDefaultAsync();
+            if (pageContent == null)
+            {
+                pageContent = new PageContent()
+                {
+                    SiteId = Site.Id,
+                    PageUri = page.Uri,
+                    Differences = new List<PageDifference>()
+                };
+                await contentCollection.InsertOneAsync(pageContent);
+            }
+            switch (page.Status)
+            {
+                case Status.Alarm:
+                    pageContent.HtmlRead = content;
+                    var items = new Diff().DiffText(pageContent.HtmlKnown, content);
+                    pageContent.Differences = items.Select(i => new PageDifference(i));
+                    break;
+                case Status.Maintenance:
+                    pageContent.HtmlKnown = string.Empty;
+                    pageContent.HtmlRead = string.Empty;
+                    pageContent.Differences = new List<PageDifference>();
+                    break;
+                case Status.NotFound:
+                    pageContent.HtmlRead = string.Empty;
+                    pageContent.Differences = new List<PageDifference>();
+                    break;
+                case Status.Ok:
+                    pageContent.HtmlKnown = content;
+                    pageContent.HtmlRead = string.Empty;
+                    pageContent.Differences = new List<PageDifference>();
+                    break;
+            }
+
+            await contentCollection.ReplaceOneAsync(s => s.Id == pageContent.Id, pageContent);
+        }
+
+        /// <summary>
         /// update the site status in the database
         /// </summary>
         /// <param name="site">The site to update</param>
@@ -271,11 +320,13 @@ namespace Metis.Guard
                 reason = $"Page {e.Page.Title} {e.Page.Uri} status is now {e.Page.Status.ToString()}";
             }
 
-            var args = new SiteStatusEventArgs(Site, previousStatus, reason);
-            OnSiteStatusChanged(args);
-
+            // update the page content changes to the database
+            Task.Run(() => updateSitePageContent(e.Page, e.Html));
             // update the page status change to the database
             Task.Run(() => updateSitePage(e.Page));
+
+            var args = new SiteStatusEventArgs(Site, previousStatus, reason);
+            OnSiteStatusChanged(args);
         }
 
         private void Monitor_PageParseException(object sender, PageExceptionEventArgs e)
