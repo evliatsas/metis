@@ -3,16 +3,16 @@ import {
   Row as AntdRow,
   Col as AntdCol,
   Icon as AntdIcon,
-  Select,
-  Typography as AntdTyp,
-  Divider
+  Select as AntdSelect,
+  Typography as AntdTypography,
+  Divider as AntdDivider
 } from 'antd'
 import { buildMap, statusColor } from './mapBuilder'
 import { callFetch } from '../../services/HttpService'
 import classes from './Map.module.sass'
 import MapAlarms from './MapAlarms'
+import MapSiteDetails from './MapSiteDetails'
 import { GuardHubContext } from '../../websockets/GuardHubProvider'
-const Option = Select.Option
 
 const viewFilter = [
   { id: 0, title: 'ΟΚ' },
@@ -58,7 +58,9 @@ const Map = () => {
   const handleChange = value => {
     console.log(`selected ${value}`)
   }
-  const options = viewFilter.map(o => <Option key={o.id}>{o.title}</Option>)
+  const options = viewFilter.map(o => (
+    <AntdSelect.Option key={o.id}>{o.title}</AntdSelect.Option>
+  ))
 
   return (
     <div style={{ height: '100%', width: '100%' }}>
@@ -68,7 +70,7 @@ const Map = () => {
         </AntdCol>
         <AntdCol xxl={4} xl={5} lg={6} md={8} style={{ height: '100%' }}>
           <div className={classes.DropdownInput}>
-            <Select
+            <AntdSelect
               dropdownClassName={classes.Dropdown}
               mode="tags"
               style={{ width: '100%' }}
@@ -76,7 +78,7 @@ const Map = () => {
               onChange={handleChange}
               allowClear={true}>
               {options}
-            </Select>
+            </AntdSelect>
           </div>
           <div className={classes.StatusContainer}>
             {sites
@@ -102,51 +104,7 @@ const Map = () => {
               ))}
           </div>
           {selected && (
-            <div className={classes.SiteView}>
-              <AntdTyp.Title level={4} className={classes.SiteViewHeader}>
-                {selected.name}
-                <span
-                  className="is-right is-link"
-                  onClick={() => setSelected(null)}>
-                  <AntdIcon type="close" />
-                </span>
-              </AntdTyp.Title>
-              <AntdTyp.Paragraph className={classes.SiteViewParagraph}>
-                <span style={{ fontSize: 18 }}>
-                  <AntdIcon
-                    type="environment"
-                    theme="twoTone"
-                    twoToneColor={statusColor[selected.status]}
-                  />{' '}
-                  Status {selected.status}
-                </span>
-                <div style={{ marginTop: 10 }}>
-                  <AntdTyp.Text>Σελίδες</AntdTyp.Text>
-                </div>
-                <ul>
-                  {selected.pages.map((s, i) => (
-                    <li key={i}>
-                      <a target="blank" href={s.uri}>
-                        {s.uri}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-                <div>
-                  <span className="is-link">
-                    <AntdIcon type="redo" /> Restart
-                  </span>{' '}
-                  <Divider type="vertical" />
-                  <span className="is-link">
-                    <AntdIcon type="play-circle" /> Start
-                  </span>{' '}
-                  <Divider type="vertical" />
-                  <span className="is-link">
-                    <AntdIcon type="border" /> Stop
-                  </span>
-                </div>
-              </AntdTyp.Paragraph>
-            </div>
+            <MapSiteDetails site={selected} onClose={() => setSelected(null)} />
           )}
         </AntdCol>
       </AntdRow>

@@ -41,6 +41,7 @@ const LogEntry = props => {
     </Option>
   ))
 
+  const submitHandler = () => {}
 
   return (
     <Form {...formItemLayout} onSubmit={submitHandler}>
