@@ -11,20 +11,25 @@ const TabPane = Tabs.TabPane
 const BookContainer = props => {
   const id = props.match.params.id ? props.match.params.id : null
   const [book, setBook] = useState({ members: [], entries: [] })
-  const [showLogEntry, setShowLogEntry] = useState(false)
+  const [logEntry, setLogEntry] = useState(null)
 
   useEffect(() => {
     if (id) {
       callFetch('logbooks/' + id, 'GET').then(res => {
         setBook(res)
+        console.log(res)
       })
     }
   }, [])
-
-  const handleLogEntry = () => {
-    setShowLogEntry(last => !last)
+  const handleLogEntry = (entry) => {
+    console.log(entry)
+    if (!entry) { setLogEntry(null) }
+    setLogEntry(entry)
   }
-  const logEntry = showLogEntry ? <LogEntry /> : null;
+
+  const logEntryModal = logEntry ? <LogEntry data={logEntry}
+    onClose={(e) => handleLogEntry(e)} /> : null;
+
   const lastupdate = moment(book.lastUpdate).fromNow()
   return (
     <Row className="is-fullheight">
@@ -39,7 +44,7 @@ const BookContainer = props => {
               key="1"
               className="has-text-primary"
               size="small"
-              onClick={handleLogEntry}>
+              onClick={() => handleLogEntry({ 'logBookId': id })}>
               {' '}
               Νεο Γεγονός{' '}
             </Button>,
@@ -61,12 +66,12 @@ const BookContainer = props => {
         />
       </Col>
       <Col span={16}>
-        <BookEntries data={props.data} />
+        <BookEntries data={book.entries} />
       </Col>
       <Col span={8} className="chat-container">
         <BookChat />
       </Col>
-      {logEntry}
+      {logEntryModal}
     </Row>
   )
 }

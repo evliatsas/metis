@@ -69,19 +69,19 @@ namespace Metis.Overseer.Services
                 throw new KeyNotFoundException($"The Log book {id} does not exist.");
             }
 
-            // var entries = await _LogEntries
-            //     .Find(x => x.LogBookId == id)
-            //     .SortBy(x=>x.Status)
-            //     .ThenByDescending(x=>x.Priority)
-            //     .ThenByDescending(x=>x.DTG)
-            //     .ToListAsync();
+            var entries = await _LogEntries
+                .Find(x => x.LogBookId == id)
+                .SortBy(x => x.Status)
+                .ThenByDescending(x => x.Priority)
+                .ThenByDescending(x => x.DTG)
+                .ToListAsync();
 
             var entriesCount = await _LogEntries
                 .Find(x => x.LogBookId == id)
                 .CountDocumentsAsync();
 
             book.EntriesCount = entriesCount;
-
+            book.Entries = entries;
             book.MembersCount = book.Members.Count();
 
             return book;

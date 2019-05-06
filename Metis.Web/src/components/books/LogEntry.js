@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { Form, DatePicker, Input, Select,Modal } from 'antd'
+import { Form, DatePicker, Input, Select, Modal } from 'antd'
 import { callFetch } from '../../services/HttpService'
+import { getCurrentMember } from '../../services/CommonFunctions';
 const Option = Select.Option
 const formItemLayout = {
   labelCol: {
@@ -14,16 +15,9 @@ const formItemLayout = {
 }
 
 const LogEntry = props => {
+  console.log(props.data)
   const [recipients, setRecipients] = useState([])
-  const [log, setLog] = useState({
-
-    dTG: null,
-    eCT: null,
-    recipient: null,
-    priority: null,
-    title: '',
-    description: ''
-  })
+  const [log, setLog] = useState({ ...props.data, issuer: getCurrentMember() })
 
   useEffect(() => {
     callFetch('logbooks/members', 'GET').then(res => {
@@ -32,6 +26,9 @@ const LogEntry = props => {
   }, [])
 
   const handleFields = (value, field) => {
+    if (field === 'recipient') {
+      value = recipients.find(x => x.userId === value)
+    }
     setLog({
       ...log,
       [field]: value
@@ -43,14 +40,18 @@ const LogEntry = props => {
     </Option>
   ))
 
-  const submitHandler = () => { }
+  const submitHandler = () => {
+    callFetch(`logbooks/${log.logBookId}/entries`, 'POST', log).then(res => {
+      props.onClose(res)
+    })
+  }
 
   return (
     <Modal
       title={log && log.id ? 'Νέο Γεγονός' : 'Επεξεργασία'}
       visible={true}
-      onOk={null}
-      onCancel={null}>
+      onOk={submitHandler}
+      onCancel={() => props.onClose(null)}>
       <Form {...formItemLayout} onSubmit={submitHandler}>
         <Form.Item label="Τίτλος">
           <Input
@@ -69,6 +70,7 @@ const LogEntry = props => {
             showSearch
             placeholder="Επιλογή παραλήπτη"
             optionFilterProp="name"
+            onSelect={(id) => handleFields(id, 'recipient')}
             filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}>
             {children}
           </Select>
