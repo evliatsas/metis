@@ -5,11 +5,11 @@ using Microsoft.Extensions.Hosting;
 
 namespace Metis.Overseer.Services
 {
-    public class BackgroundServiceStarter : IHostedService
+    public class BackgroundServiceStarter<T> : IHostedService where T : IHostedService
     {
-        readonly GuardService backgroundService;
+        readonly T backgroundService;
 
-        public BackgroundServiceStarter(GuardService backgroundService)
+        public BackgroundServiceStarter(T backgroundService)
         {
             this.backgroundService = backgroundService;
         }

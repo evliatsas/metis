@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace Metis.Overseer.Services
 {
-    public class GuardService : IDisposable
+    public class GuardService : IHostedService, IDisposable
     {
         private readonly IHubContext<GuardHub> _guardHubContext;
         private readonly string _connectionString;
@@ -39,6 +39,7 @@ namespace Metis.Overseer.Services
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
+            Dispose();
             return Task.CompletedTask;
         }
 
