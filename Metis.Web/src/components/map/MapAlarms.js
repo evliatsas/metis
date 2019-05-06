@@ -1,5 +1,5 @@
 import React from 'react'
-import classes from './Map.sass'
+import classes from './Map.module.sass'
 import { statusColor } from './mapBuilder'
 
 const MapAlarms = ({ alarms }) => {

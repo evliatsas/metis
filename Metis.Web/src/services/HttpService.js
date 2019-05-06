@@ -1,8 +1,10 @@
 import { notification } from 'antd'
 import LocalStorage from './storage'
-const api = process.env.REACT_APP_API_URL + 'api/'
+const api = process.env.REACT_APP_API_URL + '/api/'
 
 export const callFetch = async (url, method, data) => {
+  
+  console.log(api + url)
   const result = await await fetch(api + url, {
     method: method,
     headers: headers(),

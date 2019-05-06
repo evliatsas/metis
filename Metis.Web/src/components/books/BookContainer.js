@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Row, Col, PageHeader, Tabs, Button, Modal } from 'antd'
+import { Row, Col, PageHeader, Tabs, Button } from 'antd'
 import LogEntry from './LogEntry'
 import BookEntries from './BookEntries'
 import BookChat from './BookChat'
@@ -11,15 +11,7 @@ const TabPane = Tabs.TabPane
 const BookContainer = props => {
   const id = props.match.params.id ? props.match.params.id : null
   const [book, setBook] = useState({ members: [], entries: [] })
-  const [logEntry, setLogEntry] = useState({
-    dTG: null,
-    eCT: null,
-    recipient: null,
-    priority: null,
-    title: '',
-    description: ''
-  }
-  )
+  const [showLogEntry, setShowLogEntry] = useState(false)
 
   useEffect(() => {
     if (id) {
@@ -29,11 +21,10 @@ const BookContainer = props => {
     }
   }, [])
 
-  const handleLogEntry = entry => {
-    //setLogEntry(entry)
-    console.log(entry)
+  const handleLogEntry = () => {
+    setShowLogEntry(last => !last)
   }
-
+  const logEntry = showLogEntry ? <LogEntry /> : null;
   const lastupdate = moment(book.lastUpdate).fromNow()
   return (
     <Row className="is-fullheight">
@@ -48,7 +39,7 @@ const BookContainer = props => {
               key="1"
               className="has-text-primary"
               size="small"
-              onClick={() => handleLogEntry({})}>
+              onClick={handleLogEntry}>
               {' '}
               Νεο Γεγονός{' '}
             </Button>,
@@ -75,13 +66,7 @@ const BookContainer = props => {
       <Col span={8} className="chat-container">
         <BookChat />
       </Col>
-      <Modal
-        title={logEntry && logEntry.id ? 'Νέο Γεγονός' : 'Επεξεργασία'}
-        visible={logEntry !== null}
-        onOk={() => handleLogEntry(null)}
-        onCancel={() => handleLogEntry(null)}>
-        <LogEntry />
-      </Modal>
+      {logEntry}
     </Row>
   )
 }

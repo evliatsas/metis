@@ -1,6 +1,6 @@
 import React from 'react'
 import { Icon as AntdIcon, Select as AntdSelect } from 'antd'
-import classes from './Map.sass'
+import classes from './Map.module.sass'
 import { statusColor } from './mapBuilder'
 
 const viewFilter = [

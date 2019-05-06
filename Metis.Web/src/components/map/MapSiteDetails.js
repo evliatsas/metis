@@ -4,7 +4,7 @@ import {
   Icon as AntdIcon,
   Divider as AntdDivider
 } from 'antd'
-import classes from './Map.sass'
+import classes from './Map.module.sass'
 import { statusColor } from './mapBuilder'
 import api from '../../services/api'
 

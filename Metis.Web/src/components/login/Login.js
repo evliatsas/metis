@@ -28,7 +28,7 @@ const Login = () => {
         }
         callFetch('token', 'POST', body).then(res => {
             if (res && res.token) {
-                authContext.signIn(res.token);
+                authContext.signIn(res.token)
             }
         });
 
