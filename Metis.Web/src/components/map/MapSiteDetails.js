@@ -9,11 +9,11 @@ import { statusColor } from './mapBuilder'
 import api from '../../services/api'
 
 async function startOrStopMaintenance(site) {
-  return await api.get({
-    url: `/api/sites/${site.id}/maintenance/${
+  return await api.get(
+    `/api/sites/${site.id}/maintenance/${
       site.status === 'Maintenance' ? 'stop' : 'start'
     }`
-  })
+  )
 }
 
 const StartOrStopMaintenanceButton = ({ site }) => {

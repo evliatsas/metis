@@ -14,16 +14,11 @@ const Map = () => {
   const [alarms, setAlarms] = useState([])
 
   useEffect(() => {
-    api.get({ url: '/api/sites' }).then(res => {
+    api.get('/api/sites').then(res => {
       const filtered = res.filter(x => x.latitude !== 0)
       buildMap(filtered, id => setSelected(filtered.find(s => s.id === id)))
       setSites(res)
     })
-    // callFetch('sites', 'GET').then(res => {
-    //   const filtered = res.filter(x => x.latitude !== 0)
-    //   buildMap(filtered, id => setSelected(filtered.find(s => s.id === id)))
-    //   setSites(res)
-    // })
   }, [])
 
   useEffect(() => {

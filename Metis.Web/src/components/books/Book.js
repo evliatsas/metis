@@ -58,26 +58,21 @@ const Book = props => {
   }
 
   useEffect(() => {
-    // TODO: @Nikos den katalavainw th logikh sou edw
-    if (!id) {
-      return
+    if (id) {
+      api.get(`/api/logbooks/${id}`).then(res => {
+        const d = new Date(res.close)
+        const m = res.members.map(x => {
+          return x.userId
+        })
+        setUsersSelected([...m])
+        setBook({
+          ...res,
+          date: d
+        })
+      })
     }
 
-    // TODO: @Nikos den katalavainw th logikh sou edw
-    api.get(`/api/logbooks/${id}`).then(res => {
-      const d = new Date(res.close)
-      const m = res.members.map(x => {
-        return x.userId
-      })
-      setUsersSelected([...m])
-      setBook({
-        ...res,
-        date: d
-      })
-    })
-
-    // TODO: @Nikos den katalavainw th logikh sou edw
-    api.get('/api/logbooks').then(res => setUsersToSelect([...res]))
+    api.get('/api/logbooks/members').then(res => setUsersToSelect([...res]))
   }, [id])
 
   const handleSubmit = evt => {
