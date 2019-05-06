@@ -1,3 +1,4 @@
+import { notification as antdNotification } from 'antd'
 import storage from './storage'
 
 const baseUrl = process.env.REACT_APP_API_URL
@@ -28,23 +29,30 @@ async function request({ method, url, data }) {
       body: data && JSON.stringify(data)
     })
 
+    const res = await getJson(req)
+
     if (!req.ok) {
-      throw new Error(`${req.status}: ${req.statusText}`)
+      throw new Error(
+        (res && res.Message) || `${req.statusText} (${req.status})`
+      )
     }
-    const res = getJson(req)
     return res
   } catch (err) {
-    console.error(err)
+    antdNotification['error']({
+      placement: 'bottomRight',
+      message: 'Σφάλμα',
+      description: err.message
+    })
     return null
   }
 }
 
 const api = {
-  get: async ({ url }) => await request({ method: 'GET', url }),
-  post: async ({ url, data }) => await request({ method: 'POST', url, data }),
-  put: async ({ url, data }) => await request({ method: 'PUT', url, data }),
-  patch: async ({ url, data }) => await request({ method: 'PATCH', url, data }),
-  delete: async ({ url }) => await request({ method: 'DELETE', url })
+  get: async url => await request({ method: 'GET', url }),
+  post: async (url, data) => await request({ method: 'POST', url, data }),
+  put: async (url, data) => await request({ method: 'PUT', url, data }),
+  patch: async (url, data) => await request({ method: 'PATCH', url, data }),
+  delete: async url => await request({ method: 'DELETE', url })
 }
 
 export default api

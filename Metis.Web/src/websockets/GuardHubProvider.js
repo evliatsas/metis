@@ -16,8 +16,6 @@ const GuardHubProvider = ({ children }) => {
   const [connection, setConnection] = useState(null)
 
   useEffect(() => {
-    // console.log('is authenticated triggered')
-
     if (!auth.isAuthenticated) {
       return
     }

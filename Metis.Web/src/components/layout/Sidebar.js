@@ -1,11 +1,10 @@
 import React, { useContext } from 'react'
 import { Layout as AntdLayout, Menu as AntdMenu, Icon as AntdIcon } from 'antd'
 import { NavLink } from 'react-router-dom'
-import logo from '../../assets/badge-png-vector-5-transparent.png'
+import logo from '../../assets/logo.png'
 import storage from '../../services/storage'
 import { AuthContext } from '../../auth/AuthProvider'
 import './Layout.sass'
-const { Sider: AntdSider } = AntdLayout
 
 const breakpoints = {
   xs: '480px',
@@ -21,7 +20,7 @@ const Sidebar = ({ collapsed, toggleCollapsed }) => {
   const username = storage.get('auth')
 
   return (
-    <AntdSider
+    <AntdLayout.Sider
       collapsed={collapsed}
       collapsedWidth={80}
       breakpoint={breakpoints}
@@ -86,7 +85,7 @@ const Sidebar = ({ collapsed, toggleCollapsed }) => {
           </span>
         </AntdMenu.Item>
       </AntdMenu>
-    </AntdSider>
+    </AntdLayout.Sider>
   )
 }
 

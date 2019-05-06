@@ -3,7 +3,7 @@ import { Row, Col, PageHeader, Tabs, Button } from 'antd'
 import LogEntry from './LogEntry'
 import BookEntries from './BookEntries'
 import BookChat from './BookChat'
-import { callFetch } from '../../services/HttpService'
+import api from '../../services/api'
 import moment from 'moment'
 import { calculateStatus } from '../../services/CommonFunctions'
 import BookMembers from './BookMembers'
@@ -13,27 +13,30 @@ const BookContainer = props => {
   const id = props.match.params.id ? props.match.params.id : null
   const [book, setBook] = useState({ members: [], entries: [] })
   const [logEntry, setLogEntry] = useState(null)
-  const [tabIndex, setTabIndex] = useState("1")
+  const [tabIndex, setTabIndex] = useState('1')
 
   useEffect(() => {
-    if (id) {
-      callFetch('logbooks/' + id, 'GET').then(res => {
-        if (res) {
-          setBook(res)
-        }
-      })
+    if (!id) {
+      return
     }
-  }, [])
-  const handleLogEntry = (entry) => {  
-    if (!entry) { setLogEntry(null) }   
+    api.get(`/api/logbooks/${id}`).then(res => {
+      setBook(res)
+    })
+  }, [id])
+
+  const handleLogEntry = entry => {
+    if (!entry) {
+      setLogEntry(null)
+    }
     setLogEntry(entry)
   }
-  const handleTabIndex = (key) => {
+  const handleTabIndex = key => {
     setTabIndex(key)
   }
 
-  const logEntryModal = logEntry ? <LogEntry data={logEntry}
-    onClose={(e) => handleLogEntry(e)} /> : null
+  const logEntryModal = logEntry ? (
+    <LogEntry data={logEntry} onClose={e => handleLogEntry(e)} />
+  ) : null
 
   const lastupdate = moment(book.lastUpdate).fromNow()
   return (
@@ -49,7 +52,7 @@ const BookContainer = props => {
               key="1"
               className="has-text-primary"
               size="small"
-              onClick={() => handleLogEntry({ 'logBookId': id })}>
+              onClick={() => handleLogEntry({ logBookId: id })}>
               {' '}
               Νεο Γεγονός{' '}
             </Button>,
@@ -71,8 +74,11 @@ const BookContainer = props => {
         />
       </Col>
       <Col span={16}>
-        {tabIndex == "1" ? <BookEntries data={book.entries} edit={(l) => handleLogEntry(l)} /> :
-          <BookMembers members={book.members} />}
+        {tabIndex === '1' ? (
+          <BookEntries data={book.entries} edit={l => handleLogEntry(l)} />
+        ) : (
+          <BookMembers members={book.members} />
+        )}
       </Col>
       <Col span={8} className="chat-container">
         <BookChat />
