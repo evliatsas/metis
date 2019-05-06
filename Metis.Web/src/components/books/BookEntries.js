@@ -1,13 +1,14 @@
 import React from 'react';
-import { Table, Divider } from 'antd';
-import { NavLink } from 'react-router-dom';
+import { Table, Divider, Tag, Tooltip , Popconfirm, message} from 'antd';
 import moment from 'moment';
+import { priority } from '../../services/CommonFunctions'
 
 const BookEntries = props => {
     const columns = [{
-        title: 'Προτεραιότητα',
+        title: <Tooltip title="Προτεραιότητα">Π</Tooltip>,
         dataIndex: 'priority',
-        key: 'priority'
+        key: 'priority',
+        render: p => priority[p]
     }, {
         title: 'DTG',
         dataIndex: 'dTG',
@@ -35,21 +36,27 @@ const BookEntries = props => {
         title: 'Κατάσταση',
         dataIndex: 'status',
         key: 'status',
-        render: item => item
+        render: s => s == 1 ? <Tag color="magenta">Close</Tag> : <Tag color="#40861d">Open</Tag>
     }, {
         title: 'Ενέργειες',
         key: 'action',
         render: (e, row) => (
             <span>
-                <NavLink to={'/book/' + row.id}>επεξεργασία</NavLink>
+                <span className="is-link" onClick={() => props.edit(row)}>επεξεργασία</span>
                 <Divider type="vertical" />
-                <NavLink to={'/book/monitor/' + row.id}>προβολή</NavLink>
+                <Popconfirm title="Θέλετε σίγουρα να αφαιρέσετε το γεγονός?"
+                 onConfirm={confirmDelete} onCancel={null} okText="Ναι" cancelText="Όχι">
+                    <span className="is-danger">διαγραφή</span>
+                </Popconfirm>
+              
             </span>
 
         )
     }];
 
-
+    const confirmDelete = () => {
+        message.info('Συντομα κοντά σας')
+    }
     return (
         <Table rowKey="id" columns={columns} dataSource={props.data} />
     );

@@ -7,8 +7,8 @@ export const calculateStatus = date => {
   return _d.getTime() > d.getTime() ? (
     <Tag color="#40861d">Ενεργό</Tag>
   ) : (
-    <Tag color="red">Ανενεργό</Tag>
-  )
+      <Tag color="red">Ανενεργό</Tag>
+    )
 }
 
 export const getCurrentMember = () => {
@@ -17,3 +17,12 @@ export const getCurrentMember = () => {
     ? { userId: user.userid, email: user.email, name: user.title }
     : null
 }
+
+export const priority = {
+  0: <Tag color="#40861d">Normal</Tag>,
+  1: <Tag color="#2db7f5">Low</Tag>,
+  2: <Tag color="red">High</Tag>,
+  3: <Tag color="volcano">Urgent</Tag>
+}
+
+

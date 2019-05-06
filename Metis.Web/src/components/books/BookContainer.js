@@ -6,29 +6,34 @@ import BookChat from './BookChat'
 import { callFetch } from '../../services/HttpService'
 import moment from 'moment'
 import { calculateStatus } from '../../services/CommonFunctions'
+import BookMembers from './BookMembers'
 const TabPane = Tabs.TabPane
 
 const BookContainer = props => {
   const id = props.match.params.id ? props.match.params.id : null
   const [book, setBook] = useState({ members: [], entries: [] })
   const [logEntry, setLogEntry] = useState(null)
+  const [tabIndex, setTabIndex] = useState("1")
 
   useEffect(() => {
     if (id) {
       callFetch('logbooks/' + id, 'GET').then(res => {
-        setBook(res)
-        console.log(res)
+        if (res) {
+          setBook(res)
+        }
       })
     }
   }, [])
-  const handleLogEntry = (entry) => {
-    console.log(entry)
-    if (!entry) { setLogEntry(null) }
+  const handleLogEntry = (entry) => {  
+    if (!entry) { setLogEntry(null) }   
     setLogEntry(entry)
+  }
+  const handleTabIndex = (key) => {
+    setTabIndex(key)
   }
 
   const logEntryModal = logEntry ? <LogEntry data={logEntry}
-    onClose={(e) => handleLogEntry(e)} /> : null;
+    onClose={(e) => handleLogEntry(e)} /> : null
 
   const lastupdate = moment(book.lastUpdate).fromNow()
   return (
@@ -58,7 +63,7 @@ const BookContainer = props => {
             </Button>
           ]}
           footer={
-            <Tabs defaultActiveKey="1">
+            <Tabs defaultActiveKey={tabIndex} onChange={handleTabIndex}>
               <TabPane tab="Γεγονότα" key="1" />
               <TabPane tab="Μέλη" key="2" />
             </Tabs>
@@ -66,7 +71,8 @@ const BookContainer = props => {
         />
       </Col>
       <Col span={16}>
-        <BookEntries data={book.entries} />
+        {tabIndex == "1" ? <BookEntries data={book.entries} edit={(l) => handleLogEntry(l)} /> :
+          <BookMembers members={book.members} />}
       </Col>
       <Col span={8} className="chat-container">
         <BookChat />
