@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { AuthContext } from '../auth/AuthProvider'
-import storage from '../services/LocalStorage'
+import storage from '../services/storage'
 import hubConnectionBuilder from './hubConnectionBuilder'
 
 const apiUrl = process.env.REACT_APP_API_URL
@@ -16,13 +16,13 @@ const GuardHubProvider = ({ children }) => {
   const [connection, setConnection] = useState(null)
 
   useEffect(() => {
-   // console.log('is authenticated triggered')
+    // console.log('is authenticated triggered')
 
     if (!auth.isAuthenticated) {
       return
     }
 
-    hubConnectionBuilder(`${apiUrl}guard`, storage.get('token')).then(con => {
+    hubConnectionBuilder(`${apiUrl}/guard`, storage.get('token')).then(con => {
       setConnection(con)
     })
   }, [auth.isAuthenticated])

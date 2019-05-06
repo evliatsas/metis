@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { Layout as AntdLayout, Menu as AntdMenu, Icon as AntdIcon } from 'antd'
 import { NavLink } from 'react-router-dom'
 import logo from '../../assets/badge-png-vector-5-transparent.png'
-import storage from '../../services/LocalStorage'
+import storage from '../../services/storage'
 import { AuthContext } from '../../auth/AuthProvider'
 import './Layout.sass'
 const { Sider: AntdSider } = AntdLayout
@@ -15,34 +15,6 @@ const breakpoints = {
   xl: '1200px',
   xxl: '1600px'
 }
-
-const links = [
-  {
-    path: '/dashboard',
-    icon: 'home',
-    label: 'Αρχική'
-  },
-  {
-    path: '/map',
-    icon: 'global',
-    label: 'Αρχική'
-  },
-  {
-    path: 'books',
-    icon: 'notification',
-    label: 'Συμβάντα',
-    items: [
-      {
-        path: '/books/new',
-        label: 'Νέο Συμβάν'
-      },
-      {
-        path: '/books',
-        label: 'Προβολή Όλων'
-      }
-    ]
-  }
-]
 
 const Sidebar = ({ collapsed, toggleCollapsed }) => {
   const auth = useContext(AuthContext)

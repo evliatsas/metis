@@ -4,8 +4,34 @@ import {
   Icon as AntdIcon,
   Divider as AntdDivider
 } from 'antd'
-import classes from './Map.module.sass'
+import classes from './Map.sass'
 import { statusColor } from './mapBuilder'
+import api from '../../services/api'
+
+async function startOrStopMaintenance(site) {
+  return await api.get({
+    url: `/api/sites/${site.id}/maintenance/${
+      site.status === 'Maintenance' ? 'stop' : 'start'
+    }`
+  })
+}
+
+const StartOrStopMaintenanceButton = ({ site }) => {
+  if (site.status === 'Maintenance') {
+    return (
+      <span className="is-link" onClick={() => startOrStopMaintenance(site)}>
+        <AntdIcon type="play-circle" />
+        Stop Maintenance
+      </span>
+    )
+  }
+  return (
+    <span className="is-link" onClick={() => startOrStopMaintenance(site)}>
+      <AntdIcon type="border" />
+      Start Maintenance
+    </span>
+  )
+}
 
 const MapSiteDetails = ({ site, onClose }) => {
   return (
@@ -42,13 +68,14 @@ const MapSiteDetails = ({ site, onClose }) => {
             <AntdIcon type="redo" /> Restart
           </span>{' '}
           <AntdDivider type="vertical" />
-          <span className="is-link">
+          <StartOrStopMaintenanceButton site={site} />
+          {/* <span className="is-link">
             <AntdIcon type="play-circle" /> Start
           </span>{' '}
           <AntdDivider type="vertical" />
           <span className="is-link">
             <AntdIcon type="border" /> Stop
-          </span>
+          </span> */}
         </div>
       </AntdTypography.Paragraph>
     </div>

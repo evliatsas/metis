@@ -1,10 +1,11 @@
 @import '../../styles/Variables.sass'
+
 .StatusContainer
     max-height: calc(100vh - 50%)
     overflow-y: auto
 .SiteRow
     padding: 0 0 5px 10px
-.DropdownInput,
+.DropdownInput
     padding: 10px
 .Dropdown
     background: $dark
@@ -15,21 +16,19 @@
     overflow-x: hidden
 .SiteViewHeader
     background: $dark
-    padding: 10px 10px 10px 20px 
+    padding: 10px 10px 10px 20px
 .SiteViewParagraph
-    padding: 10px 20px 
-
-.AlarmsContainer      
+    padding: 10px 20px
+.AlarmsContainer
     position: absolute
     bottom: 20px
     background: #262d2d
     width: 450px
     height: 200px
-    border-radius: 5px    
+    border-radius: 5px
     margin-left: 20px
-    transition: opacity 2s ease-out   
+    transition: opacity 2s ease-out
     opacity: 0.2
-    
 .AlarmsContent
     overflow-y: auto
     position: absolute
@@ -37,9 +36,7 @@
     height: 100%
     bottom: 0px
     left: 0px
-    padding: 10px    
-
+    padding: 10px
 .AlarmsContainer:hover
     opacity: 0.8
     transition: opacity 0.5s ease-in
-    

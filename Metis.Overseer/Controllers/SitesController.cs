@@ -9,7 +9,7 @@ namespace Metis.Overseer.Controllers
     [Route("api/sites")]
     public class SitesController : ControllerBase
     {
-        private readonly GuardService _guardService;        
+        private readonly GuardService _guardService;
 
         public SitesController(GuardService guardService)
         {
@@ -40,7 +40,7 @@ namespace Metis.Overseer.Controllers
         [HttpGet]
         public IActionResult StopSiteGuard(string id)
         {
-            _guardService.StartGuard(id);
+            _guardService.StopGuard(id);
 
             return Ok();
         }

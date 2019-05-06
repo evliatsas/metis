@@ -1,42 +1,29 @@
 import React, { useEffect, useState, useContext } from 'react'
-import {
-  Row as AntdRow,
-  Col as AntdCol,
-  Icon as AntdIcon,
-  Select as AntdSelect,
-  Typography as AntdTypography,
-  Divider as AntdDivider
-} from 'antd'
-import { buildMap, statusColor } from './mapBuilder'
-import { callFetch } from '../../services/HttpService'
-import classes from './Map.module.sass'
+import { Row as AntdRow, Col as AntdCol } from 'antd'
+import { buildMap } from './mapBuilder'
 import MapAlarms from './MapAlarms'
+import MapSiteList from './MapSiteList'
 import MapSiteDetails from './MapSiteDetails'
 import { GuardHubContext } from '../../websockets/GuardHubProvider'
+import api from '../../services/api'
 
-const viewFilter = [
-  { id: 0, title: 'ΟΚ' },
-  { id: 1, title: 'Maintenance' },
-  { id: 2, title: 'Alarm' },
-  { id: 3, title: 'NotFound' }
-]
 const Map = () => {
   const guard = useContext(GuardHubContext)
   const [sites, setSites] = useState([])
   const [selected, setSelected] = useState(null)
   const [alarms, setAlarms] = useState([])
 
-  const handleSelect = id => {
-    const site = sites.find(x => x.id === id)
-    setSelected(site)
-  }
-
   useEffect(() => {
-    callFetch('sites', 'GET').then(res => {
+    api.get({ url: '/api/sites' }).then(res => {
       const filtered = res.filter(x => x.latitude !== 0)
       buildMap(filtered, id => setSelected(filtered.find(s => s.id === id)))
       setSites(res)
     })
+    // callFetch('sites', 'GET').then(res => {
+    //   const filtered = res.filter(x => x.latitude !== 0)
+    //   buildMap(filtered, id => setSelected(filtered.find(s => s.id === id)))
+    //   setSites(res)
+    // })
   }, [])
 
   useEffect(() => {
@@ -44,9 +31,6 @@ const Map = () => {
       return
     }
     guard.connection.on('SiteStatusChanged', message => {
-      // if (message.currentStatus === message.previousStatus) {
-      //   return
-      // }
       setAlarms(alarms => [message, ...alarms.slice(-100)])
     })
 
@@ -55,13 +39,6 @@ const Map = () => {
     })
   }, [guard])
 
-  const handleChange = value => {
-    console.log(`selected ${value}`)
-  }
-  const options = viewFilter.map(o => (
-    <AntdSelect.Option key={o.id}>{o.title}</AntdSelect.Option>
-  ))
-
   return (
     <div style={{ height: '100%', width: '100%' }}>
       <AntdRow style={{ height: '100%' }}>
@@ -69,40 +46,7 @@ const Map = () => {
           <div style={{ height: '100%', width: '100%' }} id="map" />
         </AntdCol>
         <AntdCol xxl={4} xl={5} lg={6} md={8} style={{ height: '100%' }}>
-          <div className={classes.DropdownInput}>
-            <AntdSelect
-              dropdownClassName={classes.Dropdown}
-              mode="tags"
-              style={{ width: '100%' }}
-              placeholder="Επιλέξτε Προβολή"
-              onChange={handleChange}
-              allowClear={true}>
-              {options}
-            </AntdSelect>
-          </div>
-          <div className={classes.StatusContainer}>
-            {sites
-              .filter(x => x.status !== 'Ok')
-              .map(site => (
-                <div
-                  key={site.id}
-                  className={classes.SiteRow}
-                  onClick={() => {
-                    handleSelect(site.id)
-                  }}>
-                  <AntdIcon
-                    type={
-                      site.status === 'Alarm'
-                        ? 'exclamation-circle'
-                        : 'info-circle'
-                    }
-                    theme="twoTone"
-                    twoToneColor={statusColor[site.status]}
-                  />
-                  <span className="is-link">{' ' + site.name}</span>
-                </div>
-              ))}
-          </div>
+          <MapSiteList sites={sites} onSelect={setSelected} />
           {selected && (
             <MapSiteDetails site={selected} onClose={() => setSelected(null)} />
           )}
