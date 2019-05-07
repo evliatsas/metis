@@ -13,6 +13,7 @@ const formItemLayout = {
 }
 const Books = () => {
   const [data, setData] = useState([])
+  const [loading, setLoading] = useState(true)
   const columns = [
     {
       title: 'Τίτλος',
@@ -63,7 +64,10 @@ const Books = () => {
   ]
 
   useEffect(() => {
-    api.get('/api/logbooks').then(res => setData(res))
+    api.get('/api/logbooks').then(res => {
+      setData(res)
+      setLoading(false)
+    })
   }, [])
 
   return (
@@ -76,7 +80,7 @@ const Books = () => {
         />
       </Col>
       <Col {...formItemLayout} className="mt-2">
-        <Table rowKey="id" columns={columns} dataSource={data} />
+        <Table loading={loading} rowKey="id" columns={columns} dataSource={data} />
       </Col>
     </Row>
   )

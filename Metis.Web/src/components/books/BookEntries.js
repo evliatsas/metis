@@ -47,8 +47,8 @@ const BookEntries = props => {
         s === 1 ? (
           <Tag color="magenta">Close</Tag>
         ) : (
-          <Tag color="#40861d">Open</Tag>
-        )
+            <Tag color="#40861d">Open</Tag>
+          )
     },
     {
       title: 'Ενέργειες',
@@ -61,7 +61,7 @@ const BookEntries = props => {
           <Divider type="vertical" />
           <Popconfirm
             title="Θέλετε σίγουρα να αφαιρέσετε το γεγονός?"
-            onConfirm={confirmDelete}
+            onConfirm={() => props.onDelete(row)}
             onCancel={null}
             okText="Ναι"
             cancelText="Όχι">
@@ -72,10 +72,7 @@ const BookEntries = props => {
     }
   ]
 
-  const confirmDelete = () => {
-    message.info('Συντομα κοντά σας')
-  }
-  return <Table rowKey="id" columns={columns} dataSource={props.data} />
+  return <Table style={{ padding: 10 }} rowKey="id" columns={columns} dataSource={props.data} />
 }
 
 export default BookEntries

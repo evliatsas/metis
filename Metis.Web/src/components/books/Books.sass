@@ -3,28 +3,38 @@
     height: calc(100vh - 98px)
     border-left: 1px solid $border-color-base
 .chat-sidedrawer
-    display: flex
-    justify-content: center
-    align-items: center
     height: 100%
     background: $dark
-    padding: 10px 10px 40px
-.chat-header
-    position: absolute   
-    top: 0
+.chat-header    
     padding: 10px
+    height: 45px
     width: 100%
     border-bottom: 1px solid $border-color-base
 .chat-header-title
     font-size: 16px
     font-weight: 600
 .chat-flexend
-    align-items: flex-end!important
+    //align-items: flex-end!important
 .chat-input
+    box-shadow: 0 -5px 7px -5px #0000006b
     position: absolute   
     bottom: 0
+    height: 61px
     & .ant-input-wrapper > .ant-input
        border: none
     & .ant-input-wrapper 
         border-top: 1px solid $border-color-base
         padding: 10px
+.chat-messages
+    height: calc(100% - 106px)
+    width: 100%
+    display: flex
+    flex-direction: column
+    overflow-y: auto
+.chat-message
+    padding: 10px
+    display: inline-block
+    border-radius: 5px
+    background: rgba(43, 60, 60, 0.54)
+    width: 95%
+    text-align: justify

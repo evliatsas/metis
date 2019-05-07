@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Row, Col, PageHeader, Tabs, Button } from 'antd'
+import { Row, Col, PageHeader, Tabs, Button,notification } from 'antd'
 import LogEntry from './LogEntry'
 import BookEntries from './BookEntries'
 import BookChat from './BookChat'
@@ -24,24 +24,42 @@ const BookContainer = props => {
     })
   }, [id])
 
-  const handleLogEntry = entry => {
-    if (!entry) {
-      setLogEntry(null)
+  const handleLogEntry = (entry, sumbited = false) => {
+    if (sumbited && entry) {
+      if (entry.id) {
+        var index = book.entries.findIndex(x => x.id === entry.id)
+        book.entries[index] = entry;
+      } else {
+        book.entries.push(entry)
+      }
+      setBook(book)
+      entry = null
     }
     setLogEntry(entry)
   }
+  const deleteEntryHandler = (l) => {
+    api.delete(`/api/logbooks/${id}/entries/${l.id}`).then(res => {
+      var index = book.entries.findIndex(x => x.id === l.id)
+      book.entries.splice(index, 1)
+      setBook({ ...book })
+      notification['success']({
+        message: 'Επιτυχής διαγραφή',
+      })
+    })
+  }
+
   const handleTabIndex = key => {
     setTabIndex(key)
   }
 
   const logEntryModal = logEntry ? (
-    <LogEntry data={logEntry} onClose={e => handleLogEntry(e)} />
+    <LogEntry data={logEntry} onClose={(entry, submited) => handleLogEntry(entry, submited)} />
   ) : null
 
   const lastupdate = moment(book.lastUpdate).fromNow()
   return (
     <Row className="is-fullheight">
-      <Col span={24}>
+      <Col sm={24}>
         <PageHeader
           onBack={() => window.history.back()}
           title={book.name}
@@ -73,14 +91,14 @@ const BookContainer = props => {
           }
         />
       </Col>
-      <Col span={16}>
+      <Col sm={24} md={24} lg={18} xl={19}>
         {tabIndex === '1' ? (
-          <BookEntries data={book.entries} edit={l => handleLogEntry(l)} />
-        ) : (
-          <BookMembers members={book.members} />
-        )}
+          <BookEntries data={book.entries} edit={l => handleLogEntry(l)}
+            onDelete={(l) => deleteEntryHandler(l)} />) :
+          (<BookMembers members={book.members} />
+          )}
       </Col>
-      <Col span={8} className="chat-container">
+      <Col sm={24} md={24} lg={6} xl={5} className="chat-container">
         <BookChat />
       </Col>
       {logEntryModal}

@@ -30,7 +30,6 @@ async function request({ method, url, data }) {
     })
 
     const res = await getJson(req)
-
     if (!req.ok) {
       throw new Error(
         (res && res.Message) || `${req.statusText} (${req.status})`

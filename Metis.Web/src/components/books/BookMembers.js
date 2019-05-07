@@ -7,7 +7,7 @@ const confirm = () => {
 
 const BookMembers = props => {
     return (
-        <List style={{ padding: 20 }}
+        <List style={{ padding: 10 }}
             itemLayout="horizontal"
             dataSource={props.members}
             renderItem={item => (

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Form, DatePicker, Input, Select, Modal } from 'antd'
+import { Form, DatePicker, Input, Select, Modal, notification } from 'antd'
 import api from '../../services/api'
 import { getCurrentMember } from '../../services/CommonFunctions'
 import moment from 'moment'
@@ -16,7 +16,6 @@ const formItemLayout = {
 }
 const dateFormat = 'YYYY/MM/DD'
 const LogEntry = props => {
-  console.log(props.data)
   const [recipients, setRecipients] = useState([])
   const [log, setLog] = useState({ ...props.data, issuer: getCurrentMember() })
   useEffect(() => {
@@ -42,11 +41,21 @@ const LogEntry = props => {
     if (log.id) {
       api
         .put(`/api/logbooks/${log.logBookId}/entries/${log.id}`, log)
-        .then(res => props.onClose(res))
+        .then(res => {
+          notification['success']({
+            message: 'Επιτυχής καταχώρηση',
+          })
+          props.onClose(log, true)
+        })
     } else {
       api
         .post(`/api/logbooks/${log.logBookId}/entries`, log)
-        .then(res => props.onClose(res))
+        .then(res => {
+          notification['success']({
+            message: 'Επιτυχής καταχώρηση',
+          })
+          props.onClose(log, true)
+        })
     }
   }
 
@@ -57,7 +66,7 @@ const LogEntry = props => {
       onOk={submitHandler}
       cancelButtonProps={{ type: 'danger' }}
       onCancel={() => props.onClose(null)}>
-      <Form {...formItemLayout} onSubmit={submitHandler}>
+      <Form {...formItemLayout}>
         <Form.Item label="Τίτλος">
           <Input
             value={log.title}

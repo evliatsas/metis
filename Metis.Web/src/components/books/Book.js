@@ -1,15 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import {
-  PageHeader,
-  DatePicker,
-  Row,
-  Form,
-  Icon,
-  Input,
-  Button,
-  Col,
-  Transfer,
-  Card
+  PageHeader, Popconfirm,
+  DatePicker, Row, Form,
+  Icon, Input, Button, Col,
+  Transfer, Card, notification
 } from 'antd'
 import api from '../../services/api'
 import { getCurrentMember } from '../../services/CommonFunctions'
@@ -33,7 +27,7 @@ const Book = props => {
   const [usersToSelect, setUsersToSelect] = useState([])
   const [usersSelected, setUsersSelected] = useState([])
   const [book, setBook] = useState({
-    date: new Date(),
+    close: new Date(),
     name: null
   })
 
@@ -43,23 +37,26 @@ const Book = props => {
       name: event.target.value
     })
   }
-  const usersHandler = (nextTargetKeys, direction, moveKeys) => {
-    if (direction === 'right') {
-      setUsersSelected(last => [...nextTargetKeys, usersSelected])
-    } else {
-      setUsersSelected(last => [...nextTargetKeys])
-    }
+  const usersHandler = (nextTargetKeys) => {
+    setUsersSelected(last => [...nextTargetKeys])
+    setBook({
+      ...book,
+      members: usersToSelect.filter(f => nextTargetKeys.some(s => s === f.key))
+    })
   }
   const dateHandler = d => {
-    if (!d._d) {
-      return
+    if (d._d) {
+      setBook({ ...book, close: d._d })
     }
-    setBook({ ...book, date: d._d })
   }
 
   useEffect(() => {
     if (id) {
       api.get(`/api/logbooks/${id}`).then(res => {
+        if (!res) {
+          props.history.push(`/books`)
+          return
+        }
         const d = new Date(res.close)
         const m = res.members.map(x => {
           return x.userId
@@ -67,24 +64,29 @@ const Book = props => {
         setUsersSelected([...m])
         setBook({
           ...res,
-          date: d
+          close: d
         })
       })
     }
-
-    api.get('/api/logbooks/members').then(res => setUsersToSelect([...res]))
+    api.get('/api/logbooks/members').then(res => res ? setUsersToSelect([...res]) : null)
   }, [id])
 
   const handleSubmit = evt => {
     evt.preventDefault()
-
     if (id) {
       api.put(`/api/logbooks/${id}`, book).then(res => {
-        props.history.push(`/book/${res.id}`)
+        notification['success']({
+          message: 'Επιτυχής καταχώρηση',
+        })
       })
     } else {
       api.post('/api/logbooks', createBody()).then(res => {
-        props.history.push(`/book/${res.id}`)
+        if (res) {
+          props.history.push(`/book/${res.id}`)
+          notification['success']({
+            message: 'Επιτυχής καταχώρηση',
+          })
+        } console.log(res)
       })
     }
   }
@@ -92,13 +94,23 @@ const Book = props => {
   const handleDelete = () => {
     api.delete(`/api/logbooks/${id}`).then(res => {
       props.history.push('/books')
+      notification['success']({
+        message: 'Επιτυχής διαγραφή',
+      })
     })
   }
 
   const deleteButton = id ? (
-    <Button type="danger" className="mr-2 is-right" onClick={handleDelete}>
-      Διαγραφή
+    <Popconfirm
+      title="Θέλετε σίγουρα να διαγράψετε το αρχείο?"
+      onConfirm={handleDelete}
+      onCancel={null}
+      okText="Ναι"
+      cancelText="Όχι">
+      <Button type="danger" className="mr-2 is-right" >
+        Διαγραφή
     </Button>
+    </Popconfirm>
   ) : null
   const bookMonitorLink = id ? (
     <Button
@@ -111,20 +123,13 @@ const Book = props => {
     </Button>
   ) : null
   const createBody = () => {
-    if (id) {
-      setBook({
-        ...book,
-        members: usersToSelect.filter(f => usersSelected.some(s => s === f.key))
-      })
-    } else {
-      return {
-        owner: member,
-        close: book.date,
-        members: usersToSelect.filter(f =>
-          usersSelected.some(s => s === f.key)
-        ),
-        name: book.name
-      }
+    return {
+      owner: member,
+      close: book.date,
+      members: usersToSelect.filter(f =>
+        usersSelected.some(s => s === f.key)
+      ),
+      name: book.name
     }
   }
   return (
@@ -146,7 +151,7 @@ const Book = props => {
             </Form.Item>
             <Form.Item label="Ημ/νια Λήξης">
               <DatePicker
-                value={moment(book.date, 'L')}
+                value={moment(book.close, 'L')}
                 placeholder="Επιλογή Ημ/νιας"
                 onChange={dateHandler}
                 className="is-fullwidth"
