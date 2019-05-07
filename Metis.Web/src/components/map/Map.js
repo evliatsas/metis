@@ -32,6 +32,13 @@ const Map = () => {
     guard.connection.on('SiteGuardingException', message => {
       console.log(message)
     })
+
+    return () => {
+      if (guard && guard.connection) {
+        guard.connection.off('SiteStatusChanged')
+        guard.connection.off('SiteGuardingException')
+      }
+    }
   }, [guard])
 
   return (
