@@ -1,4 +1,5 @@
-﻿using Metis.Guard;
+﻿using Metis.Core.Entities;
+using Metis.Guard;
 using Metis.Guard.Entities;
 using Metis.Overseer.Hubs;
 using Microsoft.AspNetCore.SignalR;
@@ -17,17 +18,19 @@ namespace Metis.Overseer.Services
 {
     public class GuardService : IHostedService, IDisposable
     {
+        private readonly IEmailService _emailService;
         private readonly IHubContext<GuardHub> _guardHubContext;
         private readonly string _connectionString;
         private readonly ConcurrentDictionary<string, Watcher> _guards;
 
         public IEnumerable<Watcher> Watchers { get { return _guards.Values; } }
 
-        public GuardService(IHubContext<GuardHub> guardHubContext, IConfiguration config)
+        public GuardService(IHubContext<GuardHub> guardHubContext, IConfiguration config, IEmailService emailService)
         {
             _guardHubContext = guardHubContext;
             _connectionString = config.GetConnectionString("Metis");
             _guards = new ConcurrentDictionary<string, Watcher>();
+            _emailService = emailService;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -155,15 +158,23 @@ namespace Metis.Overseer.Services
 
         private void Watcher_SiteStatusChanged(object sender, SiteStatusEventArgs e)
         {
-            var site = e.Site;
-            var s = e.PreviousStatus;
-
             Log.Information("Status changed for site {@name} {@id} from {@previous} to {@status}",
                 e.Site.Name, e.Site.Id, e.PreviousStatus, e.Site.Status);
 
             var message = GuardHub._CreateMessage(e);
 
             Task.Run(() => _guardHubContext.Clients.All.SendAsync("SiteStatusChanged", message));
+
+            if (e.Site.Status != e.PreviousStatus)
+            {
+                _emailService.Send(new EmailMessage()
+                {
+                    Content = $"Status changed for site {e.Site.Name} {e.Site.Id} from {e.PreviousStatus} to {e.Site.Status}",
+                    FromAddress = new EmailAddress("metis", "metis@ypes.gr"),
+                    ToAddresses = e.Site.EmailAddresses,
+                    Subject = "Κατάσταση Ιστοσελίδας"
+                });
+            }
         }
 
         private async Task<IEnumerable<string>> getSitesFromDb()

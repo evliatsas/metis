@@ -1,5 +1,6 @@
 ﻿using MailKit.Net.Pop3;
 using MailKit.Net.Smtp;
+using MailKit.Security;
 using Metis.Core.Entities;
 using MimeKit;
 using MimeKit.Text;
@@ -27,7 +28,7 @@ namespace Metis.Overseer.Services
         {
             using (var emailClient = new Pop3Client())
             {
-                emailClient.Connect(_emailConfiguration.PopServer, _emailConfiguration.PopPort, true);
+                emailClient.Connect(_emailConfiguration.PopServer, _emailConfiguration.PopPort, SecureSocketOptions.StartTls);
                 emailClient.AuthenticationMechanisms.Remove("XOAUTH2");
                 emailClient.Authenticate(_emailConfiguration.PopUsername, _emailConfiguration.PopPassword);
 
@@ -66,7 +67,7 @@ namespace Metis.Overseer.Services
             using (var emailClient = new SmtpClient())
             {
                 //The last parameter here is to use SSL
-                emailClient.Connect(_emailConfiguration.SmtpServer, _emailConfiguration.SmtpPort, true);
+                emailClient.Connect(_emailConfiguration.SmtpServer, _emailConfiguration.SmtpPort, SecureSocketOptions.StartTls);
                 //Remove any OAuth functionality as we won't be using it. 
                 emailClient.AuthenticationMechanisms.Remove("XOAUTH2");
                 emailClient.Authenticate(_emailConfiguration.SmtpUsername, _emailConfiguration.SmtpPassword);

@@ -1,4 +1,6 @@
-﻿using Metis.Guard.Entities;
+﻿using Metis.Core.Entities;
+using Metis.Guard.Entities;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +25,7 @@ namespace Metis.Guard
         public Site Site { get; private set; }
 
         public Watcher(Configuration configuration)
-        {           
+        {
             var task = Task.Run(async () => await readSiteFromDb(configuration));
             task.Wait();
             if (this.Site == null)
@@ -50,7 +52,7 @@ namespace Metis.Guard
                 monitor.PageParseException += Monitor_PageParseException;
                 monitor.PageStatusChanged += Monitor_PageStatusChanged;
                 // keep a reference to the monitor
-                this._pageMonitors.Add(page.Uri, monitor);                
+                this._pageMonitors.Add(page.Uri, monitor);
             }
         }
 
@@ -59,14 +61,14 @@ namespace Metis.Guard
         /// </summary>
         public void Stop()
         {
-            foreach(var monitor in this._pageMonitors.Values)
+            foreach (var monitor in this._pageMonitors.Values)
             {
                 // stop running threads
-                if(monitor.MonitorStatus == WorkerStatus.Running)
+                if (monitor.MonitorStatus == WorkerStatus.Running)
                 {
                     monitor.Stop();
                 }
-               
+
                 // unsubscribe from the event handlers
                 monitor.PageNotFound -= Monitor_PageNotFound;
                 monitor.PageParseException -= Monitor_PageParseException;
@@ -122,7 +124,7 @@ namespace Metis.Guard
                     snapshot.Status = Status.Ok;
                     monitor.UpdatePage(snapshot);
                     monitor.Start();
-                }                
+                }
             }
         }
 
@@ -131,15 +133,15 @@ namespace Metis.Guard
         /// </summary>
         public async Task TakeSnapshot()
         {
-            if(Site == null)
+            if (Site == null)
             {
-                return;   
+                return;
             }
 
             foreach (var page in Site.Pages)
             {
                 PageMonitor monitor;
-                if(_pageMonitors.ContainsKey(page.Uri))
+                if (_pageMonitors.ContainsKey(page.Uri))
                 {
                     monitor = this._pageMonitors[page.Uri];
                 }
@@ -187,6 +189,19 @@ namespace Metis.Guard
             var siteCollection = database.GetCollection<Site>("sites");
             var query = await siteCollection.FindAsync(Builders<Site>.Filter.Eq(x => x.Id, configuration.UiD));
             this.Site = await query.SingleOrDefaultAsync();
+
+            var userCollection = database.GetCollection<User>("users");
+            FilterDefinition<User> userFilter = "{$or:[{role:'Administrator'},{sites:{$elemMatch:{$eq:'" + configuration.UiD + "'}}}]}";
+            var userQuery = await userCollection.FindAsync(userFilter);
+            var users = await userQuery.ToListAsync();
+
+            foreach (var user in users)
+            {
+                this.Site.EmailAddresses.Add(new EmailAddress(
+                   user.Title,
+                   user.Email
+                ));
+            }
         }
 
         /// <summary>
@@ -199,7 +214,7 @@ namespace Metis.Guard
             var database = client.GetDatabase("metis");
             var siteCollection = database.GetCollection<Site>("sites");
             await siteCollection.FindOneAndUpdateAsync(s => s.Id == Site.Id && s.Pages.Any(p => p.Uri == page.Uri),
-                Builders<Site>.Update.Set(s=>s.Pages.ElementAt(-1), page));
+                Builders<Site>.Update.Set(s => s.Pages.ElementAt(-1), page));
         }
 
         /// <summary>
@@ -260,7 +275,7 @@ namespace Metis.Guard
             var client = new MongoClient(_connectionString);
             var database = client.GetDatabase("metis");
             var siteCollection = database.GetCollection<Site>("sites");
-            await siteCollection.FindOneAndUpdateAsync(s => s.Id == Site.Id, 
+            await siteCollection.FindOneAndUpdateAsync(s => s.Id == Site.Id,
                 Builders<Site>.Update.Set(s => s.Status, site.Status));
         }
 

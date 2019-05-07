@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using Metis.Core.Entities;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.Collections.Generic;
 
@@ -36,9 +37,13 @@ namespace Metis.Guard.Entities
         [BsonElement("longitude")]
         public decimal Longitude { get; set; }
 
+        [BsonIgnore]
+        public List<EmailAddress> EmailAddresses { get; set; }
+
         public Site()
         {
             this.Pages = new List<Page>();
+            this.EmailAddresses = new List<EmailAddress>();
         }
     }
 }
