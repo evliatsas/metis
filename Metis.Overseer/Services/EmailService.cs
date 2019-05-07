@@ -52,6 +52,12 @@ namespace Metis.Overseer.Services
 
         public void Send(EmailMessage emailMessage)
         {
+            if (string.IsNullOrWhiteSpace(_emailConfiguration.SmtpUsername) ||
+                string.IsNullOrWhiteSpace(_emailConfiguration.SmtpPassword))
+            {
+                return;
+            }
+
             var message = new MimeMessage();
             message.To.AddRange(emailMessage.ToAddresses.Select(x => new MailboxAddress(x.Name, x.Address)));
             message.From.Add(new MailboxAddress(emailMessage.FromAddress.Name, emailMessage.FromAddress.Address));
