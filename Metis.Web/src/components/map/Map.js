@@ -37,7 +37,6 @@ const Map = () => {
       if (guard && guard.connection) {
         guard.connection.off('SiteStatusChanged')
         guard.connection.off('SiteGuardingException')
-        guard.connection.stop()
       }
     }
   }, [guard])

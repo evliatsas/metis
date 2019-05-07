@@ -16,23 +16,31 @@ const GuardHubProvider = ({ children }) => {
   const [connection, setConnection] = useState(null)
 
   useEffect(() => {
-    setIsConnected(connection !== null)
-
     if (!auth.isAuthenticated) {
+      if (connection) {
+        connection.stop()
+        setConnection(null)
+        setIsConnected(false)
+      }
       return
     }
 
-    if (connection) {
-      return
+    if (!connection) {
+      hubConnectionBuilder(`${apiUrl}/guard`, storage.get('token'))
+        .then(con => {
+          setConnection(con)
+          setIsConnected(true)
+        })
+        .catch(err => {
+          console.error(err)
+          setConnection(null)
+          setIsConnected(false)
+        })
     }
-
-    hubConnectionBuilder(`${apiUrl}/guard`, storage.get('token')).then(con => {
-      setConnection(con)
-    })
 
     return () => {
       if (connection) {
-        connection.close()
+        connection.stop()
         console.log('connection to guard hub closed')
       }
     }
