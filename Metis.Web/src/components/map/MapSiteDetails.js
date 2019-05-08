@@ -1,24 +1,7 @@
 import React from 'react'
-import {
-  Typography as AntdTypography,
-  Icon as AntdIcon,
-  Divider as AntdDivider
-} from 'antd'
+import { Typography as AntdTypography, Icon as AntdIcon } from 'antd'
 import classes from './Map.module.sass'
 import { statusColor } from './mapBuilder'
-import api from '../../services/api'
-
-async function startMaintenance(site, callback) {
-  console.log('starting maintenace for', site.name)
-  await api.get(`/api/sites/${site.id}/maintenance/start`)
-  console.log('maintenance started')
-}
-
-async function stopMaintenance(site) {
-  console.log('stopping maintenace for', site.name)
-  await api.get(`/api/sites/${site.id}/maintenance/stop`)
-  console.log('maintenance stopped')
-}
 
 const StartOrStopMaintenanceButton = ({
   site,
@@ -27,19 +10,15 @@ const StartOrStopMaintenanceButton = ({
 }) => {
   if (site.status === 'Maintenance') {
     return (
-      <span
-        className="is-link"
-        onClick={() => stopMaintenance(site, onMaintenanceStop)}>
-        <AntdIcon type="play-circle" />
+      <span className="is-link" onClick={onMaintenanceStop}>
+        <AntdIcon type="stop" style={{ marginRight: '5px' }} />
         Stop Maintenance
       </span>
     )
   }
   return (
-    <span
-      className="is-link"
-      onClick={() => startMaintenance(site, onMaintenanceStart)}>
-      <AntdIcon type="border" />
+    <span className="is-link" onClick={onMaintenanceStart}>
+      <AntdIcon type="play-circle" style={{ marginRight: '5px' }} />
       Start Maintenance
     </span>
   )
@@ -81,10 +60,6 @@ const MapSiteDetails = ({
           ))}
         </ul>
         <div>
-          <span className="is-link">
-            <AntdIcon type="redo" /> Restart
-          </span>{' '}
-          <AntdDivider type="vertical" />
           <StartOrStopMaintenanceButton
             site={site}
             onMaintenanceStart={onMaintenanceStart}

@@ -17,8 +17,26 @@ const MapContainer = () => {
   const [selected, setSelected] = useState(null)
   const [selectedSite, setSelectedSite] = useState(null)
 
-  useEffect(() => {
+  function getSites() {
     api.get('/api/sites').then(res => setSites(res))
+  }
+
+  async function onMaintenanceStart() {
+    console.log('starting maintenace for', selectedSite.name)
+    await api.get(`/api/sites/${selected}/maintenance/start`)
+    console.log('maintenance started')
+    getSites()
+  }
+
+  async function onMaintenanceStop() {
+    console.log('stopping maintenace for', selectedSite.name)
+    await api.get(`/api/sites/${selected}/maintenance/stop`)
+    console.log('maintenance stopped')
+    getSites()
+  }
+
+  useEffect(() => {
+    getSites()
 
     hubConnectionBuilder(HUB_URL)
       .then(con => {
@@ -44,12 +62,11 @@ const MapContainer = () => {
 
     return () => {
       if (hub.current) {
-        console.log('cleanup')
         hub.current.stop()
         hub.current = null
-        console.log('connection to guard hub closed')
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -62,12 +79,23 @@ const MapContainer = () => {
         <AntdCol xxl={20} xl={19} lg={18} md={16} style={{ height: '100%' }}>
           <Map sites={sites} onSelect={setSelected} />
         </AntdCol>
-        <AntdCol xxl={4} xl={5} lg={6} md={8} style={{ height: '100%' }}>
-          <MapSiteList sites={sites} onSelect={setSelected} />
+        <AntdCol
+          xxl={4}
+          xl={5}
+          lg={6}
+          md={8}
+          style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <MapSiteList
+            sites={sites}
+            onSelect={setSelected}
+            style={{ flexGrow: 1 }}
+          />
           {selectedSite && (
             <MapSiteDetails
               site={selectedSite}
               onClose={() => setSelected(null)}
+              onMaintenanceStart={onMaintenanceStart}
+              onMaintenanceStop={onMaintenanceStop}
             />
           )}
         </AntdCol>

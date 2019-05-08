@@ -86,11 +86,12 @@ const Map = ({ sites, onSelect }) => {
     const markers = sites
       .filter(x => x.latitude > 0)
       .map(site => siteToMarker(site))
-
+    layer.setSource(null)
     layer.setSource(new OLVectorSource({ features: markers }))
     layer.getSource().refresh({ force: true })
+    map.updateSize()
     console.log('should have refreshed')
-  }, [layer, sites])
+  }, [layer, sites, map])
 
   return <div id="map" style={{ height: '100%' }} />
 }

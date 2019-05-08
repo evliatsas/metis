@@ -17,6 +17,9 @@ const options = viewFilter.map(o => (
 ))
 
 const MapSiteList = ({ sites, onSelect }) => {
+  function handleSelect(site) {
+    onSelect(site.id)
+  }
   return (
     <React.Fragment>
       <div className={classes.DropdownInput}>
@@ -35,7 +38,7 @@ const MapSiteList = ({ sites, onSelect }) => {
           <div
             key={site.id}
             className={classes.SiteRow}
-            onClick={() => onSelect(site.id)}>
+            onClick={() => handleSelect(site)}>
             <AntdIcon
               type={
                 site.status === 'Alarm' ? 'exclamation-circle' : 'info-circle'

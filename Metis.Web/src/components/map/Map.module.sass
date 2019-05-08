@@ -1,7 +1,6 @@
 @import '../../styles/Variables.sass'
 
 .StatusContainer
-    max-height: calc(100vh - 50%)
     overflow-y: auto
 .SiteRow
     padding: 0 0 5px 10px
@@ -11,11 +10,13 @@
     background: $dark
     padding: 5px 0 5px 10px
 .SiteView
-    max-height: calc(100vh - 50% - 53px)
+    margin-top: 10px
+    min-height: 250px
     overflow-y: auto
     overflow-x: hidden
 .SiteViewHeader
     background: $dark
+    word-wrap: break-word
     padding: 10px 10px 10px 20px
 .SiteViewParagraph
     padding: 10px 20px
