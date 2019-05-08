@@ -13,14 +13,17 @@ const MapContainer = () => {
   const [messages, setMessages] = useState([])
   const [selected, setSelected] = useState(null)
 
-  function onSelect(id) {
-    const site = sites.find(x => x.id === id)
-    console.log('onSelect', id, site, sites)
-    setSelected(site)
+  async function getSites() {
+    const res = await api.get('/api/sites')
+    setSites(res)
+  }
+
+  const onSelectCb = id => {
+    console.log(id, sites)
   }
 
   useEffect(() => {
-    api.get('/api/sites').then(res => setSites(res))
+    getSites()
   }, [])
 
   useEffect(() => {
@@ -56,7 +59,7 @@ const MapContainer = () => {
     <div style={{ height: '100%' }}>
       <AntdRow style={{ height: '100%' }}>
         <AntdCol xxl={20} xl={19} lg={18} md={16} style={{ height: '100%' }}>
-          <Map sites={sites} onSelect={onSelect} />
+          <Map sites={sites} onSelect={id => onSelectCb(id)} />
         </AntdCol>
         <AntdCol xxl={4} xl={5} lg={6} md={8} style={{ height: '100%' }}>
           <MapSiteList sites={sites} onSelect={setSelected} />

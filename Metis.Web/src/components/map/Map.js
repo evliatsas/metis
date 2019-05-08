@@ -67,11 +67,12 @@ const Map = ({ sites, onSelect }) => {
       _map.addInteraction(select)
 
       select.on('select', evt => {
-        if (onSelect) {
-          const marker = select.getFeatures().getArray()[0]
-          const key = marker && marker.getId()
-          onSelect(key)
+        if (!onSelect) {
+          return
         }
+        const marker = select.getFeatures().getArray()[0]
+        const key = marker && marker.getId()
+        onSelect(key)
       })
 
       setMap(_map)
