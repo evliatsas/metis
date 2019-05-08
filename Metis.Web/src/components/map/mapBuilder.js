@@ -17,7 +17,7 @@ export const statusColor = {
   Selected: 'cyan'
 }
 
-const siteToMarker = site => {
+function siteToMarker(site) {
   const marker = new OLFeature({
     geometry: new OLPoint(OLfromLonLat([site.longitude, site.latitude])),
     label: site.name
@@ -35,8 +35,96 @@ const siteToMarker = site => {
   return marker
 }
 
-export const buildMap = (sites, onSelect) => {
-  const map = new OLMap({
+function updateMarkers(map, sites, onSelect) {
+  if (!map) {
+    return
+  }
+
+  let layer = map.getLayers().item(1)
+
+  if (!layer) {
+    layer = new OLVectorLayer()
+    map.addLayer(layer)
+    layer.setZIndex(10)
+  }
+
+  const markers = sites.map(site => siteToMarker(site))
+  const source = new OLVectorSource({ features: markers })
+
+  layer.setSource(source)
+
+  if (onSelect) {
+    addSelectInteraction(map, layer, onSelect)
+  }
+
+  setTimeout(() => source.refresh(), 10)
+  console.log('updateMarkers()')
+}
+
+function setMarkerColor(map, id, color) {
+  if (!map) {
+    return
+  }
+  const source = map
+    .getLayers()
+    .item(1)
+    .getSource()
+  const marker = source.getFeatureById(id)
+
+  if (marker) {
+    marker.getStyle().setImage(
+      new OLIcon({
+        color: color,
+        src: dot
+      })
+    )
+
+    setTimeout(() => source.refresh(), 10)
+  }
+}
+
+function addSelectInteraction(map, layer, onSelect) {
+  const select = new Select({ layers: [layer] })
+
+  map.addInteraction(select)
+
+  select.on('select', evt => {
+    // evt.deselected.forEach(marker =>
+    //   marker.getStyle().setImage(
+    //     new OLIcon({
+    //       color: statusColor[marker.get('status')],
+    //       src: dot
+    //     })
+    //   )
+    // )
+
+    // select.getFeatures().forEach(marker =>
+    //   marker.getStyle().setImage(
+    //     new OLIcon({
+    //       color: statusColor['Selected'],
+    //       src: dot
+    //     })
+    //   )
+    // )
+
+    if (onSelect) {
+      const marker = select.getFeatures().getArray()[0]
+      const key = marker && marker.getId()
+      onSelect(key)
+    }
+  })
+}
+
+const map = {
+  instance: null,
+  updateMarkers: (sites, onSelect) =>
+    updateMarkers(map.instance, sites, onSelect),
+  setMarkerColor: (site, color) =>
+    setMarkerColor(map.instance, site.id, color || statusColor[site.status])
+}
+
+export const buildMap = () => {
+  map.instance = new OLMap({
     target: 'map',
     controls: [],
     view: new OLView({
@@ -45,43 +133,7 @@ export const buildMap = (sites, onSelect) => {
     })
   })
 
-  apply(map, darklayer)
+  apply(map.instance, darklayer)
 
-  const markers = sites.map(site => siteToMarker(site))
-  const vectorSource = new OLVectorSource({ features: markers })
-  const markerVectorLayer = new OLVectorLayer({ source: vectorSource })
-
-  map.addLayer(markerVectorLayer)
-
-  markerVectorLayer.setZIndex(10)
-
-  const select = new Select({ layers: [markerVectorLayer] })
-
-  map.addInteraction(select)
-
-  select.on('select', evt => {
-    evt.deselected.forEach(marker =>
-      marker.getStyle().setImage(
-        new OLIcon({
-          color: statusColor[marker.get('status')],
-          src: dot
-        })
-      )
-    )
-
-    select.getFeatures().forEach(marker =>
-      marker.getStyle().setImage(
-        new OLIcon({
-          color: statusColor['Selected'],
-          src: dot
-        })
-      )
-    )
-
-    if (onSelect) {
-      const marker = select.getFeatures().getArray()[0]
-      const key = marker && marker.getId()
-      onSelect(key)
-    }
-  })
+  return map
 }
