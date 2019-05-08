@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Row, Col, PageHeader, Tabs, Button,notification } from 'antd'
+import { Row, Col, PageHeader, Tabs, Button, notification } from 'antd'
 import LogEntry from './LogEntry'
 import BookEntries from './BookEntries'
 import BookChat from './BookChat'
@@ -20,7 +20,7 @@ const BookContainer = props => {
       return
     }
     api.get(`/api/logbooks/${id}`).then(res => {
-      setBook(res)
+      res ? setBook(res) : props.history.push('/books')
     })
   }, [id])
 
