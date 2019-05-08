@@ -13,8 +13,8 @@ const BookEntries = props => {
     },
     {
       title: 'DTG',
-      dataIndex: 'dTG',
-      key: 'dTG',
+      dataIndex: 'dtg',
+      key: 'dtg',
       render: item => moment(item).format('L')
     },
     {

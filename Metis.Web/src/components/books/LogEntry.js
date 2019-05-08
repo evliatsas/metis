@@ -108,7 +108,7 @@ const LogEntry = props => {
           <DatePicker
             defaultValue={log.dtg ? moment(log.dtg, dateFormat) : null}
             className="is-fullwidth"
-            onChange={date => handleFields(date._d, 'dTG')}
+            onChange={date => handleFields(date._d, 'dtg')}
             placeholder="DateTime given"
           />
         </Form.Item>
@@ -116,7 +116,7 @@ const LogEntry = props => {
           <DatePicker
             defaultValue={log.ect ? moment(log.ect, dateFormat) : null}
             className="is-fullwidth"
-            onChange={date => handleFields(date._d, 'eCT')}
+            onChange={date => handleFields(date._d, 'ect')}
             placeholder="DateTime of completion"
           />
         </Form.Item>
