@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import {
-  PageHeader, Popconfirm,
-  DatePicker, Row, Form,
-  Icon, Input, Button, Col,
-  Transfer, Divider, notification
+  PageHeader,
+  Popconfirm,
+  DatePicker,
+  Row,
+  Form,
+  Icon,
+  Input,
+  Button,
+  Col,
+  Transfer,
+  Divider,
+  notification
 } from 'antd'
 import api from '../../services/api'
 import { getCurrentMember } from '../../services/CommonFunctions'
@@ -40,7 +48,7 @@ const Book = props => {
     })
   }
 
-  const usersHandler = (nextTargetKeys) => {
+  const usersHandler = nextTargetKeys => {
     setUsersSelected(last => [...nextTargetKeys])
     setBook({
       ...book,
@@ -55,6 +63,7 @@ const Book = props => {
   }
 
   useEffect(() => {
+    console.log(id)
     if (id) {
       api.get(`/api/logbooks/${id}`).then(res => {
         if (!res) {
@@ -71,8 +80,15 @@ const Book = props => {
           close: d
         })
       })
+    } else {
+      setBook({
+        close: new Date(),
+        name: null
+      })
     }
-    api.get('/api/logbooks/members').then(res => res ? setUsersToSelect([...res]) : null)
+    api
+      .get('/api/logbooks/members')
+      .then(res => (res ? setUsersToSelect([...res]) : null))
   }, [id])
 
   const handleSubmit = evt => {
@@ -80,7 +96,7 @@ const Book = props => {
     if (id) {
       api.put(`/api/logbooks/${id}`, book).then(res => {
         notification['success']({
-          message: 'Επιτυχής καταχώρηση',
+          message: 'Επιτυχής καταχώρηση'
         })
       })
     } else {
@@ -88,7 +104,7 @@ const Book = props => {
         if (res) {
           props.history.push(`/book/${res.id}`)
           notification['success']({
-            message: 'Επιτυχής καταχώρηση',
+            message: 'Επιτυχής καταχώρηση'
           })
         }
       })
@@ -99,36 +115,42 @@ const Book = props => {
     api.delete(`/api/logbooks/${id}`).then(res => {
       props.history.push('/books')
       notification['success']({
-        message: 'Επιτυχής διαγραφή',
+        message: 'Επιτυχής διαγραφή'
       })
     })
   }
 
   const deleteButton = id ? (
-    <Popconfirm key="1"
+    <Popconfirm
+      key="1"
       title="Θέλετε σίγουρα να διαγράψετε το αρχείο?"
       onConfirm={handleDelete}
-      onCancel={null}      
+      onCancel={null}
       okText="Ναι"
       cancelText="Όχι">
-      <Button type="danger"  size="small" className="mr-2" >διαγραφή</Button>
+      <Button type="danger" size="small" className="mr-2">
+        διαγραφή
+      </Button>
     </Popconfirm>
   ) : null
 
   const bookMonitorLink = id ? (
-    <Button key="0" size="small"
+    <Button
+      key="0"
+      size="small"
       className="has-text-primary mr-2"
       onClick={() => {
         props.history.push('/book/monitor/' + id)
-      }}> προβολή </Button>
+      }}>
+      {' '}
+      προβολή{' '}
+    </Button>
   ) : null
   const createBody = () => {
     return {
       owner: member,
       close: book.date,
-      members: usersToSelect.filter(f =>
-        usersSelected.some(s => s === f.key)
-      ),
+      members: usersToSelect.filter(f => usersSelected.some(s => s === f.key)),
       name: book.name
     }
   }
@@ -136,18 +158,23 @@ const Book = props => {
     <Form onSubmit={handleSubmit}>
       <Row type="flex" justify="center">
         <Col span={24}>
-          <PageHeader onBack={() => window.history.back()} title={title}
-           subTitle="Δημιουργία Συμβάν και προσθήκη μελών"
+          <PageHeader
+            onBack={() => window.history.back()}
+            title={title}
+            subTitle="Δημιουργία Συμβάν και προσθήκη μελών"
             extra={[
               bookMonitorLink,
               deleteButton,
               <Button key="3" type="primary" size="small" htmlType="submit">
                 Αποθήκευση
-            </Button>
+              </Button>
             ]}
           />
         </Col>
-        <Col {...formItemLayout} style={{ padding: 10 }} className="has-background-dark mt-2">
+        <Col
+          {...formItemLayout}
+          style={{ padding: 10 }}
+          className="has-background-dark mt-2">
           <Divider>Λεπτομέρειες</Divider>
           <Form.Item label="Τίτλος">
             <Input
