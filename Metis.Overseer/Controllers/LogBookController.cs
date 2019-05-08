@@ -1,4 +1,5 @@
-﻿using Metis.Overseer.Services;
+﻿using System;
+using Metis.Overseer.Services;
 using Metis.Teamwork.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
@@ -23,7 +24,10 @@ namespace Metis.Overseer.Controllers
         [HttpGet]
         public async Task<IActionResult> GetBooks()
         {
-            var books = await _logService.GetBooks();
+            var claim = User.Claims.FirstOrDefault(t => t.Type == "userid");
+            var userId = claim != null ? claim.Value : "";
+
+            var books = await _logService.GetBooks(userId);
 
             return Ok(books);
         }
@@ -39,7 +43,7 @@ namespace Metis.Overseer.Controllers
                 Name = user.Title,
                 Email = user.Email
             })
-            .OrderBy(o=>o.Name);
+            .OrderBy(o => o.Name);
 
             return Ok(members);
         }
@@ -48,7 +52,15 @@ namespace Metis.Overseer.Controllers
         [HttpGet]
         public async Task<IActionResult> GetBook(string id)
         {
+            var claim = User.Claims.FirstOrDefault(t => t.Type == "userid");
+            var userId = claim != null ? claim.Value : "";
+
             var book = await _logService.GetBook(id);
+
+            if (book.Owner.UserId != userId && !book.Members.Any(t => t.UserId == userId))
+            {
+                throw new Exception("Your account has no permission for this entry.");
+            }
 
             return Ok(book);
         }
@@ -75,6 +87,16 @@ namespace Metis.Overseer.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateEntry(string bookId, [FromBody] LogEntry entry)
         {
+            var claim = User.Claims.FirstOrDefault(t => t.Type == "userid");
+            var userId = claim != null ? claim.Value : "";
+
+            var book = await _logService.GetBook(bookId);
+
+            if (book.Owner.UserId != userId && !book.Members.Any(t => t.UserId == userId))
+            {
+                throw new Exception("Your account has no permission for this entry.");
+            }
+
             entry.LogBookId = bookId;
             var inserted = await _logService.Create(entry);
 
@@ -83,19 +105,45 @@ namespace Metis.Overseer.Controllers
 
         [Route("{id}")]
         [HttpPut]
-        public async Task<IActionResult> UpdateBook(string id, [FromBody] LogBook book)
+        public async Task<IActionResult> UpdateBook(string id, [FromBody] LogBook model)
         {
-            await _logService.Update(id, book);
+            var claim = User.Claims.FirstOrDefault(t => t.Type == "userid");
+            var userId = claim != null ? claim.Value : "";
+
+            var book = await _logService.GetBook(id);
+
+            if (book.Owner.UserId != userId && !book.Members.Any(t => t.UserId == userId))
+            {
+                throw new Exception("Your account has no permission for this entry.");
+            }
+
+            await _logService.Update(id, model);
 
             return Ok();
         }
 
         [Route("{bookId}/entries/{entryId}")]
         [HttpPut]
-        public async Task<IActionResult> UpdateEntry(string bookId, string entryId, [FromBody] LogEntry entry)
+        public async Task<IActionResult> UpdateEntry(string bookId, string entryId, [FromBody] LogEntry model)
         {
-            entry.LogBookId = bookId;
-            await _logService.Update(entryId, entry);
+            var claim = User.Claims.FirstOrDefault(t => t.Type == "userid");
+            var userId = claim != null ? claim.Value : "";
+
+            var book = await _logService.GetBook(bookId);
+            var entry = await _logService.GetEntry(entryId);
+
+            if (book.Owner.UserId != userId && !book.Members.Any(t => t.UserId == userId))
+            {
+                throw new Exception("Your account has no permission for this entry.");
+            }
+
+            if (entry.Issuer.UserId != userId && entry.Recipient.UserId != userId)
+            {
+                throw new Exception("Your account has no permission for this entry.");
+            }
+
+            model.LogBookId = bookId;
+            await _logService.Update(entryId, model);
 
             return Ok();
         }
@@ -104,6 +152,16 @@ namespace Metis.Overseer.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteBook(string id)
         {
+            var claim = User.Claims.FirstOrDefault(t => t.Type == "userid");
+            var userId = claim != null ? claim.Value : "";
+
+            var book = await _logService.GetBook(id);
+
+            if (book.Owner.UserId != userId && !book.Members.Any(t => t.UserId == userId))
+            {
+                throw new Exception("Your account has no permission for this entry.");
+            }
+
             await _logService.RemoveBook(id);
 
             return Ok();
@@ -113,6 +171,22 @@ namespace Metis.Overseer.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteEntry(string bookId, string entryId)
         {
+            var claim = User.Claims.FirstOrDefault(t => t.Type == "userid");
+            var userId = claim != null ? claim.Value : "";
+
+            var book = await _logService.GetBook(bookId);
+            var entry = await _logService.GetEntry(entryId);
+
+            if (book.Owner.UserId != userId && !book.Members.Any(t => t.UserId == userId))
+            {
+                throw new Exception("Your account has no permission for this entry.");
+            }
+
+            if (entry.Issuer.UserId != userId && entry.Recipient.UserId != userId)
+            {
+                throw new Exception("Your account has no permission for this entry.");
+            }
+
             await _logService.RemoveEntry(entryId);
 
             return Ok();

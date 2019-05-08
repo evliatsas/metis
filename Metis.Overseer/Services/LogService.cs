@@ -22,10 +22,11 @@ namespace Metis.Overseer.Services
             _LogEntries = database.GetCollection<LogEntry>("logEntries");
         }
 
-        public async Task<IEnumerable<LogBook>> GetBooks()
+        public async Task<IEnumerable<LogBook>> GetBooks(string userId)
         {
+            FilterDefinition<LogBook> filter = "{$or:[{'owner.userId':'" + userId + "'},{members:{$elemMatch:{userId:'" + userId + "'}}}]}";
             var result = await _LogBooks
-                .Find(x => true)
+                .Find(filter)
                 .Project<LogBook>(Builders<LogBook>.Projection
                     .Include(x => x.Id)
                     .Include(x => x.Close)
