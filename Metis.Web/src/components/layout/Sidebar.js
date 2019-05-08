@@ -7,27 +7,24 @@ import { AuthContext } from '../../auth/AuthProvider'
 import './Layout.sass'
 
 const breakpoints = {
-  xs: '480px',
-  sm: '576px',
-  md: '768px',
-  lg: '992px',
-  xl: '1200px',
-  xxl: '1600px'
+  xs: '480px', sm: '576px', md: '768px', lg: '992px', xl: '1200px', xxl: '1600px'
 }
 
 const Sidebar = ({ collapsed, toggleCollapsed }) => {
   const auth = useContext(AuthContext)
+  const isMobile = window.innerWidth <= 760
+  const width = isMobile ? 0 : 80
   const username = storage.get('auth')
-
+  const minimize = isMobile ? <AntdMenu.Item key="1" onClick={toggleCollapsed}>
+    <span>
+      <AntdIcon type={collapsed ? 'menu-unfold' : 'menu-fold'} />
+      <span>Ελαχιστοποίηση</span>
+    </span>
+  </AntdMenu.Item> : null
   return (
     <AntdLayout.Sider
       collapsed={collapsed}
-      collapsedWidth={80}
-      breakpoint={breakpoints}
-      onCollapse={(collapsed, type) => {
-        console.log(collapsed, type)
-      }}
-      onBreakpoint={broken => console.log(broken)}>
+      collapsedWidth={width}>
       <AntdMenu
         selectable={false}
         mode="vertical"
@@ -42,19 +39,14 @@ const Sidebar = ({ collapsed, toggleCollapsed }) => {
             <span>{username.title}</span>
           </span>
         </AntdMenu.Item>
-        {/* <AntdMenu.Item key="1" onClick={toggleCollapsed}>
-          <span>
-            <AntdIcon type={collapsed ? 'menu-unfold' : 'menu-fold'} />
-            <span>Ελαχιστοποίηση</span>
-          </span>
-        </AntdMenu.Item> */}
-        <AntdMenu.Item key="2">
+        {minimize}
+        <AntdMenu.Item key="2" onClick={isMobile ? toggleCollapsed : null}>
           <NavLink to="/dashboard">
             <AntdIcon type="home" />
             <span>Αρχική</span>
           </NavLink>
         </AntdMenu.Item>
-        <AntdMenu.Item key="3">
+        <AntdMenu.Item key="3" onClick={isMobile ? toggleCollapsed : null}>
           <NavLink to="/map">
             <AntdIcon type="global" />
             <span>Χάρτης</span>
@@ -68,14 +60,14 @@ const Sidebar = ({ collapsed, toggleCollapsed }) => {
               <span>Συμβάντα</span>
             </span>
           }>
-          <AntdMenu.Item key="5">
+          <AntdMenu.Item key="5" onClick={isMobile ? toggleCollapsed : null}>
             <NavLink to="/book/new">Νέο Συμβάν</NavLink>
           </AntdMenu.Item>
-          <AntdMenu.Item key="6">
+          <AntdMenu.Item key="6" onClick={isMobile ? toggleCollapsed : null}>
             <NavLink to="/books">Συμβάντα</NavLink>
           </AntdMenu.Item>
         </AntdMenu.SubMenu>
-        <AntdMenu.Item
+        <AntdMenu.Item onClick={isMobile ? toggleCollapsed : null}
           className="bottom-menu-item"
           key="99"
           onClick={auth.signOut}>
