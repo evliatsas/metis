@@ -1,9 +1,14 @@
 import React from 'react'
 import { Table, Divider, Tag, Tooltip, Popconfirm, message } from 'antd'
 import moment from 'moment'
+import { getCurrentMember } from '../../services/CommonFunctions'
 import { priority } from '../../services/CommonFunctions'
-
+const currentUser = getCurrentMember()
 const BookEntries = props => {
+  const canDeleteOrEdit = (row) => {
+    return row.issuer.userId === currentUser.userId ||
+      row.recipient.userId === currentUser.userId
+  }
   const columns = [
     {
       title: <Tooltip title="Προτεραιότητα">Π</Tooltip>,
@@ -56,17 +61,18 @@ const BookEntries = props => {
       render: (e, row) => (
         <span>
           <span className="is-link" onClick={() => props.edit(row)}>
-            επεξεργασία
+            {canDeleteOrEdit(row) ? 'επεξεργασία' : 'προβολή'}
           </span>
-          <Divider type="vertical" />
-          <Popconfirm
-            title="Θέλετε σίγουρα να αφαιρέσετε το γεγονός?"
-            onConfirm={() => props.onDelete(row)}
-            onCancel={null}
-            okText="Ναι"
-            cancelText="Όχι">
-            <span className="is-danger">διαγραφή</span>
-          </Popconfirm>
+          {canDeleteOrEdit(row) ?
+            <span><Divider type="vertical" />
+              <Popconfirm
+                title="Θέλετε σίγουρα να αφαιρέσετε το γεγονός?"
+                onConfirm={() => props.onDelete(row)}
+                onCancel={null}
+                okText="Ναι"
+                cancelText="Όχι">
+                <span className="is-danger">διαγραφή</span>
+              </Popconfirm></span> : null}
         </span>
       )
     }

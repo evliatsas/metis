@@ -11,11 +11,13 @@ const BookMembers = props => {
             itemLayout="horizontal"
             dataSource={props.members}
             renderItem={item => (
-                <List.Item actions={[<Popconfirm title="Θέλετε σίγουρα να αφαιρέσετε τον χρήστη?"
-                 onConfirm={confirm} onCancel={null} okText="Ναι" cancelText="Όχι">
-                    <span className="is-danger">διαγραφή</span>
-                </Popconfirm>
-                ]}>
+                <List.Item 
+                // actions={[<Popconfirm title="Θέλετε σίγουρα να αφαιρέσετε τον χρήστη?"
+                //  onConfirm={confirm} onCancel={null} okText="Ναι" cancelText="Όχι">
+                //     <span className="is-danger">διαγραφή</span>
+                // </Popconfirm>
+                // ]}
+                >
                     <List.Item.Meta
                         avatar={<Icon type="user" style={{ fontSize: 40 }} />}
                         title={<span className="has-text-primary">{item.name}</span>}

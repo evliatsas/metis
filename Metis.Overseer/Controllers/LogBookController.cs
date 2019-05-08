@@ -216,7 +216,7 @@ namespace Metis.Overseer.Controllers
             entry.Status = Status.Closed;
             await _logService.Update(entryId, entry);
 
-            return Ok();
+            return Ok(entry);
         }
     }
 }
