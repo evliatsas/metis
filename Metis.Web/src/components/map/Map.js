@@ -36,12 +36,15 @@ function siteToMarker(site) {
   return marker
 }
 
-const Map = ({ sites }) => {
+const Map = ({ sites, onSelect }) => {
   const mapRef = useRef(null)
   const [map, setMap] = useState(null)
   const [layer, setLayer] = useState(null)
 
   useEffect(() => {
+    if (map) {
+      return
+    }
     setTimeout(() => {
       const _map = new OLMap({
         target: mapRef.current,
@@ -54,21 +57,35 @@ const Map = ({ sites }) => {
 
       apply(_map, darklayer)
 
-      const vectorLayer = new OLVectorLayer({
+      const _layer = new OLVectorLayer({
         source: new OLVectorSource({ features: [] })
       })
-      _map.addLayer(vectorLayer)
-      vectorLayer.setZIndex(10)
+      _map.addLayer(_layer)
+      _layer.setZIndex(10)
+
+      const select = new Select({ layers: [_layer] })
+      _map.addInteraction(select)
+
+      select.on('select', evt => {
+        if (onSelect) {
+          const marker = select.getFeatures().getArray()[0]
+          const key = marker && marker.getId()
+          onSelect(key)
+        }
+      })
+
       setMap(_map)
-      setLayer(vectorLayer)
+      setLayer(_layer)
     }, 0)
-  }, [])
+  }, [map, onSelect])
 
   useEffect(() => {
     if (!layer || !sites) {
       return
     }
-    const markers = sites.map(site => siteToMarker(site))
+    const markers = sites
+      .filter(x => x.latitude > 0)
+      .map(site => siteToMarker(site))
 
     layer.setSource(new OLVectorSource({ features: markers }))
     layer.getSource().refresh({ force: true })

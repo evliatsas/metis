@@ -31,23 +31,21 @@ const MapSiteList = ({ sites, onSelect }) => {
         </AntdSelect>
       </div>
       <div className={classes.StatusContainer}>
-        {sites
-          .filter(x => x.status !== 'Ok')
-          .map(site => (
-            <div
-              key={site.id}
-              className={classes.SiteRow}
-              onClick={() => onSelect(site)}>
-              <AntdIcon
-                type={
-                  site.status === 'Alarm' ? 'exclamation-circle' : 'info-circle'
-                }
-                theme="twoTone"
-                twoToneColor={statusColor[site.status]}
-              />
-              <span className="is-link">{' ' + site.name}</span>
-            </div>
-          ))}
+        {sites.map(site => (
+          <div
+            key={site.id}
+            className={classes.SiteRow}
+            onClick={() => onSelect(site)}>
+            <AntdIcon
+              type={
+                site.status === 'Alarm' ? 'exclamation-circle' : 'info-circle'
+              }
+              theme="twoTone"
+              twoToneColor={statusColor[site.status]}
+            />
+            <span className="is-link">{' ' + site.name}</span>
+          </div>
+        ))}
       </div>
     </React.Fragment>
   )

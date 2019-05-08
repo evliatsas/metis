@@ -1,17 +1,23 @@
-import React, { useState, useEffect, useContext, useRef } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { Row as AntdRow, Col as AntdCol } from 'antd'
+import { GuardHubContext } from '../../websockets/GuardHubProvider'
+import api from '../../services/api'
 import Map from './Map'
 import MapAlarms from './MapAlarms'
 import MapSiteList from './MapSiteList'
 import MapSiteDetails from './MapSiteDetails'
-import { GuardHubContext } from '../../websockets/GuardHubProvider'
-import api from '../../services/api'
 
 const MapContainer = () => {
   const guard = useContext(GuardHubContext)
   const [sites, setSites] = useState([])
   const [messages, setMessages] = useState([])
   const [selected, setSelected] = useState(null)
+
+  function onSelect(id) {
+    const site = sites.find(x => x.id === id)
+    console.log('onSelect', id, site, sites)
+    setSelected(site)
+  }
 
   useEffect(() => {
     api.get('/api/sites').then(res => setSites(res))
@@ -35,7 +41,7 @@ const MapContainer = () => {
     })
 
     guard.connection.on('SiteGuardingException', message => {
-      console.log(message)
+      console.log('unhandled message:', message)
     })
 
     return () => {
@@ -50,7 +56,7 @@ const MapContainer = () => {
     <div style={{ height: '100%' }}>
       <AntdRow style={{ height: '100%' }}>
         <AntdCol xxl={20} xl={19} lg={18} md={16} style={{ height: '100%' }}>
-          <Map sites={sites} />
+          <Map sites={sites} onSelect={onSelect} />
         </AntdCol>
         <AntdCol xxl={4} xl={5} lg={6} md={8} style={{ height: '100%' }}>
           <MapSiteList sites={sites} onSelect={setSelected} />
