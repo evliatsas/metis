@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Map as OLMap, View as OLView, Feature as OLFeature } from 'ol'
 import { Vector as OLVectorSource } from 'ol/source'
 import { Vector as OLVectorLayer } from 'ol/layer'
@@ -37,7 +37,6 @@ function siteToMarker(site) {
 }
 
 const Map = ({ sites, onSelect }) => {
-  const mapRef = useRef(null)
   const [map, setMap] = useState(null)
   const [layer, setLayer] = useState(null)
 
@@ -47,7 +46,7 @@ const Map = ({ sites, onSelect }) => {
     }
     setTimeout(() => {
       const _map = new OLMap({
-        target: mapRef.current,
+        target: 'map',
         controls: [],
         view: new OLView({
           center: OLfromLonLat([27.0, 38.0]),
@@ -63,22 +62,22 @@ const Map = ({ sites, onSelect }) => {
       _map.addLayer(_layer)
       _layer.setZIndex(10)
 
-      const select = new Select({ layers: [_layer] })
-      _map.addInteraction(select)
+      if (onSelect) {
+        const _select = new Select({ layers: [_layer] })
+        _map.addInteraction(_select)
 
-      select.on('select', evt => {
-        if (!onSelect) {
-          return
-        }
-        const marker = select.getFeatures().getArray()[0]
-        const key = marker && marker.getId()
-        onSelect(key)
-      })
+        _select.on('select', evt => {
+          const marker = _select.getFeatures().getArray()[0]
+          const key = marker && marker.getId()
+          onSelect(key)
+        })
+      }
 
       setMap(_map)
       setLayer(_layer)
-    }, 0)
-  }, [map, onSelect])
+    }, 100)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [map])
 
   useEffect(() => {
     if (!layer || !sites) {
@@ -93,7 +92,7 @@ const Map = ({ sites, onSelect }) => {
     console.log('should have refreshed')
   }, [layer, sites])
 
-  return <div id="map" ref={mapRef} style={{ height: '100%' }} />
+  return <div id="map" style={{ height: '100%' }} />
 }
 
 export default Map

@@ -7,7 +7,12 @@ import { AuthContext } from '../../auth/AuthProvider'
 import './Layout.sass'
 
 const breakpoints = {
-  xs: '480px', sm: '576px', md: '768px', lg: '992px', xl: '1200px', xxl: '1600px'
+  xs: '480px',
+  sm: '576px',
+  md: '768px',
+  lg: '992px',
+  xl: '1200px',
+  xxl: '1600px'
 }
 
 const Sidebar = ({ collapsed, toggleCollapsed }) => {
@@ -15,16 +20,16 @@ const Sidebar = ({ collapsed, toggleCollapsed }) => {
   const isMobile = window.innerWidth <= 760
   const width = isMobile ? 0 : 80
   const username = storage.get('auth')
-  const minimize = isMobile ? <AntdMenu.Item key="1" onClick={toggleCollapsed}>
-    <span>
-      <AntdIcon type={collapsed ? 'menu-unfold' : 'menu-fold'} />
-      <span>Ελαχιστοποίηση</span>
-    </span>
-  </AntdMenu.Item> : null
+  const minimize = isMobile ? (
+    <AntdMenu.Item key="1" onClick={toggleCollapsed}>
+      <span>
+        <AntdIcon type={collapsed ? 'menu-unfold' : 'menu-fold'} />
+        <span>Ελαχιστοποίηση</span>
+      </span>
+    </AntdMenu.Item>
+  ) : null
   return (
-    <AntdLayout.Sider
-      collapsed={collapsed}
-      collapsedWidth={width}>
+    <AntdLayout.Sider collapsed={collapsed} collapsedWidth={width}>
       <AntdMenu
         selectable={false}
         mode="vertical"
@@ -67,7 +72,7 @@ const Sidebar = ({ collapsed, toggleCollapsed }) => {
             <NavLink to="/books">Συμβάντα</NavLink>
           </AntdMenu.Item>
         </AntdMenu.SubMenu>
-        <AntdMenu.Item onClick={isMobile ? toggleCollapsed : null}
+        <AntdMenu.Item
           className="bottom-menu-item"
           key="99"
           onClick={auth.signOut}>

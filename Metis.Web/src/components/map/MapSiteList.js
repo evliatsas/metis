@@ -35,7 +35,7 @@ const MapSiteList = ({ sites, onSelect }) => {
           <div
             key={site.id}
             className={classes.SiteRow}
-            onClick={() => onSelect(site)}>
+            onClick={() => onSelect(site.id)}>
             <AntdIcon
               type={
                 site.status === 'Alarm' ? 'exclamation-circle' : 'info-circle'
