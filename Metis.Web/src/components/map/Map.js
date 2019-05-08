@@ -1,62 +1,81 @@
-import React, { useEffect, useState, useContext } from 'react'
-import { Row as AntdRow, Col as AntdCol } from 'antd'
-import { buildMap } from './mapBuilder'
-import MapAlarms from './MapAlarms'
-import MapSiteList from './MapSiteList'
-import MapSiteDetails from './MapSiteDetails'
-import { GuardHubContext } from '../../websockets/GuardHubProvider'
-import api from '../../services/api'
+import React, { useRef, useEffect, useState } from 'react'
+import { Map as OLMap, View as OLView, Feature as OLFeature } from 'ol'
+import { Vector as OLVectorSource } from 'ol/source'
+import { Vector as OLVectorLayer } from 'ol/layer'
+import { fromLonLat as OLfromLonLat } from 'ol/proj'
+import { Style as OLStyle, Icon as OLIcon } from 'ol/style'
+import { Point as OLPoint } from 'ol/geom'
+import Select from 'ol/interaction/Select'
+import { apply } from 'ol-mapbox-style'
+import darklayer from './darklayer.json'
+import dot from '../../assets/dot.png'
 
-const Map = () => {
-  const guard = useContext(GuardHubContext)
-  const [sites, setSites] = useState([])
-  const [selected, setSelected] = useState(null)
-  const [alarms, setAlarms] = useState([])
+const statusColor = {
+  Alarm: '#f5222d',
+  Ok: '#52c41a',
+  NotFound: '#1890ff',
+  Maintenance: '#faad14',
+  Selected: 'cyan'
+}
+
+function siteToMarker(site) {
+  const marker = new OLFeature({
+    geometry: new OLPoint(OLfromLonLat([site.longitude, site.latitude])),
+    label: site.name
+  })
+  marker.setId(site.id)
+  marker.set('status', site.status)
+  marker.setStyle(
+    new OLStyle({
+      image: new OLIcon({
+        color: statusColor[site.status],
+        src: dot
+      })
+    })
+  )
+  return marker
+}
+
+const Map = ({ sites }) => {
+  const mapRef = useRef(null)
+  const [map, setMap] = useState(null)
+  const [layer, setLayer] = useState(null)
 
   useEffect(() => {
-    api.get('/api/sites').then(res => {
-      const filtered = res.filter(x => x.latitude !== 0)
-      buildMap(filtered, id => setSelected(filtered.find(s => s.id === id)))
-      setSites(res)
-    })
+    setTimeout(() => {
+      const _map = new OLMap({
+        target: mapRef.current,
+        controls: [],
+        view: new OLView({
+          center: OLfromLonLat([27.0, 38.0]),
+          zoom: 7
+        })
+      })
+
+      apply(_map, darklayer)
+
+      const vectorLayer = new OLVectorLayer({
+        source: new OLVectorSource({ features: [] })
+      })
+      _map.addLayer(vectorLayer)
+      vectorLayer.setZIndex(10)
+      setMap(_map)
+      setLayer(vectorLayer)
+    }, 0)
   }, [])
 
   useEffect(() => {
-    if (!guard || !guard.isConnected) {
+    if (!layer || !sites) {
       return
     }
-    guard.connection.on('SiteStatusChanged', message => {
-      setAlarms(alarms => [message, ...alarms.slice(-100)])
-    })
+    const markers = sites.map(site => siteToMarker(site))
 
-    guard.connection.on('SiteGuardingException', message => {
-      console.log(message)
-    })
+    layer.setSource(new OLVectorSource({ features: markers }))
+    layer.getSource().refresh({ force: true })
+    console.log('should have refreshed')
+  }, [layer, sites])
 
-    return () => {
-      if (guard && guard.connection) {
-        guard.connection.off('SiteStatusChanged')
-        guard.connection.off('SiteGuardingException')
-      }
-    }
-  }, [guard])
-
-  return (
-    <div style={{ height: '100%', width: '100%' }}>
-      <AntdRow style={{ height: '100%' }}>
-        <AntdCol xxl={20} xl={19} lg={18} md={16} style={{ height: '100%' }}>
-          <div style={{ height: '100%', width: '100%' }} id="map" />
-        </AntdCol>
-        <AntdCol xxl={4} xl={5} lg={6} md={8} style={{ height: '100%' }}>
-          <MapSiteList sites={sites} onSelect={setSelected} />
-          {selected && (
-            <MapSiteDetails site={selected} onClose={() => setSelected(null)} />
-          )}
-        </AntdCol>
-      </AntdRow>
-      <MapAlarms alarms={alarms} />
-    </div>
-  )
+  return <div id="map" ref={mapRef} style={{ height: '100%' }} />
 }
 
 export default Map
