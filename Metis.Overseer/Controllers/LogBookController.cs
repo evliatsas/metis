@@ -191,5 +191,32 @@ namespace Metis.Overseer.Controllers
 
             return Ok();
         }
+
+        [Route("{bookId}/entries/{entryId}/close")]
+        [HttpGet]
+        public async Task<IActionResult> CloseEntry(string bookId, string entryId)
+        {
+            var claim = User.Claims.FirstOrDefault(t => t.Type == "userid");
+            var userId = claim != null ? claim.Value : "";
+
+            var book = await _logService.GetBook(bookId);
+            var entry = await _logService.GetEntry(entryId);
+
+            if (book.Owner.UserId != userId && !book.Members.Any(t => t.UserId == userId))
+            {
+                throw new Exception("Your account has no permission for this entry.");
+            }
+
+            if (entry.Issuer.UserId != userId && entry.Recipient.UserId != userId)
+            {
+                throw new Exception("Your account has no permission for this entry.");
+            }
+
+            entry.CompletionTime = DateTime.Now;
+            entry.Status = Status.Closed;
+            await _logService.Update(entryId, entry);
+
+            return Ok();
+        }
     }
 }
