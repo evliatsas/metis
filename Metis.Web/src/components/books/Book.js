@@ -3,7 +3,7 @@ import {
   PageHeader, Popconfirm,
   DatePicker, Row, Form,
   Icon, Input, Button, Col,
-  Transfer, Card, notification
+  Transfer, Divider, notification
 } from 'antd'
 import api from '../../services/api'
 import { getCurrentMember } from '../../services/CommonFunctions'
@@ -11,8 +11,10 @@ import './Books.sass'
 import moment from 'moment'
 const formItemLayout = {
   xs: { span: 24 },
-  lg: { span: 22 },
-  xl: { span: 11 },
+  sm: { span: 24 },
+  md: { span: 24 },
+  lg: { span: 18 },
+  xl: { span: 12 },
   xxl: { span: 10 }
 }
 const locale = {
@@ -37,6 +39,7 @@ const Book = props => {
       name: event.target.value
     })
   }
+
   const usersHandler = (nextTargetKeys) => {
     setUsersSelected(last => [...nextTargetKeys])
     setBook({
@@ -44,6 +47,7 @@ const Book = props => {
       members: usersToSelect.filter(f => nextTargetKeys.some(s => s === f.key))
     })
   }
+
   const dateHandler = d => {
     if (d._d) {
       setBook({ ...book, close: d._d })
@@ -86,7 +90,7 @@ const Book = props => {
           notification['success']({
             message: 'Επιτυχής καταχώρηση',
           })
-        } console.log(res)
+        }
       })
     }
   }
@@ -101,26 +105,22 @@ const Book = props => {
   }
 
   const deleteButton = id ? (
-    <Popconfirm
+    <Popconfirm key="1"
       title="Θέλετε σίγουρα να διαγράψετε το αρχείο?"
       onConfirm={handleDelete}
-      onCancel={null}
+      onCancel={null}      
       okText="Ναι"
       cancelText="Όχι">
-      <Button type="danger" className="mr-2 is-right" >
-        Διαγραφή
-    </Button>
+      <Button type="danger"  size="small" className="mr-2" >διαγραφή</Button>
     </Popconfirm>
   ) : null
+
   const bookMonitorLink = id ? (
-    <Button
-      className="has-text-primary mr-2 is-right"
+    <Button key="0" size="small"
+      className="has-text-primary mr-2"
       onClick={() => {
         props.history.push('/book/monitor/' + id)
-      }}>
-      {' '}
-      Προβολή
-    </Button>
+      }}> προβολή </Button>
   ) : null
   const createBody = () => {
     return {
@@ -134,54 +134,54 @@ const Book = props => {
   }
   return (
     <Form onSubmit={handleSubmit}>
-      <Row type="flex" justify="center" gutter={16}>
+      <Row type="flex" justify="center">
         <Col span={24}>
-          <PageHeader onBack={() => window.history.back()} title={title} />
-        </Col>
-        <Col {...formItemLayout} className="mt-2">
-          <Card title="Λεπτομέρειες" size="small">
-            <Form.Item label="Τίτλος">
-              <Input
-                prefix={<Icon type="folder-open" />}
-                name="name"
-                value={book.name}
-                placeholder="Τίτλος Συμβάν"
-                onChange={bookHandler}
-              />
-            </Form.Item>
-            <Form.Item label="Ημ/νια Λήξης">
-              <DatePicker
-                value={moment(book.close, 'L')}
-                placeholder="Επιλογή Ημ/νιας"
-                onChange={dateHandler}
-                className="is-fullwidth"
-              />
-            </Form.Item>
-            <Button type="primary is-right" htmlType="submit">
-              Αποθήκευση
+          <PageHeader onBack={() => window.history.back()} title={title}
+           subTitle="Δημιουργία Συμβάν και προσθήκη μελών"
+            extra={[
+              bookMonitorLink,
+              deleteButton,
+              <Button key="3" type="primary" size="small" htmlType="submit">
+                Αποθήκευση
             </Button>
-            {deleteButton}
-            {bookMonitorLink}
-          </Card>
+            ]}
+          />
         </Col>
-        <Col {...formItemLayout} className="mt-2">
-          <Card title="Επιλογή μέλών για προβολή/επεξεργασία" size="small">
-            <Form.Item label="">
-              <Transfer
-                locale={locale}
-                titles={['Επιλογή', 'Επιλεγμένοι']}
-                rowKey={record => record.userId}
-                dataSource={usersToSelect}
-                showSearch
-                listStyle={{
-                  height: 400
-                }}
-                targetKeys={usersSelected}
-                onChange={usersHandler}
-                render={item => `${item.name}`}
-              />
-            </Form.Item>
-          </Card>
+        <Col {...formItemLayout} style={{ padding: 10 }} className="has-background-dark mt-2">
+          <Divider>Λεπτομέρειες</Divider>
+          <Form.Item label="Τίτλος">
+            <Input
+              prefix={<Icon type="folder-open" />}
+              name="name"
+              value={book.name}
+              placeholder="Τίτλος Συμβάν"
+              onChange={bookHandler}
+            />
+          </Form.Item>
+          <Form.Item label="Ημ/νια Λήξης">
+            <DatePicker
+              value={moment(book.close, 'L')}
+              placeholder="Επιλογή Ημ/νιας"
+              onChange={dateHandler}
+              className="is-fullwidth"
+            />
+          </Form.Item>
+          <Divider>Επιλογή μέλών για προβολή/επεξεργασία</Divider>
+          <Form.Item label="">
+            <Transfer
+              locale={locale}
+              titles={['Επιλογή', 'Επιλεγμένοι']}
+              rowKey={record => record.userId}
+              dataSource={usersToSelect}
+              showSearch
+              listStyle={{
+                height: 400
+              }}
+              targetKeys={usersSelected}
+              onChange={usersHandler}
+              render={item => `${item.name}`}
+            />
+          </Form.Item>
         </Col>
       </Row>
     </Form>
