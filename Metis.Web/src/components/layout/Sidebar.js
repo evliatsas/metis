@@ -57,21 +57,13 @@ const Sidebar = ({ collapsed, toggleCollapsed }) => {
             <span>Χάρτης</span>
           </NavLink>
         </AntdMenu.Item>
-        <AntdMenu.SubMenu
-          key="4"
-          title={
-            <span>
-              <AntdIcon type="notification" />
-              <span>Συμβάντα</span>
-            </span>
-          }>
-          <AntdMenu.Item key="5" onClick={isMobile ? toggleCollapsed : null}>
-            <NavLink to="/book/new">Νέο Συμβάν</NavLink>
-          </AntdMenu.Item>
-          <AntdMenu.Item key="6" onClick={isMobile ? toggleCollapsed : null}>
-            <NavLink to="/books">Συμβάντα</NavLink>
-          </AntdMenu.Item>
-        </AntdMenu.SubMenu>
+
+        <AntdMenu.Item key="4" onClick={isMobile ? toggleCollapsed : null}>
+          <NavLink to="/books">
+            <AntdIcon type="notification" />
+            <span>Συμβάντα</span>
+          </NavLink>
+        </AntdMenu.Item>
         <AntdMenu.Item
           className="bottom-menu-item"
           key="99"
