@@ -224,13 +224,10 @@ namespace Metis.Guard
             var database = client.GetDatabase("metis");
             var siteCollection = database.GetCollection<Site>("sites");
 
-            // await siteCollection.FindOneAndUpdateAsync(s => s.Id == Site.Id && s.Pages.Any(p => p.Uri == page.Uri),
-            //     Builders<Site>.Update.Set(s => s.Pages.ElementAt(-1), page));
-
             var filter = Builders<Site>.Filter;
             var siteIdAndPageIdFilter = filter.And(
               filter.Eq(x => x.Id, Site.Id),
-              filter.ElemMatch(x => x.Pages, c => c.Title == page.Title));
+              filter.ElemMatch(x => x.Pages, c => c.Uri == page.Uri));
 
             var update = Builders<Site>.Update;
             var pageStatusSetter = update.Set("pages.$", page);
