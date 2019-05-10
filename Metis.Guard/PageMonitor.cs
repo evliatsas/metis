@@ -16,7 +16,7 @@ namespace Metis.Guard
         /// <summary>
         /// The page refresh time in seconds
         /// </summary>
-        const int MONITOR_THRESHOLD = 60;
+        const int MONITOR_THRESHOLD = 120;
 
         private readonly Encoding _encoding;
         private Page _page;

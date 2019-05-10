@@ -118,14 +118,15 @@ namespace Metis.Guard
             foreach (var page in Site.Pages)
             {
                 var monitor = _pageMonitors[page.Uri];
-                if (monitor.MonitorStatus != WorkerStatus.Running)
+                if (monitor.MonitorStatus == WorkerStatus.Running)
                 {
-                    var snapshot = await monitor.TakeSnapshot(page);
-                    snapshot.Status = Status.Ok;
-                    monitor.UpdatePage(snapshot);
-                    await updateSitePage(snapshot);
-                    monitor.Start();
+                    monitor.Stop();
                 }
+                var snapshot = await monitor.TakeSnapshot(page);
+                snapshot.Status = Status.Ok;
+                monitor.UpdatePage(snapshot);
+                await updateSitePage(snapshot);
+                monitor.Start();
             }
 
             if (Site.Status == Status.Maintenance)
