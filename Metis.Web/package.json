@@ -8,6 +8,7 @@
     "babel-plugin-import": "^1.11.0",
     "customize-cra": "^0.2.12",
     "jsonwebtoken": "^8.5.1",
+    "leaflet": "^1.5.1",
     "less": "^3.9.0",
     "less-loader": "^5.0.0",
     "node-sass": "^4.12.0",
@@ -16,6 +17,7 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-highlight-words": "^0.16.0",
+    "react-leaflet": "^2.2.1",
     "react-router-dom": "^5.0.0",
     "react-scripts": "3.0.1",
     "react-use": "^8.4.0"
