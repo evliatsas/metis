@@ -122,25 +122,22 @@ namespace Metis.Guard
                     }
                     else if (string.Equals(page.MD5Hash, md5))
                     {
-                        // if (page.Status != Status.Ok)
-                        //{
-                        var previousStatus = page.Status;
-                        page.Status = Status.Ok;
-                        // raise page status changed event
-                        var args = new PageStatusEventArgs(page, previousStatus, content);
-                        OnPageStatusChanged(args);
-                        //}
+                        if (page.Status != Status.Ok)
+                        {
+                            var previousStatus = page.Status;
+                            page.Status = Status.Ok;
+                            // raise page status changed event
+                            var args = new PageStatusEventArgs(page, previousStatus, content);
+                            OnPageStatusChanged(args);
+                        }
                     }
                     else
                     {
-                        // if (page.Status != Status.Alarm)
-                        // {
                         var previousStatus = page.Status;
                         page.Status = Status.Alarm;
                         // raise page status changed event
                         var args = new PageStatusEventArgs(page, previousStatus, content);
                         OnPageStatusChanged(args);
-                        // }
                     }
 
                     await Task.Delay(TimeSpan.FromSeconds(MONITOR_THRESHOLD), token);
@@ -173,11 +170,17 @@ namespace Metis.Guard
                 var title = doc.DocumentNode.SelectSingleNode("//title");
                 page.Title = string.IsNullOrEmpty(title?.InnerText) ? "no title" : title.InnerText;
 
+                removeComments(doc.DocumentNode);
+
                 foreach (var exception in page.Exceptions)
                 {
                     if (exception.Type == "script" && exception.Attribute == "text()")
                     {
                         removeScriptText(doc.DocumentNode, exception.Value);
+                    }
+                    else if(string.IsNullOrEmpty(exception.Type))
+                    {
+                        removeByAttribute(doc.DocumentNode, exception.Attribute);
                     }
                     else if (exception.Attribute.EndsWith("()"))
                     {
@@ -250,6 +253,26 @@ namespace Metis.Guard
             }
         }
 
+        private void removeByAttribute(HtmlNode node, string attribute)
+        {
+            var path = $"//*[@{attribute}]";
+            var nodes = node.SelectNodes(path);
+            foreach (var elementNode in nodes)
+            {
+                elementNode.ParentNode.RemoveChild(elementNode);
+            }
+        }
+
+        private void removeComments(HtmlNode node)
+        {
+            var path = "//comment()";
+            var nodes = node.SelectNodes(path);
+            foreach (var elementNode in nodes)
+            {
+                elementNode.ParentNode.RemoveChild(elementNode);
+            }
+        }
+        
         #region Events
 
         /// <summary>

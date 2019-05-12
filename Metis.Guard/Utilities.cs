@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Metis.Guard
 {
@@ -16,6 +17,9 @@ namespace Metis.Guard
             {
                 encoding = Encoding.UTF8;
             }
+
+            // remove all white spaces and new lines
+            input = Regex.Replace(input, @"\s+", "");
 
             // Use input string to calculate MD5 hash
             using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
