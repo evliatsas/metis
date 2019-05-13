@@ -15,7 +15,8 @@ const statusColor = {
   Ok: '#52c41a',
   NotFound: '#1890ff',
   Maintenance: '#faad14',
-  Selected: 'cyan'
+  Selected: 'cyan',
+  Pending: 'yellow'
 }
 
 const MapContainer = () => {
@@ -23,23 +24,20 @@ const MapContainer = () => {
   const [sites, setSites] = useState([])
   const [messages, setMessages] = useState([])
   const [selected, setSelected] = useState(null)
+  const [alarm, setAlarm] = useState(null)
 
   function getSites() {
     api.get('/api/sites').then(res => setSites(res))
   }
 
   async function onMaintenanceStart() {
-    console.log('starting maintenace for', selected.name)
+    setSelected(ps => ({ ...ps, status: 'Pending' }))
     await api.get(`/api/sites/${selected.id}/maintenance/start`)
-    console.log('maintenance started')
-    getSites()
   }
 
   async function onMaintenanceStop() {
-    console.log('stopping maintenace for', selected.name)
+    setSelected(ps => ({ ...ps, status: 'Pending' }))
     await api.get(`/api/sites/${selected.id}/maintenance/stop`)
-    console.log('maintenance stopped')
-    getSites()
   }
 
   useEffect(() => {
@@ -56,10 +54,11 @@ const MapContainer = () => {
             }`
           )
           setMessages(messages => [message, ...messages.slice(-100)])
+          setAlarm(message)
         })
 
         hub.current.on('SiteGuardingException', message => {
-          console.log('unhandled message:', message)
+          console.info('site exception:', message)
         })
       })
       .catch(err => {
@@ -73,8 +72,27 @@ const MapContainer = () => {
         hub.current = null
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  useEffect(() => {
+    if (!alarm) {
+      return
+    }
+
+    setSites(prevSites => {
+      const site = prevSites.find(x => x.id === alarm.id)
+      const idx = prevSites.indexOf(site)
+      prevSites.splice(idx, 1, { ...site, status: alarm.currentStatus })
+      return prevSites.slice()
+    })
+
+    setSelected(prevSelected => {
+      if (!prevSelected || prevSelected.id !== alarm.id) {
+        return prevSelected
+      }
+      return { ...prevSelected, status: alarm.currentStatus }
+    })
+  }, [alarm])
 
   return (
     <div style={{ height: '100%' }}>

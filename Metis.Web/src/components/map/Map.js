@@ -30,21 +30,23 @@ const Map = ({ sites, selected, onSelect }) => {
   return (
     <LeafletMap center={MAP_CENTER} zoom={7} className="map">
       <LeafletTileLayer url={TILE_LAYERS.LIGHT} />
-      {sites.map(site => (
-        <LeafletMarker
-          key={site.id}
-          position={{ lat: site.latitude, lng: site.longitude }}
-          icon={
-            new leaflet.DivIcon({
-              className:
-                selected && selected.id === site.id
-                  ? 'marker-selected'
-                  : statusClass[site.status]
-            })
-          }
-          onclick={() => onSelect(site)}
-        />
-      ))}
+      {sites
+        .filter(x => x.latitude > 0)
+        .map(site => (
+          <LeafletMarker
+            key={site.id}
+            position={{ lat: site.latitude, lng: site.longitude }}
+            icon={
+              new leaflet.DivIcon({
+                className:
+                  selected && selected.id === site.id
+                    ? 'marker-selected'
+                    : statusClass[site.status]
+              })
+            }
+            onclick={() => onSelect(site)}
+          />
+        ))}
     </LeafletMap>
   )
 }

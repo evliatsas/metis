@@ -60,11 +60,13 @@ const MapSiteDetails = ({
           ))}
         </ul>
         <div>
-          <StartOrStopMaintenanceButton
-            site={site}
-            onMaintenanceStart={onMaintenanceStart}
-            onMaintenanceStop={onMaintenanceStop}
-          />
+          {site.status !== 'Pending' && (
+            <StartOrStopMaintenanceButton
+              site={site}
+              onMaintenanceStart={onMaintenanceStart}
+              onMaintenanceStop={onMaintenanceStop}
+            />
+          )}
         </div>
       </AntdTypography.Paragraph>
     </div>
