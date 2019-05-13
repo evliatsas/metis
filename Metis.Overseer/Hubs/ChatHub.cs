@@ -15,28 +15,39 @@ namespace Metis.Overseer.Hubs
     public class ChatHub : Hub
     {
         private UserService db;
+        private LogService lgb;
         private static readonly ConcurrentDictionary<string, User> Users
             = new ConcurrentDictionary<string, User>(StringComparer.InvariantCultureIgnoreCase);
 
-        public ChatHub(UserService ctx)
+        public ChatHub(UserService ctx, LogService logService)
         {
             db = ctx;
+            lgb = logService;
         }
 
-        public async Task Send(string message)
+        public async Task Send(string logBookId, string message)
         {
             string sender = Context.User.Identity.Name;
 
-            // So, broadcast the sender, too.
-            await Clients.All.SendAsync("received", Context.User.Identity.Name, message);
+            var book = await lgb.GetBook(logBookId);
+
+            foreach (var u in book.Members)
+            {
+                await SendTo(message, u.UserId);
+            }
         }
 
         public async Task SendTo(string message, string to)
         {
+            string userName = Context.User.Identity.GetUserName();
+            string title = Context.User.Identity.GetTitle();
+            string email = Context.User.Identity.GetEmail();
+            string userId = Context.User.Identity.GetUserId();
+
             User receiver;
             if (Users.TryGetValue(to, out receiver))
             {
-                User sender = GetUser(Context.User.Identity.Name);
+                User sender = GetUser(userId);
 
                 IEnumerable<string> allReceivers;
                 lock (receiver.ConnectionIds)
@@ -49,7 +60,7 @@ namespace Metis.Overseer.Hubs
 
                 foreach (var cid in allReceivers)
                 {
-                    await Clients.Client(cid).SendAsync("received", Context.User.Identity.Name, message);
+                    await Clients.Client(cid).SendAsync("received", userName, message);
                 }
             }
         }
@@ -64,10 +75,12 @@ namespace Metis.Overseer.Hubs
             //     }
             // }).Select(x => x.Value);
             return Users
-                .Select(x => new {
+                .Select(x => new
+                {
                     Title = x.Value.Title,
                     UserName = x.Value.Username,
-                    Key = x.Value.Username
+                    Id = x.Value.Id,
+                    Email = x.Value.Email
                 })
                 .OrderBy(t => t.Title);
         }
@@ -76,18 +89,22 @@ namespace Metis.Overseer.Hubs
         {
             string userName = Context.User.Identity.GetUserName();
             string title = Context.User.Identity.GetTitle();
+            string email = Context.User.Identity.GetEmail();
+            string userId = Context.User.Identity.GetUserId();
             string connectionId = Context.ConnectionId;
 
-            var user = Users.GetOrAdd(userName, _ => new User
+            var user = Users.GetOrAdd(userId, _ => new User
             {
+                Id = userId,
                 Username = userName,
                 Title = title,
+                Email = email,
                 ConnectionIds = new HashSet<string>()
             });
 
             if (user.ConnectionIds.Count == 0)
             {
-                await Clients.Others.SendAsync("userConnected", userName, title);
+                await Clients.Others.SendAsync("userConnected", userName, title, email);
             }
 
             lock (user.ConnectionIds)
@@ -101,10 +118,13 @@ namespace Metis.Overseer.Hubs
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             string userName = Context.User.Identity.GetUserName();
+            string title = Context.User.Identity.GetTitle();
+            string email = Context.User.Identity.GetEmail();
+            string userId = Context.User.Identity.GetUserId();
             string connectionId = Context.ConnectionId;
 
             User user;
-            Users.TryGetValue(userName, out user);
+            Users.TryGetValue(userId, out user);
 
             if (user != null)
             {
@@ -115,23 +135,23 @@ namespace Metis.Overseer.Hubs
                     if (!user.ConnectionIds.Any())
                     {
                         User removedUser;
-                        Users.TryRemove(userName, out removedUser);
+                        Users.TryRemove(userId, out removedUser);
                     }
                 }
             }
 
             if (!user.ConnectionIds.Any())
             {
-                await Clients.Others.SendAsync("userDisconnected", userName);
+                await Clients.Others.SendAsync("userDisconnected", userName, title, email);
             }
 
             await base.OnDisconnectedAsync(exception);
         }
 
-        private User GetUser(string username)
+        private User GetUser(string userId)
         {
             User user;
-            Users.TryGetValue(username, out user);
+            Users.TryGetValue(userId, out user);
 
             return user;
         }
