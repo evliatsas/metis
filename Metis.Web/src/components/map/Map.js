@@ -29,7 +29,7 @@ const statusClass = {
 const Map = ({ sites, selected, onSelect }) => {
   return (
     <LeafletMap center={MAP_CENTER} zoom={7} className="map">
-      <LeafletTileLayer url={TILE_LAYERS.LIGHT} />
+      <LeafletTileLayer url={TILE_LAYERS.DARK} />
       {sites
         .filter(x => x.latitude > 0)
         .map(site => (

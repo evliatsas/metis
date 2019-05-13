@@ -133,11 +133,14 @@ namespace Metis.Guard
                     }
                     else
                     {
-                        var previousStatus = page.Status;
-                        page.Status = Status.Alarm;
-                        // raise page status changed event
-                        var args = new PageStatusEventArgs(page, previousStatus, content);
-                        OnPageStatusChanged(args);
+                        if (page.Status != Status.Alarm)
+                        {
+                            var previousStatus = page.Status;
+                            page.Status = Status.Alarm;
+                            // raise page status changed event
+                            var args = new PageStatusEventArgs(page, previousStatus, content);
+                            OnPageStatusChanged(args);
+                        }
                     }
 
                     await Task.Delay(TimeSpan.FromSeconds(MONITOR_THRESHOLD), token);
@@ -178,7 +181,7 @@ namespace Metis.Guard
                     {
                         removeScriptText(doc.DocumentNode, exception.Value);
                     }
-                    else if(string.IsNullOrEmpty(exception.Type))
+                    else if (string.IsNullOrEmpty(exception.Type))
                     {
                         removeByAttribute(doc.DocumentNode, exception.Attribute);
                     }
@@ -272,7 +275,7 @@ namespace Metis.Guard
                 elementNode.ParentNode.RemoveChild(elementNode);
             }
         }
-        
+
         #region Events
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using Metis.Teamwork.Entities;
+﻿using Metis.Core.Entities;
+using Metis.Teamwork.Entities;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -13,6 +14,8 @@ namespace Metis.Overseer.Services
     {
         private readonly IMongoCollection<LogBook> _LogBooks;
         private readonly IMongoCollection<LogEntry> _LogEntries;
+        private readonly IMongoCollection<ChatMessage> _ChatMessages;
+        private readonly IMongoCollection<User> _Users;
 
         public LogService(IConfiguration config)
         {
@@ -20,6 +23,8 @@ namespace Metis.Overseer.Services
             var database = client.GetDatabase("metis");
             _LogBooks = database.GetCollection<LogBook>("logBooks");
             _LogEntries = database.GetCollection<LogEntry>("logEntries");
+            _ChatMessages = database.GetCollection<ChatMessage>("chats");
+            _Users = database.GetCollection<User>("users");
         }
 
         public async Task<IEnumerable<LogBook>> GetBooks(string userId)
@@ -142,6 +147,50 @@ namespace Metis.Overseer.Services
         public async Task RemoveEntry(string id)
         {
             await _LogEntries.DeleteOneAsync(x => x.Id == id);
+        }
+
+        public async Task<ChatMessage> CreateMessage(string userId, string logBookId, string message)
+        {
+            var book = await _LogBooks
+                .Find(x => x.Id == logBookId)
+                .SingleOrDefaultAsync();
+
+            if (book == null)
+            {
+                throw new KeyNotFoundException($"The Log book {logBookId} does not exist.");
+            }
+
+            var user = await _Users
+                .Find(x => x.Id == userId)
+                .SingleOrDefaultAsync();
+
+            if (user == null)
+            {
+                throw new KeyNotFoundException($"The User {userId} does not exist.");
+            }
+
+            var entry = new ChatMessage();
+            entry.LogBookId = logBookId;
+            entry.Message = message;
+            entry.Sent = DateTime.Now;
+            entry.Sender = new User
+            {
+                Id = user.Id,
+                Username = user.Username,
+                Title = user.Title,
+                Email = user.Email
+            };
+            await _ChatMessages.InsertOneAsync(entry);
+            return entry;
+        }
+
+        public async Task<IEnumerable<ChatMessage>> GetMessages(string logBookId)
+        {
+            var list = await _ChatMessages.Find(t => t.LogBookId == logBookId)
+                .SortByDescending(t => t.Sent)
+                .Limit(100)
+                .ToListAsync();
+            return list;
         }
     }
 }

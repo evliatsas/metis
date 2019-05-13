@@ -27,9 +27,13 @@ namespace Metis.Overseer.Hubs
 
         public async Task Send(string logBookId, string message)
         {
-            string sender = Context.User.Identity.Name;
+            string userName = Context.User.Identity.GetUserName();
+            string title = Context.User.Identity.GetTitle();
+            string email = Context.User.Identity.GetEmail();
+            string userId = Context.User.Identity.GetUserId();
 
             var book = await lgb.GetBook(logBookId);
+            var entry = await lgb.CreateMessage(userId, logBookId, message);
 
             foreach (var u in book.Members)
             {

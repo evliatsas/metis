@@ -2,9 +2,9 @@
   height: 100vh;
 }
 
-.leaflet-tile {
+/* .leaflet-tile {
   filter: hue-rotate(180deg) invert(100%);
-}
+} */
 
 .marker-ok {
   width: 20px;
