@@ -36,6 +36,8 @@ namespace Metis.Guard.Entities
         public decimal Latitude { get; set; }
         [BsonElement("longitude")]
         public decimal Longitude { get; set; }
+        [BsonElement("category")]
+        public string Category { get; set; }
 
         [BsonIgnore]
         public List<EmailAddress> EmailAddresses { get; set; }

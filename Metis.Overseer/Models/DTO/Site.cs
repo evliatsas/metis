@@ -12,6 +12,7 @@ namespace Metis.Overseer.Models.DTO
         public string status { get; set; }
         public decimal latitude { get; set; }
         public decimal longitude { get; set; }
+        public string category { get; set; }
         public IEnumerable<Page> pages { get; set; }
 
         public Site() { }
@@ -23,13 +24,15 @@ namespace Metis.Overseer.Models.DTO
             status = watcher.Site.Status.ToString();
             latitude = watcher.Site.Latitude;
             longitude = watcher.Site.Longitude;
-            pages = watcher.Site.Pages.Select(page => 
-                new DTO.Page() {
+            category = watcher.Site.Category;
+            pages = watcher.Site.Pages.Select(page =>
+                new DTO.Page()
+                {
                     name = page.Title,
                     uri = page.Uri,
                     status = page.Status.ToString(),
                     guard = watcher.GetPageWorkerStatus(page.Uri).ToString()
-            });
+                });
         }
     }
 }
