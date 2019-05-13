@@ -10,27 +10,34 @@ import MapSiteDetails from './MapSiteDetails'
 
 const HUB_URL = `${process.env.REACT_APP_API_URL}/guard`
 
+const statusColor = {
+  Alarm: '#f5222d',
+  Ok: '#52c41a',
+  NotFound: '#1890ff',
+  Maintenance: '#faad14',
+  Selected: 'cyan'
+}
+
 const MapContainer = () => {
   const hub = useRef(null)
   const [sites, setSites] = useState([])
   const [messages, setMessages] = useState([])
   const [selected, setSelected] = useState(null)
-  const [selectedSite, setSelectedSite] = useState(null)
 
   function getSites() {
     api.get('/api/sites').then(res => setSites(res))
   }
 
   async function onMaintenanceStart() {
-    console.log('starting maintenace for', selectedSite.name)
-    await api.get(`/api/sites/${selected}/maintenance/start`)
+    console.log('starting maintenace for', selected.name)
+    await api.get(`/api/sites/${selected.id}/maintenance/start`)
     console.log('maintenance started')
     getSites()
   }
 
   async function onMaintenanceStop() {
-    console.log('stopping maintenace for', selectedSite.name)
-    await api.get(`/api/sites/${selected}/maintenance/stop`)
+    console.log('stopping maintenace for', selected.name)
+    await api.get(`/api/sites/${selected.id}/maintenance/stop`)
     console.log('maintenance stopped')
     getSites()
   }
@@ -69,15 +76,17 @@ const MapContainer = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  useEffect(() => {
-    setSelectedSite(selected ? sites.find(x => x.id === selected) : null)
-  }, [sites, selected])
-
   return (
     <div style={{ height: '100%' }}>
       <AntdRow style={{ height: '100%' }}>
         <AntdCol xxl={20} xl={19} lg={18} md={16} style={{ height: '100%' }}>
-          <Map sites={sites} onSelect={setSelected} />
+          <Map
+            sites={sites}
+            selected={selected}
+            onSelect={setSelected}
+            zoom={9}
+            style={{ height: '100%' }}
+          />
         </AntdCol>
         <AntdCol
           xxl={4}
@@ -88,11 +97,13 @@ const MapContainer = () => {
           <MapSiteList
             sites={sites}
             onSelect={setSelected}
+            statusColor={statusColor}
             style={{ flexGrow: 1 }}
           />
-          {selectedSite && (
+          {selected && (
             <MapSiteDetails
-              site={selectedSite}
+              site={selected}
+              statusColor={statusColor}
               onClose={() => setSelected(null)}
               onMaintenanceStart={onMaintenanceStart}
               onMaintenanceStop={onMaintenanceStop}
@@ -100,7 +111,7 @@ const MapContainer = () => {
           )}
         </AntdCol>
       </AntdRow>
-      <MapAlarms alarms={messages} />
+      <MapAlarms alarms={messages} statusColor={statusColor} />
     </div>
   )
 }

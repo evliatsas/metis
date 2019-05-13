@@ -1,7 +1,6 @@
 import React from 'react'
 import { Typography as AntdTypography, Icon as AntdIcon } from 'antd'
 import classes from './Map.module.sass'
-import { statusColor } from './mapBuilder'
 
 const StartOrStopMaintenanceButton = ({
   site,
@@ -27,6 +26,7 @@ const StartOrStopMaintenanceButton = ({
 const MapSiteDetails = ({
   site,
   onClose,
+  statusColor,
   onMaintenanceStart,
   onMaintenanceStop
 }) => {

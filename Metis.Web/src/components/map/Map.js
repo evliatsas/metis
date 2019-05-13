@@ -1,99 +1,52 @@
-import React, { useEffect, useState } from 'react'
-import { Map as OLMap, View as OLView, Feature as OLFeature } from 'ol'
-import { Vector as OLVectorSource } from 'ol/source'
-import { Vector as OLVectorLayer } from 'ol/layer'
-import { fromLonLat as OLfromLonLat } from 'ol/proj'
-import { Style as OLStyle, Icon as OLIcon } from 'ol/style'
-import { Point as OLPoint } from 'ol/geom'
-import Select from 'ol/interaction/Select'
-import { apply } from 'ol-mapbox-style'
-import darklayer from './darklayer.json'
-import dot from '../../assets/dot.png'
+import React from 'react'
+import {
+  Map as LeafletMap,
+  TileLayer as LeafletTileLayer,
+  Marker as LeafletMarker
+  //Popup as LeafletPopup
+} from 'react-leaflet'
+import leaflet from 'leaflet'
+import './map.css'
 
-const statusColor = {
-  Alarm: '#f5222d',
-  Ok: '#52c41a',
-  NotFound: '#1890ff',
-  Maintenance: '#faad14',
-  Selected: 'cyan'
+const TILE_LAYERS = {
+  DARK: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
+  LIGHT: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 }
 
-function siteToMarker(site) {
-  const marker = new OLFeature({
-    geometry: new OLPoint(OLfromLonLat([site.longitude, site.latitude])),
-    label: site.name
-  })
-  marker.setId(site.id)
-  marker.set('status', site.status)
-  marker.setStyle(
-    new OLStyle({
-      image: new OLIcon({
-        color: statusColor[site.status],
-        src: dot
-      })
-    })
+const MAP_CENTER = {
+  lat: 38.0,
+  lng: 25.0
+}
+
+const statusClass = {
+  Alarm: 'marker-alarm',
+  Ok: 'marker-ok',
+  NotFound: 'marker-alamr',
+  Maintenance: 'marker-maintenance',
+  Selected: 'marker-selected'
+}
+
+const Map = ({ sites, selected, onSelect }) => {
+  return (
+    <LeafletMap center={MAP_CENTER} zoom={7} className="map">
+      <LeafletTileLayer url={TILE_LAYERS.LIGHT} />
+      {sites.map(site => (
+        <LeafletMarker
+          key={site.id}
+          position={{ lat: site.latitude, lng: site.longitude }}
+          icon={
+            new leaflet.DivIcon({
+              className:
+                selected && selected.id === site.id
+                  ? 'marker-selected'
+                  : statusClass[site.status]
+            })
+          }
+          onclick={() => onSelect(site)}
+        />
+      ))}
+    </LeafletMap>
   )
-  return marker
-}
-
-const Map = ({ sites, onSelect }) => {
-  const [map, setMap] = useState(null)
-  const [layer, setLayer] = useState(null)
-
-  useEffect(() => {
-    if (map) {
-      return
-    }
-    setTimeout(() => {
-      const _map = new OLMap({
-        target: 'map',
-        controls: [],
-        view: new OLView({
-          center: OLfromLonLat([27.0, 38.0]),
-          zoom: 7
-        })
-      })
-
-      apply(_map, darklayer)
-
-      const _layer = new OLVectorLayer({
-        source: new OLVectorSource({ features: [] })
-      })
-      _map.addLayer(_layer)
-      _layer.setZIndex(10)
-
-      if (onSelect) {
-        const _select = new Select({ layers: [_layer] })
-        _map.addInteraction(_select)
-
-        _select.on('select', evt => {
-          const marker = _select.getFeatures().getArray()[0]
-          const key = marker && marker.getId()
-          onSelect(key)
-        })
-      }
-
-      setMap(_map)
-      setLayer(_layer)
-    }, 100)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [map])
-
-  useEffect(() => {
-    if (!layer || !sites) {
-      return
-    }
-    const markers = sites
-      .filter(x => x.latitude > 0)
-      .map(site => siteToMarker(site))
-    layer.setSource(null)
-    layer.setSource(new OLVectorSource({ features: markers }))
-    layer.getSource().refresh({ force: true })
-    map.updateSize()
-    console.log('should have refreshed')
-  }, [layer, sites, map])
-
-  return <div id="map" style={{ height: '100%' }} />
 }
 
 export default Map

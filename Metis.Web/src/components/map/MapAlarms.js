@@ -1,11 +1,8 @@
 import React, { useRef, useState } from 'react'
-import { Icon as AntdIcon, Divider as AntdDivider } from 'antd'
+import { Icon as AntdIcon } from 'antd'
 import classes from './Map.module.sass'
-import { statusColor } from './mapBuilder'
 
-// `${site.name}: ${message.previousStatus} -> ${message.currentStatus}`
-
-const MapAlarm = ({ alarm, isExpanded }) => (
+const MapAlarm = ({ alarm, isExpanded, statusColor }) => (
   <p style={{ fontSize: 12, fontWeight: 'bolder' }}>
     <span style={{ color: statusColor[alarm.currentStatus] }}>
       [{new Date().toLocaleTimeString('el-GR')}]
@@ -22,7 +19,7 @@ const MapAlarm = ({ alarm, isExpanded }) => (
   </p>
 )
 
-const MapAlarms = ({ alarms }) => {
+const MapAlarms = ({ alarms, statusColor }) => {
   const containerRef = useRef(null)
   const [isExpanded, setIsExpanded] = useState(false)
 
@@ -61,7 +58,12 @@ const MapAlarms = ({ alarms }) => {
           )}
         </div>
         {alarms.map((alarm, idx) => (
-          <MapAlarm key={idx} alarm={alarm} isExpanded={isExpanded} />
+          <MapAlarm
+            key={idx}
+            alarm={alarm}
+            isExpanded={isExpanded}
+            statusColor={statusColor}
+          />
         ))}
       </div>
     </div>

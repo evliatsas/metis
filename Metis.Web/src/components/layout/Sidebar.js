@@ -6,15 +6,6 @@ import storage from '../../services/storage'
 import { AuthContext } from '../../auth/AuthProvider'
 import './Layout.sass'
 
-const breakpoints = {
-  xs: '480px',
-  sm: '576px',
-  md: '768px',
-  lg: '992px',
-  xl: '1200px',
-  xxl: '1600px'
-}
-
 const Sidebar = ({ collapsed, toggleCollapsed }) => {
   const auth = useContext(AuthContext)
   const isMobile = window.innerWidth <= 760

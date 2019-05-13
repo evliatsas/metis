@@ -1,7 +1,6 @@
 import React from 'react'
 import { Icon as AntdIcon, Select as AntdSelect } from 'antd'
 import classes from './Map.module.sass'
-import { statusColor } from './mapBuilder'
 
 const viewFilter = [
   { id: 0, title: 'ΟΚ' },
@@ -16,10 +15,7 @@ const options = viewFilter.map(o => (
   <AntdSelect.Option key={o.id}>{o.title}</AntdSelect.Option>
 ))
 
-const MapSiteList = ({ sites, onSelect }) => {
-  function handleSelect(site) {
-    onSelect(site.id)
-  }
+const MapSiteList = ({ sites, onSelect, statusColor }) => {
   return (
     <React.Fragment>
       <div className={classes.DropdownInput}>
@@ -38,7 +34,7 @@ const MapSiteList = ({ sites, onSelect }) => {
           <div
             key={site.id}
             className={classes.SiteRow}
-            onClick={() => handleSelect(site)}>
+            onClick={() => onSelect(site)}>
             <AntdIcon
               type={
                 site.status === 'Alarm' ? 'exclamation-circle' : 'info-circle'

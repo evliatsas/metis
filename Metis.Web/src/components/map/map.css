@@ -1,0 +1,35 @@
+.map {
+  height: 100vh;
+}
+
+.leaflet-tile {
+  filter: hue-rotate(180deg) invert(100%);
+}
+
+.marker-ok {
+  width: 20px;
+  height: 20px;
+  background-color: #52c41a;
+  border-radius: 10px;
+}
+
+.marker-maintenance {
+  width: 20px;
+  height: 20px;
+  background-color: #faad14;
+  border-radius: 10px;
+}
+
+.marker-alarm {
+  width: 20px;
+  height: 20px;
+  background-color: #f5222d;
+  border-radius: 10px;
+}
+
+.marker-selected {
+  width: 20px;
+  height: 20px;
+  background-color: cyan;
+  border-radius: 10px;
+}
