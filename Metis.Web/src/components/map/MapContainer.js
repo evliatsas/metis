@@ -1,23 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Row as AntdRow, Col as AntdCol } from 'antd'
 import hubConnectionBuilder from '../../services/hubConnectionBuilder'
-
+import { HUB_URL } from './mapUtilities'
 import api from '../../services/api'
 import Map from './Map'
 import MapAlarms from './MapAlarms'
 import MapSiteList from './MapSiteList'
 import MapSiteDetails from './MapSiteDetails'
-
-const HUB_URL = `${process.env.REACT_APP_API_URL}/guard`
-
-const statusColor = {
-  Alarm: '#f5222d',
-  Ok: '#52c41a',
-  NotFound: '#1890ff',
-  Maintenance: '#faad14',
-  Selected: 'cyan',
-  Pending: 'yellow'
-}
 
 const MapContainer = () => {
   const hub = useRef(null)
@@ -115,13 +104,11 @@ const MapContainer = () => {
           <MapSiteList
             sites={sites}
             onSelect={setSelected}
-            statusColor={statusColor}
             style={{ flexGrow: 1 }}
           />
           {selected && (
             <MapSiteDetails
               site={selected}
-              statusColor={statusColor}
               onClose={() => setSelected(null)}
               onMaintenanceStart={onMaintenanceStart}
               onMaintenanceStop={onMaintenanceStop}
@@ -129,14 +116,14 @@ const MapContainer = () => {
           )}
         </AntdCol>
       </AntdRow>
-      <MapAlarms alarms={messages} statusColor={statusColor} />
+      <MapAlarms alarms={messages} />
       <svg hidden>
         <filter id="map-filter">
           <feColorMatrix
             type="matrix"
-            values="0.1 0 0 0 0
-                    0 0.5 0 0 0
-                    0 0 0.5 0 0
+            values="0.2 0 0 0 0
+                    0 0.3 0 0 0
+                    0 0 0.4 0 0
                     0 0 0 1 0"
           />
         </filter>

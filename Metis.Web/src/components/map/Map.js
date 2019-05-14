@@ -6,19 +6,7 @@ import {
 } from 'react-leaflet'
 import leaflet from 'leaflet'
 import './map.css'
-
-const TILE_LAYERS = {
-  LIGHT:
-    'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
-  LIGHT_LABELS: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-  DARK: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
-  DARK_LABELS: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-}
-
-const MAP_CENTER = {
-  lat: 38.0,
-  lng: 25.0
-}
+import { MAP_CENTER, TILE_LAYERS } from './mapUtilities'
 
 const Map = ({ sites, selected, onSelect }) => {
   return (

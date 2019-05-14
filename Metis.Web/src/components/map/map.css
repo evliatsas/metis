@@ -12,6 +12,10 @@
   border: none;
 }
 
+.leaflet-control-attribution {
+  display: none;
+}
+
 .marker-ok {
   width: 20px;
   height: 20px;

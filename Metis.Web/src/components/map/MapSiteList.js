@@ -1,36 +1,51 @@
-import React from 'react'
-import { Icon as AntdIcon, Select as AntdSelect } from 'antd'
+import React, { useState, useEffect } from 'react'
+import { Icon as AntdIcon, Input as AntdInput } from 'antd'
+import MapSiteListFilter from './MapSiteListFilter'
 import classes from './Map.module.sass'
+import { FILTER, statusColor, applyFilter } from './mapUtilities'
 
-const viewFilter = [
-  { id: 0, title: 'ΟΚ' },
-  { id: 1, title: 'Maintenance' },
-  { id: 2, title: 'Alarm' },
-  { id: 3, title: 'NotFound' }
-]
-const handleChange = value => {
-  console.log(`selected ${value}`)
-}
-const options = viewFilter.map(o => (
-  <AntdSelect.Option key={o.id}>{o.title}</AntdSelect.Option>
-))
+const MapSiteList = ({ sites, onSelect }) => {
+  const [filter, setFilter] = useState([...FILTER])
+  const [filterText, setFilterText] = useState('')
+  const [filtered, setFiltered] = useState([])
 
-const MapSiteList = ({ sites, onSelect, statusColor }) => {
+  function handleFilterChange(f) {
+    setFilter(prevFilter => {
+      const idx = prevFilter.findIndex(x => x.key === f.key)
+      prevFilter[idx] = f
+      return [...prevFilter]
+    })
+  }
+
+  useEffect(() => {
+    const _filtered = sites.filter(site =>
+      applyFilter(site, filter, filterText)
+    )
+    setFiltered(_filtered)
+  }, [sites, filter, filterText])
+
   return (
     <React.Fragment>
-      <div className={classes.DropdownInput}>
-        <AntdSelect
-          dropdownClassName={classes.Dropdown}
-          mode="tags"
-          style={{ width: '100%' }}
-          placeholder="Επιλέξτε Προβολή"
-          onChange={handleChange}
-          allowClear={true}>
-          {options}
-        </AntdSelect>
+      <MapSiteListFilter filter={filter} onFilterChange={handleFilterChange} />
+      <div className={classes.SiteListHeader}>
+        <div style={{ flexGrow: 1, padding: '6px' }}>
+          <AntdInput
+            prefix={<AntdIcon type="search" />}
+            value={filterText}
+            onChange={evt => setFilterText(evt.target.value.toLowerCase())}
+          />
+        </div>
+        <div
+          style={{
+            padding: '6px',
+            display: 'flex',
+            alignItems: 'center'
+          }}>
+          ({filtered.length}/{sites.length})
+        </div>
       </div>
       <div className={classes.StatusContainer}>
-        {sites.map(site => (
+        {filtered.map(site => (
           <div
             key={site.id}
             className={classes.SiteRow}
@@ -42,7 +57,9 @@ const MapSiteList = ({ sites, onSelect, statusColor }) => {
               theme="twoTone"
               twoToneColor={statusColor[site.status]}
             />
-            <span className="is-link">{' ' + site.name}</span>
+            <span className="is-link" style={{ marginLeft: '5px' }}>
+              {site.name}
+            </span>
           </div>
         ))}
       </div>

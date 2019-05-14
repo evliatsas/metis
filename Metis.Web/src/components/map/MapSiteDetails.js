@@ -1,6 +1,11 @@
 import React from 'react'
-import { Typography as AntdTypography, Icon as AntdIcon } from 'antd'
+import {
+  Typography as AntdTypography,
+  Icon as AntdIcon,
+  Tag as AntdTag
+} from 'antd'
 import classes from './Map.module.sass'
+import { FILTER, statusColor } from './mapUtilities'
 
 const StartOrStopMaintenanceButton = ({
   site,
@@ -26,27 +31,34 @@ const StartOrStopMaintenanceButton = ({
 const MapSiteDetails = ({
   site,
   onClose,
-  statusColor,
   onMaintenanceStart,
   onMaintenanceStop
 }) => {
   return (
     <div className={classes.SiteView}>
       <AntdTypography.Title level={4} className={classes.SiteViewHeader}>
-        {site.name}
-        <span className="is-right is-link" onClick={onClose}>
+        <span style={{ flexGrow: 1 }}>{site.name}</span>
+        <span className="is-link" onClick={onClose}>
           <AntdIcon type="close" />
         </span>
       </AntdTypography.Title>
+      <div style={{ padding: '10px' }}>
+        <AntdTag color={FILTER.find(x => x.key === site.category).color}>
+          {site.category}
+        </AntdTag>
+        <AntdTag color={FILTER.find(x => x.key === site.status).color}>
+          {site.status}
+        </AntdTag>
+      </div>
       <AntdTypography.Paragraph className={classes.SiteViewParagraph}>
-        <span style={{ fontSize: 18 }}>
+        {/* <span style={{ fontSize: 18 }}>
           <AntdIcon
             type="environment"
             theme="twoTone"
             twoToneColor={statusColor[site.status]}
           />{' '}
           Status {site.status}
-        </span>
+        </span> */}
         <div style={{ marginTop: 10 }}>
           <AntdTypography.Text>Σελίδες</AntdTypography.Text>
         </div>
