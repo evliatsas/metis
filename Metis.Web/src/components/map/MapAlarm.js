@@ -1,6 +1,7 @@
 import React from 'react'
+import { statusColor } from './mapUtilities'
 
-const MapAlarm = ({ alarm, isExpanded, statusColor }) => (
+const MapAlarm = ({ alarm, isExpanded }) => (
   <p style={{ fontSize: 12, fontWeight: 'bolder' }}>
     <span style={{ color: statusColor[alarm.currentStatus] }}>
       [{new Date().toLocaleTimeString('el-GR')}]

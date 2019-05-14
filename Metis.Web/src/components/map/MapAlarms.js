@@ -42,12 +42,7 @@ const MapAlarms = ({ alarms, statusColor }) => {
           )}
         </div>
         {alarms.map((alarm, idx) => (
-          <MapAlarm
-            key={idx}
-            alarm={alarm}
-            isExpanded={isExpanded}
-            statusColor={statusColor}
-          />
+          <MapAlarm key={idx} alarm={alarm} isExpanded={isExpanded} />
         ))}
       </div>
     </div>
