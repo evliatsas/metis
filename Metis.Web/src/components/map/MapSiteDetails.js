@@ -5,7 +5,7 @@ import {
   Tag as AntdTag
 } from 'antd'
 import classes from './Map.module.sass'
-import { FILTER, statusColor } from './mapUtilities'
+import { FILTER } from './mapUtilities'
 
 const StartOrStopMaintenanceButton = ({
   site,
@@ -42,7 +42,7 @@ const MapSiteDetails = ({
           <AntdIcon type="close" />
         </span>
       </AntdTypography.Title>
-      <div style={{ padding: '10px' }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <AntdTag color={FILTER.find(x => x.key === site.category).color}>
           {site.category}
         </AntdTag>
@@ -51,17 +51,7 @@ const MapSiteDetails = ({
         </AntdTag>
       </div>
       <AntdTypography.Paragraph className={classes.SiteViewParagraph}>
-        {/* <span style={{ fontSize: 18 }}>
-          <AntdIcon
-            type="environment"
-            theme="twoTone"
-            twoToneColor={statusColor[site.status]}
-          />{' '}
-          Status {site.status}
-        </span> */}
-        <div style={{ marginTop: 10 }}>
-          <AntdTypography.Text>Σελίδες</AntdTypography.Text>
-        </div>
+        <AntdTypography.Text>Σελίδες</AntdTypography.Text>
         <ul>
           {site.pages.map((s, i) => (
             <li key={i}>
