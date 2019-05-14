@@ -130,6 +130,17 @@ const MapContainer = () => {
         </AntdCol>
       </AntdRow>
       <MapAlarms alarms={messages} statusColor={statusColor} />
+      <svg hidden>
+        <filter id="map-filter">
+          <feColorMatrix
+            type="matrix"
+            values="0.1 0 0 0 0
+                    0 0.5 0 0 0
+                    0 0 0.5 0 0
+                    0 0 0 1 0"
+          />
+        </filter>
+      </svg>
     </div>
   )
 }

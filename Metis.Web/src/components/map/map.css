@@ -2,9 +2,15 @@
   height: 100vh;
 }
 
-/* .leaflet-tile {
-  filter: hue-rotate(180deg) invert(100%);
-} */
+.leaflet-tile {
+  filter: url(#map-filter);
+}
+
+.leaflet-control > a {
+  background-color: #3b3b3b;
+  color: #2abbbb;
+  border: none;
+}
 
 .marker-ok {
   width: 20px;
@@ -25,11 +31,11 @@
   height: 20px;
   background-color: #f5222d;
   border-radius: 10px;
+  transition: transform 0.8s;
 }
 
 .marker-selected {
-  width: 20px;
-  height: 20px;
-  background-color: cyan;
-  border-radius: 10px;
+  border: 1px solid white;
+  border-radius: 0;
+  transform: scale(1.25);
 }

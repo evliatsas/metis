@@ -3,14 +3,16 @@ import {
   Map as LeafletMap,
   TileLayer as LeafletTileLayer,
   Marker as LeafletMarker
-  //Popup as LeafletPopup
 } from 'react-leaflet'
 import leaflet from 'leaflet'
 import './map.css'
 
 const TILE_LAYERS = {
+  LIGHT:
+    'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+  LIGHT_LABELS: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
   DARK: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
-  LIGHT: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+  DARK_LABELS: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
 }
 
 const MAP_CENTER = {
@@ -18,18 +20,10 @@ const MAP_CENTER = {
   lng: 25.0
 }
 
-const statusClass = {
-  Alarm: 'marker-alarm',
-  Ok: 'marker-ok',
-  NotFound: 'marker-alamr',
-  Maintenance: 'marker-maintenance',
-  Selected: 'marker-selected'
-}
-
 const Map = ({ sites, selected, onSelect }) => {
   return (
     <LeafletMap center={MAP_CENTER} zoom={7} className="map">
-      <LeafletTileLayer url={TILE_LAYERS.DARK} />
+      <LeafletTileLayer url={TILE_LAYERS.LIGHT} />
       {sites
         .filter(x => x.latitude > 0)
         .map(site => (
@@ -38,10 +32,9 @@ const Map = ({ sites, selected, onSelect }) => {
             position={{ lat: site.latitude, lng: site.longitude }}
             icon={
               new leaflet.DivIcon({
-                className:
-                  selected && selected.id === site.id
-                    ? 'marker-selected'
-                    : statusClass[site.status]
+                className: `marker-${site.status.toLowerCase()}${
+                  selected && selected.id === site.id ? ' marker-selected' : ''
+                }`
               })
             }
             onclick={() => onSelect(site)}
