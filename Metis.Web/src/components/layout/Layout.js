@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import { AuthContext } from '../../auth/AuthProvider'
+import { AuthContext } from '../../contexts/AuthProvider'
 import Navbar from './Navbar'
 import { Layout as AntdLayout } from 'antd'
 import Sidebar from './Sidebar'

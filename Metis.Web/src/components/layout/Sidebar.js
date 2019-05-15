@@ -3,7 +3,7 @@ import { Layout as AntdLayout, Menu as AntdMenu, Icon as AntdIcon } from 'antd'
 import { NavLink } from 'react-router-dom'
 import logo from '../../assets/logo.png'
 import storage from '../../services/storage'
-import { AuthContext } from '../../auth/AuthProvider'
+import { AuthContext } from '../../contexts/AuthProvider'
 import './Layout.sass'
 
 const Sidebar = ({ collapsed, toggleCollapsed }) => {

@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react'
-import { AuthContext } from '../../auth/AuthProvider'
+import { AuthContext } from '../../contexts/AuthProvider'
 import {
   Form as AntdForm,
   Icon as AntdIcon,

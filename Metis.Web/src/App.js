@@ -1,7 +1,7 @@
 import React, { Suspense, useContext } from 'react'
 import { withRouter } from 'react-router-dom'
 import LayoutContainer from './components/layout/Layout'
-import { AuthContext } from './auth/AuthProvider'
+import { AuthContext } from './contexts/AuthProvider'
 import { Authorizedroutes, UnauthorizedRoutes } from './components/Routes'
 import 'moment/locale/el'
 import './styles/Utilities.sass'

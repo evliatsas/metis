@@ -1,0 +1,43 @@
+.logbooks-table {
+  flex-grow: 1;
+  margin: 20px;
+  max-width: 1024px;
+}
+
+.logbooks-card-list {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.logbook-card-list-divider {
+  padding: 10px;
+}
+
+.logbook-card-list-divider::before,
+.logbook-card-list-divider::after {
+  border-top: 2px solid #262d2d !important;
+}
+
+.logbook-card {
+  margin: 10px;
+  width: 80%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+}
+
+.logbook-card > .ant-card-body {
+  flex-grow: 1;
+}
+
+.logbook-card > .ant-card-actions {
+  background-color: #262d2d;
+  border-color: #3b3b3b;
+}
+.logbook-card > .ant-card-actions > li {
+  border-color: #3b3b3b;
+  color: #2abbbb;
+}
