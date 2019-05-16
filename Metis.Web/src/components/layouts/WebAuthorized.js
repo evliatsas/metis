@@ -4,6 +4,7 @@ import { Layout as AntdLayout } from 'antd'
 import WebSidebar from './WebSidebar'
 
 const Map = lazy(() => import('../map/WebMapLayout'))
+const LogBooks = lazy(() => import('../logBooks/LogBooks'))
 
 const WebAuthorized = () => {
   return (
@@ -14,6 +15,7 @@ const WebAuthorized = () => {
           <Suspense fallback={<div>Loading...</div>}>
             <Switch>
               <Route exact path="/map" component={Map} />
+              <Route exact path="/logbooks" component={LogBooks} />
               <Redirect to="/map" />
             </Switch>
           </Suspense>

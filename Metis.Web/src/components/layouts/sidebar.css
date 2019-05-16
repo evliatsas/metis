@@ -1,0 +1,19 @@
+.sidebar-menu {
+  border-right: unset;
+}
+
+.sidebar-logout:hover {
+  color: red;
+}
+
+.sidebar-menu-item:hover {
+  background-color: #3b3b3b;
+}
+
+.sidebar-version {
+  margin-top: 20px;
+  color: unset;
+  border-top: 2px solid #3b3b3b;
+  border-bottom: 2px solid #3b3b3b;
+  padding: 2px 8px;
+}

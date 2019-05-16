@@ -35,14 +35,6 @@ select:-webkit-autofill:focus {
   -webkit-text-fill-color: #2abbbb;
 }
 
-.sidebar-menu {
-  border-right: unset;
-}
-
-.sidebar-logout:hover {
-  color: red;
-}
-
 .is-link {
   cursor: pointer;
 }

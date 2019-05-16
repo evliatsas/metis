@@ -8,12 +8,20 @@ import {
 } from 'antd'
 import { AuthContext } from '../../contexts/AuthProvider'
 import logo from '../../assets/logo.png'
+import './sidebar.css'
+
+const VERSION = process.env.REACT_APP_VERSION
 
 const items = [
   {
     path: '/map',
     icon: 'global',
-    caption: 'Map'
+    caption: 'Χάρτης'
+  },
+  {
+    path: '/logbooks',
+    icon: 'notification',
+    caption: 'Συμβάντα'
   }
 ]
 
@@ -25,11 +33,14 @@ const Sidebar = () => {
         <div
           style={{
             display: 'flex',
-            justifyContent: 'center',
-            margin: '20px 0px 40px 0px'
+            flexDirection: 'column',
+            alignItems: 'center',
+            margin: '20px 0px 60px 0px'
           }}>
           <AntdAvatar size={48} src={logo} alt="metis" />
+          <span className="sidebar-version">{VERSION}</span>
         </div>
+
         <AntdMenu selectable={false} mode="vertical" className="sidebar-menu">
           {items.map(item => (
             <AntdMenu.Item key={item.path} className="sidebar-menu-item">

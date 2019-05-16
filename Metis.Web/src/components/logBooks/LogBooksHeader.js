@@ -20,6 +20,7 @@ const LogBooksHeader = ({ onBack, onCreate }) => {
           {STRINGS.NEW}
         </AntdButton>
       }
+      className="logbooks-header"
     />
   )
 }

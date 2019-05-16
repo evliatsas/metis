@@ -1,3 +1,15 @@
+.logbooks-header
+  > .ant-page-header-title-view
+  > .ant-page-header-title-view-title {
+  color: white;
+}
+
+.logbooks-header
+  > .ant-page-header-title-view
+  > .ant-page-header-title-view-sub-title {
+  color: darkgray;
+}
+
 .logbooks-table {
   flex-grow: 1;
   margin: 20px;
