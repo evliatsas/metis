@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { Icon as AntdIcon, Input as AntdInput } from 'antd'
+import {
+  Icon as AntdIcon,
+  Input as AntdInput,
+  Typography as AntdTypography
+} from 'antd'
 import MapSiteListFilter from './MapSiteListFilter'
 import { FILTER, statusColor, applyFilter } from './mapUtilities'
 
@@ -26,7 +30,7 @@ const MapSiteList = ({ sites, onSelect }) => {
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
       <MapSiteListFilter filter={filter} onFilterChange={handleFilterChange} />
-      <div>
+      <div className="map-site-list-header">
         <div style={{ flexGrow: 1, padding: '6px' }}>
           <AntdInput
             prefix={<AntdIcon type="search" />}
@@ -43,7 +47,7 @@ const MapSiteList = ({ sites, onSelect }) => {
           ({filtered.length}/{sites.length})
         </div>
       </div>
-      <div style={{ height: '100%', overflowY: 'scroll' }}>
+      <div className="map-site-list">
         {filtered.map(site => (
           <div key={site.id} onClick={() => onSelect(site)}>
             <AntdIcon
@@ -53,9 +57,9 @@ const MapSiteList = ({ sites, onSelect }) => {
               theme="twoTone"
               twoToneColor={statusColor[site.status]}
             />
-            <span className="is-link" style={{ marginLeft: '5px' }}>
+            <AntdTypography.Text className="map-site-list-item">
               {site.name}
-            </span>
+            </AntdTypography.Text>
           </div>
         ))}
       </div>

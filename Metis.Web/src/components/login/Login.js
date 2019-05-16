@@ -4,10 +4,7 @@ import {
   Input as AntdInput,
   Icon as AntdIcon,
   Button as AntdButton,
-  Comment as AntdComment,
-  Typography as AntdTypography,
-  Avatar as AntdAvatar,
-  Divider as AntdDivider
+  Avatar as AntdAvatar
 } from 'antd'
 import { AuthContext } from '../../contexts/AuthProvider'
 import api from '../../services/api'
@@ -51,7 +48,6 @@ const Login = () => {
         />
         <AntdForm
           onSubmit={handleSubmit}
-          autoComplete="off"
           style={{
             padding: '10px',
             marginBottom: '100px',
@@ -62,7 +58,7 @@ const Login = () => {
           <AntdForm.Item>
             <AntdInput
               name="username"
-              //autoComplete="username"
+              autoComplete="username"
               size="large"
               prefix={<AntdIcon type="user" />}
               placeholder={STRINGS.USERNAME_PLACEHOLDER}
@@ -71,7 +67,7 @@ const Login = () => {
             />
             <AntdInput
               name="password"
-              //autoComplete="password"
+              autoComplete="password"
               type="password"
               size="large"
               prefix={<AntdIcon type="user" />}

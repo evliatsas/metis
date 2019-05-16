@@ -3,3 +3,32 @@ body,
 .idDiv {
   height: 100%;
 }
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #192222;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3b3b3b;
+  border-radius: 30%;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.sidebar-menu {
+  border-right: unset;
+}
+
+/* .sidebar-menu-item:hover {
+  background-color: black;
+} */
+
+.sidebar-logout:hover {
+  color: red;
+}

@@ -35,9 +35,12 @@ const MapSiteDetails = ({
 }) => {
   return (
     <div>
-      <AntdTypography.Title level={4}>
-        <span style={{ flexGrow: 1 }}>{site.name}</span>
-        <span className="is-link" onClick={onClose}>
+      <AntdTypography.Title
+        level={4}
+        className="map-site-list-header"
+        style={{ padding: '5px', color: '#2abbbb' }}>
+        <span style={{ flexGrow: 1, color: 'whitesmoke' }}>{site.name}</span>
+        <span onClick={onClose}>
           <AntdIcon type="close" />
         </span>
       </AntdTypography.Title>
@@ -49,7 +52,7 @@ const MapSiteDetails = ({
           {site.status}
         </AntdTag>
       </div>
-      <AntdTypography.Paragraph>
+      <AntdTypography.Paragraph style={{ padding: '10px' }}>
         <AntdTypography.Text>Σελίδες</AntdTypography.Text>
         <ul>
           {site.pages.map((s, i) => (

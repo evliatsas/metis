@@ -63,3 +63,18 @@
 
 .map-alarms-content {
 }
+
+.map-site-list-header {
+  background-color: #262d2d;
+  display: flex;
+}
+.map-site-list {
+  height: 100%;
+  padding: 10px;
+  overflow-y: scroll;
+}
+
+.map-site-list-item {
+  margin-left: 5px;
+  cursor: pointer;
+}

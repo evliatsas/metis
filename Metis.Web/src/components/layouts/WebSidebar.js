@@ -30,9 +30,9 @@ const Sidebar = () => {
           }}>
           <AntdAvatar size={48} src={logo} alt="metis" />
         </div>
-        <AntdMenu selectable={false} mode="vertical">
+        <AntdMenu selectable={false} mode="vertical" className="sidebar-menu">
           {items.map(item => (
-            <AntdMenu.Item key={item.path}>
+            <AntdMenu.Item key={item.path} className="sidebar-menu-item">
               <NavLink to={item.path}>
                 <AntdIcon type={item.icon} />
                 <span>{item.caption}</span>
@@ -41,11 +41,16 @@ const Sidebar = () => {
           ))}
         </AntdMenu>
         <div style={{ flexGrow: '1' }} />
-        <AntdMenu selectable={false} mode="vertical">
+        <AntdMenu
+          selectable={false}
+          mode="vertical"
+          style={{ backgroundColor: 'unset' }}
+          className="sidebar-menu">
           <AntdMenu.Item
             key="/logout"
             onClick={auth.signOut}
-            style={{ justifySelf: 'flex-end' }}>
+            style={{ justifySelf: 'flex-end' }}
+            className="sidebar-logout">
             <span>
               <AntdIcon type="logout" />
               <span>Αποσύνδεση</span>
