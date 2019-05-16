@@ -34,7 +34,7 @@ const WebMapLayoutView = ({
       </div>
       <div
         style={{
-          width: '250px',
+          width: '300px',
           height: '100vh',
           maxHeight: '100vh',
           display: 'flex',

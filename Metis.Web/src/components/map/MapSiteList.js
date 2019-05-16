@@ -49,7 +49,10 @@ const MapSiteList = ({ sites, onSelect }) => {
       </div>
       <div className="map-site-list">
         {filtered.map(site => (
-          <div key={site.id} onClick={() => onSelect(site)}>
+          <div
+            key={site.id}
+            onClick={() => onSelect(site)}
+            style={{ padding: '2px' }}>
             <AntdIcon
               type={
                 site.status === 'Alarm' ? 'exclamation-circle' : 'info-circle'

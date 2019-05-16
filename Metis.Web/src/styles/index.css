@@ -36,4 +36,5 @@ select:-webkit-autofill:focus {
 
 .is-link {
   cursor: pointer;
+  color: #2abbbb;
 }

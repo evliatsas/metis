@@ -1,7 +1,7 @@
 import React from 'react'
 import LogBooksContainer from '../containers/LogBooksContainer'
 import LogBooksHeader from './LogBooksHeader'
-import LogBooksCardList from './LogBooksCardList'
+import LogBooksTable from './LogBooksTable'
 import './logBooks.css'
 
 const LogBooksView = ({ logBooks }) => {
@@ -9,7 +9,7 @@ const LogBooksView = ({ logBooks }) => {
     <div>
       <LogBooksHeader />
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <LogBooksCardList logBooks={logBooks} />
+        <LogBooksTable logBooks={logBooks} />
       </div>
     </div>
   )
