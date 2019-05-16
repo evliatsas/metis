@@ -36,12 +36,6 @@ const Sidebar = ({ collapsed, toggleCollapsed }) => {
           </span>
         </AntdMenu.Item>
         {minimize}
-        <AntdMenu.Item key="2" onClick={isMobile ? toggleCollapsed : null}>
-          <NavLink to="/dashboard">
-            <AntdIcon type="home" />
-            <span>Αρχική</span>
-          </NavLink>
-        </AntdMenu.Item>
         <AntdMenu.Item key="3" onClick={isMobile ? toggleCollapsed : null}>
           <NavLink to="/map">
             <AntdIcon type="global" />

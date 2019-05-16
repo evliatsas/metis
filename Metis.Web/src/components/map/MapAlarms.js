@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { Icon as AntdIcon } from 'antd'
-import classes from './Map.module.sass'
 import MapAlarm from './MapAlarm'
+import './map.css'
 
 const MapAlarms = ({ alarms, statusColor }) => {
   const containerRef = useRef(null)
@@ -20,8 +20,8 @@ const MapAlarms = ({ alarms, statusColor }) => {
   }
 
   return (
-    <div className={classes.AlarmsContainer} ref={containerRef}>
-      <div className={classes.AlarmsContent}>
+    <div className="map-alarms-container" ref={containerRef}>
+      <div className="map-alarms-content">
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           {!isExpanded ? (
             <span className="is-link" onClick={expand}>

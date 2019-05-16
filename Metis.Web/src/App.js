@@ -1,28 +1,15 @@
-import React, { Suspense, useContext } from 'react'
+import React, { useContext } from 'react'
 import { withRouter } from 'react-router-dom'
-import LayoutContainer from './components/layout/Layout'
 import { AuthContext } from './contexts/AuthProvider'
-import { Authorizedroutes, UnauthorizedRoutes } from './components/Routes'
-import 'moment/locale/el'
-import './styles/Utilities.sass'
-
-const Routes = () => {
-  const authContext = useContext(AuthContext)
-  return authContext.isAuthenticated ? (
-    <Authorizedroutes />
-  ) : (
-    <UnauthorizedRoutes />
-  )
-}
+import WebUnauthorized from './components/layouts/WebUnauthorized'
+import WebAuthorized from './components/layouts/WebAuthorized'
 
 const App = () => {
-  return (
-    <LayoutContainer className="is-fullheight">
-      <Suspense fallback={<p>Loading...</p>}>
-        <Routes />
-      </Suspense>
-    </LayoutContainer>
-  )
+  const auth = useContext(AuthContext)
+  if (!auth.isAuthenticated) {
+    return <WebUnauthorized />
+  }
+  return <WebAuthorized />
 }
 
 export default withRouter(App)

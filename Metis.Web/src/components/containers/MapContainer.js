@@ -1,14 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Row as AntdRow, Col as AntdCol } from 'antd'
 import hubConnectionBuilder from '../../services/hubConnectionBuilder'
-import { HUB_URL } from './mapUtilities'
+import { HUB_URL } from '../map/mapUtilities'
 import api from '../../services/api'
-import Map from './Map'
-import MapAlarms from './MapAlarms'
-import MapSiteList from './MapSiteList'
-import MapSiteDetails from './MapSiteDetails'
 
-const MapContainer = () => {
+const MapContainer = ({ children }) => {
   const hub = useRef(null)
   const [sites, setSites] = useState([])
   const [messages, setMessages] = useState([])
@@ -83,73 +78,16 @@ const MapContainer = () => {
     })
   }, [alarm])
 
-  return (
-    <div style={{ height: '100vh', display: 'flex' }}>
-      <div style={{ flexGrow: 1 }}>
-        <Map
-          sites={sites}
-          selected={selected}
-          onSelect={setSelected}
-          zoom={9}
-          style={{ height: '100vh' }}
-        />
-        <svg hidden>
-          <filter id="map-filter">
-            <feColorMatrix
-              type="matrix"
-              values="0.2 0 0 0 0
-                    0 0.3 0 0 0
-                    0 0 0.4 0 0
-                    0 0 0 1 0"
-            />
-          </filter>
-        </svg>
-      </div>
-      <div style={{ width: '250px', height: '100vh' }}>
-        <MapSiteList
-          sites={sites}
-          onSelect={setSelected}
-          style={{ flexGrow: 1 }}
-        />
-      </div>
-      <MapAlarms alarms={messages} />
-    </div>
-  )
-
-  return (
-    <div style={{ height: '100%' }}>
-      <AntdRow style={{ height: '100%' }}>
-        <AntdCol style={{ height: '100%' }} />
-        <AntdCol
-          style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-          <MapSiteList
-            sites={sites}
-            onSelect={setSelected}
-            style={{ flexGrow: 1 }}
-          />
-          {selected && (
-            <MapSiteDetails
-              site={selected}
-              onClose={() => setSelected(null)}
-              onMaintenanceStart={onMaintenanceStart}
-              onMaintenanceStop={onMaintenanceStop}
-            />
-          )}
-        </AntdCol>
-      </AntdRow>
-      <MapAlarms alarms={messages} />
-      <svg hidden>
-        <filter id="map-filter">
-          <feColorMatrix
-            type="matrix"
-            values="0.2 0 0 0 0
-                    0 0.3 0 0 0
-                    0 0 0.4 0 0
-                    0 0 0 1 0"
-          />
-        </filter>
-      </svg>
-    </div>
+  return React.Children.map(children, child =>
+    React.cloneElement(child, {
+      sites,
+      messages,
+      alarm,
+      selected,
+      setSelected,
+      onMaintenanceStart,
+      onMaintenanceStop
+    })
   )
 }
 

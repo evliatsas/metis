@@ -43,3 +43,23 @@
   border-radius: 0;
   transform: scale(1.25);
 }
+
+.map-alarms-container {
+  position: absolute;
+  bottom: 20px;
+  background: #262d2d;
+  width: 450px;
+  height: 200px;
+  border-radius: 5px;
+  margin-left: 20px;
+  transition: opacity 2s ease-out;
+  opacity: 0.2;
+  z-index: 1100;
+}
+
+.map-alarms-container > span {
+  padding-right: 5px;
+}
+
+.map-alarms-content {
+}

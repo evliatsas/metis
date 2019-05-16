@@ -1,131 +1,102 @@
-import React, { useState, useContext } from 'react'
-import { AuthContext } from '../../contexts/AuthProvider'
+import React, { useContext, useState } from 'react'
 import {
   Form as AntdForm,
-  Icon as AntdIcon,
   Input as AntdInput,
+  Icon as AntdIcon,
   Button as AntdButton,
-  Row as AntdRow,
-  Col as AntdCol,
-  Typography as AntdTypography,
-  Divider as AntdDivider,
   Comment as AntdComment,
-  Avatar as AntdAvatar
+  Typography as AntdTypography,
+  Avatar as AntdAvatar,
+  Divider as AntdDivider
 } from 'antd'
+import { AuthContext } from '../../contexts/AuthProvider'
 import api from '../../services/api'
 import logo from '../../assets/logo.png'
-import '../../styles/Utilities.sass'
-import './Login.sass'
+import './login.css'
+
+const STRINGS = {
+  USERNAME_PLACEHOLDER: 'όνομα χρήστη',
+  PASSWORD_PLACEHOLDER: 'κωδικός',
+  LOGIN_BUTTON: 'Είσοδος'
+}
 
 const Login = () => {
-  const authContext = useContext(AuthContext)
-  const [loginModel, setLoginModel] = useState({
-    username: '',
-    password: ''
-  })
+  const auth = useContext(AuthContext)
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
 
-  const inputsHandler = e => {
-    setLoginModel({
-      ...loginModel,
-      [e.target.name]: e.target.value
-    })
-  }
-
-  const clearUsernameHandler = () => {
-    setLoginModel({ ...loginModel, username: '' })
-  }
-
-  const loginHandler = async () => {
-    const res = await api.post('/api/token', loginModel)
-
-    if (res && res.token) {
-      authContext.signIn(res.token)
+  async function handleSubmit(evt) {
+    evt.preventDefault()
+    const response = await api.post('/api/token', { username, password })
+    if (response && response.token) {
+      auth.signIn(response.token)
     }
   }
 
-  const clearButton = loginModel.username && (
-    <AntdIcon type="close-circle" onClick={clearUsernameHandler} />
-  )
-
   return (
-    <AntdRow
-      className="is-fullheight"
-      type="flex"
-      justify="center"
-      align="middle">
-      <AntdCol
-        xs={{ span: 0 }}
-        md={{ span: 11 }}
-        xl={{ span: 7 }}
-        xxl={{ span: 5 }}>
-        <AntdComment
-          author={
-            <AntdTypography.Title className="metis-title" level={4}>
-              Metis
-            </AntdTypography.Title>
-          }
-          avatar={<AntdAvatar size={124} src={logo} alt="TODO" />}
-          content={
-            <p className="content-fix">
-              Some text that they will propably provide for use about the
-              application. Otherwise some basic info about what this application
-              does.
-            </p>
-          }
+    <div
+      style={{
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexWrap: 'wrap'
+      }}>
+      <div className="login-form">
+        <AntdAvatar
+          size={196}
+          src={logo}
+          alt="metis"
+          style={{ marginBottom: '100px' }}
         />
-      </AntdCol>
-      <AntdCol xs={{ span: 0 }} md={{ span: 1 }} className="has-text-centered">
-        <AntdDivider type="vertical" className="divider" />
-      </AntdCol>
-
-      <AntdCol
-        xs={{ span: 21 }}
-        md={{ span: 11 }}
-        xl={{ span: 7 }}
-        xxl={{ span: 5 }}>
-        <AntdForm>
-          <AntdTypography.Title className="mb-5" level={2}>
-            Σύνδεση
-          </AntdTypography.Title>
+        <AntdForm
+          onSubmit={handleSubmit}
+          autoComplete="off"
+          style={{
+            padding: '10px',
+            marginBottom: '100px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center'
+          }}>
           <AntdForm.Item>
             <AntdInput
-              placeholder="Συμπληρώστε όνομα χρήστη"
-              size="large"
               name="username"
-              autoComplete="username"
+              //autoComplete="username"
+              size="large"
               prefix={<AntdIcon type="user" />}
-              suffix={clearButton}
-              className="has-text-dark"
-              value={loginModel.username}
-              onChange={inputsHandler}
+              placeholder={STRINGS.USERNAME_PLACEHOLDER}
+              value={username}
+              onChange={evt => setUsername(evt.target.value)}
             />
-          </AntdForm.Item>
-          <AntdForm.Item>
-            <AntdInput.Password
-              autoComplete="password"
-              size="large"
-              className="has-text-dark"
+            <AntdInput
               name="password"
-              prefix={<AntdIcon type="lock" />}
-              value={loginModel.password}
-              onChange={inputsHandler}
-              placeholder="Ο κωδικός σας"
-              onPressEnter={loginHandler}
+              //autoComplete="password"
+              type="password"
+              size="large"
+              prefix={<AntdIcon type="user" />}
+              placeholder={STRINGS.USERNAME_PLACEHOLDER}
+              value={password}
+              onChange={evt => setPassword(evt.target.value)}
             />
           </AntdForm.Item>
-          <AntdForm.Item>
-            <AntdButton
-              type="primary"
-              size="large"
-              onClick={loginHandler}
-              block>
-              {' '}
-              Σύνδεση
-            </AntdButton>
-          </AntdForm.Item>
+          <AntdButton
+            type="primary"
+            htmlType="submit"
+            style={{ width: '100%' }}
+            disabled={
+              !(
+                username &&
+                username.length > 0 &&
+                password &&
+                password.length > 0
+              )
+            }>
+            {STRINGS.LOGIN_BUTTON}
+          </AntdButton>
         </AntdForm>
-      </AntdCol>
-    </AntdRow>
+      </div>
+    </div>
   )
 }
 

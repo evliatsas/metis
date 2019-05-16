@@ -4,7 +4,6 @@ import {
   Icon as AntdIcon,
   Tag as AntdTag
 } from 'antd'
-import classes from './Map.module.sass'
 import { FILTER } from './mapUtilities'
 
 const StartOrStopMaintenanceButton = ({
@@ -35,8 +34,8 @@ const MapSiteDetails = ({
   onMaintenanceStop
 }) => {
   return (
-    <div className={classes.SiteView}>
-      <AntdTypography.Title level={4} className={classes.SiteViewHeader}>
+    <div>
+      <AntdTypography.Title level={4}>
         <span style={{ flexGrow: 1 }}>{site.name}</span>
         <span className="is-link" onClick={onClose}>
           <AntdIcon type="close" />
@@ -50,7 +49,7 @@ const MapSiteDetails = ({
           {site.status}
         </AntdTag>
       </div>
-      <AntdTypography.Paragraph className={classes.SiteViewParagraph}>
+      <AntdTypography.Paragraph>
         <AntdTypography.Text>Σελίδες</AntdTypography.Text>
         <ul>
           {site.pages.map((s, i) => (

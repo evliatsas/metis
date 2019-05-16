@@ -1,10 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter } from 'react-router-dom'
-import './styles/Index.sass'
 import App from './App'
 import AuthProvider from './contexts/AuthProvider'
 import * as serviceWorker from './serviceWorker'
+import './styles/index.css'
 
 const Root = (
   <BrowserRouter>

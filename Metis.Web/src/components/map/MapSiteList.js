@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Icon as AntdIcon, Input as AntdInput } from 'antd'
 import MapSiteListFilter from './MapSiteListFilter'
-import classes from './Map.module.sass'
 import { FILTER, statusColor, applyFilter } from './mapUtilities'
 
 const MapSiteList = ({ sites, onSelect }) => {
@@ -25,9 +24,9 @@ const MapSiteList = ({ sites, onSelect }) => {
   }, [sites, filter, filterText])
 
   return (
-    <React.Fragment>
+    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
       <MapSiteListFilter filter={filter} onFilterChange={handleFilterChange} />
-      <div className={classes.SiteListHeader}>
+      <div>
         <div style={{ flexGrow: 1, padding: '6px' }}>
           <AntdInput
             prefix={<AntdIcon type="search" />}
@@ -44,12 +43,9 @@ const MapSiteList = ({ sites, onSelect }) => {
           ({filtered.length}/{sites.length})
         </div>
       </div>
-      <div className={classes.StatusContainer}>
+      <div style={{ height: '100%', overflowY: 'scroll' }}>
         {filtered.map(site => (
-          <div
-            key={site.id}
-            className={classes.SiteRow}
-            onClick={() => onSelect(site)}>
+          <div key={site.id} onClick={() => onSelect(site)}>
             <AntdIcon
               type={
                 site.status === 'Alarm' ? 'exclamation-circle' : 'info-circle'
@@ -63,7 +59,7 @@ const MapSiteList = ({ sites, onSelect }) => {
           </div>
         ))}
       </div>
-    </React.Fragment>
+    </div>
   )
 }
 
