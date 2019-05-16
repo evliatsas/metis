@@ -3,6 +3,7 @@ import MapContainer from '../containers/MapContainer'
 import Map from './Map'
 import MapSiteList from './MapSiteList'
 import MapSiteDetails from './MapSiteDetails'
+import MapAlarms from './MapAlarms'
 
 const WebMapLayoutView = ({
   sites,
@@ -51,6 +52,7 @@ const WebMapLayoutView = ({
           />
         )}
       </div>
+      <MapAlarms alarms={messages} />
     </div>
   )
 }

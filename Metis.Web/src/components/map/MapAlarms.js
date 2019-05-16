@@ -3,7 +3,7 @@ import { Icon as AntdIcon } from 'antd'
 import MapAlarm from './MapAlarm'
 import './map.css'
 
-const MapAlarms = ({ alarms, statusColor }) => {
+const MapAlarms = ({ alarms }) => {
   const containerRef = useRef(null)
   const [isExpanded, setIsExpanded] = useState(false)
 

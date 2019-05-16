@@ -38,9 +38,9 @@ const MapSiteDetails = ({
       <AntdTypography.Title
         level={4}
         className="map-site-list-header"
-        style={{ padding: '5px', color: '#2abbbb' }}>
+        style={{ padding: '10px', color: '#2abbbb' }}>
         <span style={{ flexGrow: 1, color: 'whitesmoke' }}>{site.name}</span>
-        <span onClick={onClose}>
+        <span onClick={onClose} style={{ cursor: 'pointer' }}>
           <AntdIcon type="close" />
         </span>
       </AntdTypography.Title>
