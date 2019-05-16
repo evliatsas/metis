@@ -19,7 +19,7 @@ export const statusColor = {
   NotFound: '#1890ff',
   Maintenance: '#faad14',
   Selected: 'cyan',
-  Pending: 'yellow'
+  Pending: '#fadb14'
 }
 
 export const FILTER = [
@@ -27,6 +27,7 @@ export const FILTER = [
   { key: 'Alarm', enabled: true, color: statusColor['Alarm'] },
   { key: 'Maintenance', enabled: true, color: statusColor['Maintenance'] },
   { key: 'NotFound', enabled: false, color: statusColor['NotFound'] },
+  { key: 'Pending', enabled: false, color: statusColor['Pending'] },
   { key: 'Δήμοι', enabled: true, color: '#2abbbb' }
 ]
 
