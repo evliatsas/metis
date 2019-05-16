@@ -13,8 +13,7 @@ body,
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #3b3b3b;
-  border-radius: 30%;
+  background: #262d2d;
 }
 
 ::-webkit-scrollbar-thumb:hover {
