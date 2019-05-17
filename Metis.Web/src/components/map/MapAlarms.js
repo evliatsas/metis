@@ -8,7 +8,7 @@ const MapAlarms = ({ alarms }) => {
   const [isExpanded, setIsExpanded] = useState(false)
 
   function expand() {
-    containerRef.current.style.height = 'calc(100% - 40px)'
+    containerRef.current.style.height = 'calc(100% - 100px)'
     containerRef.current.style.width = '60vw'
     setIsExpanded(true)
   }

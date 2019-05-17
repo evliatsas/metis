@@ -25,7 +25,7 @@ const LayoutProvider = ({ children }) => {
     return () => {
       window.removeEventListener('resize', handleResize)
     }
-  }, [auth.isAuthenticated, layout])
+  }, [layout])
 
   useEffect(() => {
     setLayout(prevLayout => ({ ...prevLayout, auth: auth.isAuthenticated }))

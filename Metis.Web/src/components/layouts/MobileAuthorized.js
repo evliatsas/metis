@@ -2,7 +2,7 @@ import React, { lazy, Suspense } from 'react'
 import { Route, Switch, Redirect } from 'react-router-dom'
 import { Layout as AntdLayout } from 'antd'
 
-const Map = lazy(() => import('../map/WebMapLayout'))
+const Map = lazy(() => import('../map/MobileMapLayout'))
 const LogBooks = lazy(() => import('../logBooks/LogBooks'))
 const LogBook = lazy(() => import('../logBooks/LogBook'))
 
