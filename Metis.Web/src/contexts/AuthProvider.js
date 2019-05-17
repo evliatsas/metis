@@ -1,15 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import jwt from 'jsonwebtoken'
 import storage from '../services/storage'
 
 const tokenSuffix = 'token'
 const sessionSuffix = 'auth'
-// The initial values here are only for autocompletion in other components
-export const AuthContext = React.createContext({
-  isAuthenticated: true,
-  signIn: () => {},
-  signOut: () => {}
-})
+
+const AuthContext = React.createContext(null)
 
 const AuthProvider = props => {
   const token = storage.get(tokenSuffix)
@@ -50,5 +46,7 @@ const AuthProvider = props => {
     </AuthContext.Provider>
   )
 }
+
+export const useAuth = () => useContext(AuthContext)
 
 export default AuthProvider

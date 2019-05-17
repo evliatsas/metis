@@ -15,9 +15,7 @@ const columns = [
     title: 'Τίτλος',
     dataIndex: 'name',
     key: 'name',
-    render: (e, row) => (
-      <NavLink to={'/book/monitor/' + row.id}>{row.name}</NavLink>
-    )
+    render: (e, row) => <NavLink to={`/logbooks/${row.id}`}>{row.name}</NavLink>
   },
   {
     title: 'Λήξη',
@@ -51,9 +49,9 @@ const columns = [
     key: 'action',
     render: (e, row) => (
       <span>
-        <NavLink to={'/book/' + row.id}>{STRINGS.EDIT}</NavLink>
+        <NavLink to={`/logbooks/${row.id}/edit`}>{STRINGS.EDIT}</NavLink>
         <AntdDivider type="vertical" />
-        <NavLink to={'/book/monitor/' + row.id}>{STRINGS.VIEW}</NavLink>
+        <NavLink to={`/logbooks/${row.id}`}>{STRINGS.VIEW}</NavLink>
       </span>
     )
   }

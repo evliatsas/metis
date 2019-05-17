@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { NavLink } from 'react-router-dom'
 import {
   Layout as AntdLayout,
@@ -6,7 +6,7 @@ import {
   Icon as AntdIcon,
   Avatar as AntdAvatar
 } from 'antd'
-import { AuthContext } from '../../contexts/AuthProvider'
+import { useAuth } from '../../contexts/AuthProvider'
 import logo from '../../assets/logo.png'
 import './sidebar.css'
 
@@ -26,7 +26,7 @@ const items = [
 ]
 
 const Sidebar = () => {
-  const auth = useContext(AuthContext)
+  const auth = useAuth()
   return (
     <AntdLayout.Sider collapsed={true}>
       <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>

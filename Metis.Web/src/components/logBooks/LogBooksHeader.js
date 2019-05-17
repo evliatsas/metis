@@ -6,7 +6,7 @@ const STRINGS = {
   TITLE: 'Συμβάντα',
   SUBTITLE: 'Σύντομη ανασκόπηση συμβάντων ταξινομημένα κατα ημερομηνία',
   REFRESH: 'Ανανέωση',
-  NEW: 'Προσθήκη Νέου'
+  NEW: 'Νέο Συμβάν'
 }
 
 const LogBooksHeader = ({ onBack, onCreate }) => {
@@ -14,7 +14,7 @@ const LogBooksHeader = ({ onBack, onCreate }) => {
     <AntdPageHeader
       title={STRINGS.TITLE}
       subTitle={STRINGS.SUBTITLE}
-      onBack={() => onBack()}
+      //onBack={() => onBack()}
       extra={
         <AntdButton key="1" type="primary" size="small" onClick={onCreate}>
           {STRINGS.NEW}

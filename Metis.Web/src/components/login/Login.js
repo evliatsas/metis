@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import {
   Form as AntdForm,
   Input as AntdInput,
@@ -6,10 +6,10 @@ import {
   Button as AntdButton,
   Avatar as AntdAvatar
 } from 'antd'
-import { AuthContext } from '../../contexts/AuthProvider'
+import { useAuth } from '../../contexts/AuthProvider'
 import api from '../../services/api'
 import logo from '../../assets/logo.png'
-import './login.css'
+import './login.less'
 
 const STRINGS = {
   USERNAME_PLACEHOLDER: 'όνομα χρήστη',
@@ -18,7 +18,7 @@ const STRINGS = {
 }
 
 const Login = () => {
-  const auth = useContext(AuthContext)
+  const auth = useAuth()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
@@ -31,30 +31,15 @@ const Login = () => {
   }
 
   return (
-    <div
-      style={{
-        height: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexWrap: 'wrap'
-      }}>
+    <div className="login-container">
       <div className="login-form">
         <AntdAvatar
           size={196}
           src={logo}
           alt="metis"
-          style={{ marginBottom: '100px' }}
+          className="login-avatar"
         />
-        <AntdForm
-          onSubmit={handleSubmit}
-          style={{
-            padding: '10px',
-            marginBottom: '100px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center'
-          }}>
+        <AntdForm className="login-form-content" onSubmit={handleSubmit}>
           <AntdForm.Item>
             <AntdInput
               name="username"
@@ -70,7 +55,7 @@ const Login = () => {
               autoComplete="password"
               type="password"
               size="large"
-              prefix={<AntdIcon type="user" />}
+              prefix={<AntdIcon type="key" />}
               placeholder={STRINGS.USERNAME_PLACEHOLDER}
               value={password}
               onChange={evt => setPassword(evt.target.value)}
@@ -79,7 +64,6 @@ const Login = () => {
           <AntdButton
             type="primary"
             htmlType="submit"
-            style={{ width: '100%' }}
             disabled={
               !(
                 username &&
