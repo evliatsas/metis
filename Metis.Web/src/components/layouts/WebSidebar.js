@@ -8,7 +8,7 @@ import {
 } from 'antd'
 import { useAuth } from '../../contexts/AuthProvider'
 import logo from '../../assets/logo.png'
-import './sidebar.css'
+import './sidebar.less'
 
 const VERSION = process.env.REACT_APP_VERSION
 

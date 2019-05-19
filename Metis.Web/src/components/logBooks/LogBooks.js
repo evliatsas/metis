@@ -2,7 +2,7 @@ import React from 'react'
 import LogBooksContainer from '../containers/LogBooksContainer'
 import LogBooksHeader from './LogBooksHeader'
 import LogBooksTable from './LogBooksTable'
-import './logBooks.css'
+import './logBooks.less'
 
 const LogBooksView = ({ logBooks }) => {
   return (

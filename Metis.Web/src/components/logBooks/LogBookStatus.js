@@ -10,9 +10,9 @@ const LogBookStatus = ({ closeDate }) => {
   const isClosed = new Date(closeDate) < new Date()
 
   return isClosed ? (
-    <AntdTag color="#f50">{STRINGS.CLOSED}</AntdTag>
+    <AntdTag color="#cf1322">{STRINGS.CLOSED}</AntdTag>
   ) : (
-    <AntdTag color="#40861d">{STRINGS.OPEN}</AntdTag>
+    <AntdTag color="#378212">{STRINGS.OPEN}</AntdTag>
   )
 }
 

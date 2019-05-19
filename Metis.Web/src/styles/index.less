@@ -1,3 +1,5 @@
+@import './theme.less';
+
 html,
 body,
 .idDiv {
@@ -9,11 +11,11 @@ body,
 }
 
 ::-webkit-scrollbar-track {
-  background: #192222;
+  background: @body-background;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #262d2d;
+  background: @component-background;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -29,12 +31,12 @@ textarea:-webkit-autofill:focus,
 select:-webkit-autofill,
 select:-webkit-autofill:hover,
 select:-webkit-autofill:focus {
-  box-shadow: 0 0 0px 1000px #192222 inset;
+  box-shadow: 0 0 0px 1000px @body-background inset;
   transition: background-color 5000s ease-in-out 0s;
-  -webkit-text-fill-color: #2abbbb;
+  -webkit-text-fill-color: @primary-color;
 }
 
 .is-link {
   cursor: pointer;
-  color: #2abbbb;
+  color: @primary-color;
 }

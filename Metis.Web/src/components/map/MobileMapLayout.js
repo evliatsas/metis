@@ -1,17 +1,15 @@
 import React from 'react'
 import MapContainer from '../containers/MapContainer'
 import Map from './Map'
-// import MapSiteList from './MapSiteList'
-// import MapSiteDetails from './MapSiteDetails'
 import MapAlarms from './MapAlarms'
 
 const WebMapLayoutView = ({
   sites,
   selected,
   setSelected,
-  messages,
-  onMaintenanceStart,
-  onMaintenanceStop
+  messages
+  //onMaintenanceStart,
+  //onMaintenanceStop
 }) => {
   return (
     <div style={{ height: '100vh', display: 'flex' }}>
@@ -32,26 +30,6 @@ const WebMapLayoutView = ({
           </filter>
         </svg>
       </div>
-      {/* <div
-        style={{
-          width: '300px',
-          height: '100vh',
-          maxHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'auto'
-        }}>
-        <MapSiteList sites={sites} onSelect={setSelected} />
-        {selected && (
-          <MapSiteDetails
-            site={selected}
-            onClose={() => setSelected(null)}
-            onMaintenanceStart={onMaintenanceStart}
-            onMaintenanceStop={onMaintenanceStop}
-            style={{ minHeight: '100px' }}
-          />
-        )}
-      </div> */}
       <MapAlarms alarms={messages} />
     </div>
   )

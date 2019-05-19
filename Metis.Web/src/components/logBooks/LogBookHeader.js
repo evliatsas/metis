@@ -1,6 +1,6 @@
 import React from 'react'
 import { PageHeader as AntdPageHeader, Button as AntdButton } from 'antd'
-import './logBooks.css'
+import './logBooks.less'
 
 const STRINGS = {
   NEW: 'Προσθήκη Νέου'

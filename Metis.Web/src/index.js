@@ -5,7 +5,7 @@ import App from './App'
 import AuthProvider from './contexts/AuthProvider'
 import LayoutProvider from './contexts/LayoutProvider'
 import * as serviceWorker from './serviceWorker'
-import './styles/index.css'
+import './styles/index.less'
 
 const Root = (
   <BrowserRouter>

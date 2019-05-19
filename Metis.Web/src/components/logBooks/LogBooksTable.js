@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom'
 import { Table as AntdTable, Divider as AntdDivider } from 'antd'
 import moment from 'moment'
 import LogBookStatus from './LogBookStatus'
-import './logBooks.css'
+import './logBooks.less'
 
 const STRINGS = {
   EDIT: 'επεξεργασία',

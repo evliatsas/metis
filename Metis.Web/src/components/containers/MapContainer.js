@@ -10,10 +10,6 @@ const MapContainer = ({ children }) => {
   const [selected, setSelected] = useState(null)
   const [alarm, setAlarm] = useState(null)
 
-  function getSites() {
-    api.get('/api/sites').then(res => setSites(res))
-  }
-
   async function onMaintenanceStart() {
     setSelected(ps => ({ ...ps, status: 'Pending' }))
     await api.get(`/api/sites/${selected.id}/maintenance/start`)
@@ -25,7 +21,12 @@ const MapContainer = ({ children }) => {
   }
 
   useEffect(() => {
-    getSites()
+    async function fetchSites() {
+      const response = await api.get('/api/sites')
+      setSites(response)
+    }
+
+    fetchSites()
 
     hubConnectionBuilder(HUB_URL)
       .then(con => {
