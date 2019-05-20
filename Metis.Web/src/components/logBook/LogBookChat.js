@@ -26,7 +26,7 @@ const LogBookChat = ({ messages, onSend }) => {
 
   return (
     <div className="logbook-chat">
-      <div ref={messagesRef} style={{ flexGrow: 2, overflowY: 'scroll' }}>
+      <div ref={messagesRef} className="logbook-chat-message-list">
         {messages.map((msg, idx) => (
           <LogBookChatMessage
             key={idx}
@@ -39,13 +39,18 @@ const LogBookChat = ({ messages, onSend }) => {
 
       <div style={{ display: 'flex' }}>
         <Input
+          size="large"
           value={message}
           onChange={evt => setMessage(evt.target.value)}
           onKeyDown={handleKeyDown}
         />
-        <Button type="primary" onClick={handleSend}>
-          Send
-        </Button>
+        <Button
+          size="large"
+          type="ghost"
+          icon="message"
+          onClick={handleSend}
+          disabled={!message}
+        />
       </div>
     </div>
   )
