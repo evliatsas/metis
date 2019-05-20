@@ -18,7 +18,7 @@ namespace Metis.Overseer.Extensions
 
         public static string GetEmail(this IIdentity identity)
         {
-            return ((ClaimsIdentity)identity).FindFirst("email").Value;
+            return ((ClaimsIdentity)identity).FindFirst(ClaimTypes.Email).Value;
         }
 
         public static string GetTitle(this IIdentity identity)
