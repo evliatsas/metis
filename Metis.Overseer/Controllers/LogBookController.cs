@@ -218,5 +218,14 @@ namespace Metis.Overseer.Controllers
 
             return Ok(entry);
         }
+
+        [Route("{bookId}/messages")]
+        [HttpGet]
+        public async Task<IActionResult> GetMessages(string bookId)
+        {
+            var data = await _logService.GetMessages(bookId);
+
+            return Ok(data);
+        }
     }
 }
