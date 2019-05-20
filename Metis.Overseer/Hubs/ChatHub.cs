@@ -58,7 +58,7 @@ namespace Metis.Overseer.Hubs
                 {
                     lock (sender.ConnectionIds)
                     {
-                        allReceivers = receiver.ConnectionIds.Concat(sender.ConnectionIds);
+                        allReceivers = receiver.ConnectionIds; //.Concat(sender.ConnectionIds);
                     }
                 }
 
