@@ -1,6 +1,6 @@
 import React from 'react'
 import { PageHeader as AntdPageHeader, Button as AntdButton } from 'antd'
-import './logBooks.less'
+import './logBook.less'
 
 const STRINGS = {
   NEW: 'Προσθήκη Νέου'
@@ -17,7 +17,7 @@ const LogBookHeader = ({ logBook, onBack, onCreate }) => {
           {STRINGS.NEW}
         </AntdButton>
       }
-      className="logbooks-header"
+      className="logbook-header"
     />
   )
 }

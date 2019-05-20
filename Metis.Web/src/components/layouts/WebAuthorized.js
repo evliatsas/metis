@@ -5,7 +5,7 @@ import WebSidebar from './WebSidebar'
 
 const Map = lazy(() => import('../map/WebMapLayout'))
 const LogBooks = lazy(() => import('../logBooks/LogBooks'))
-const LogBook = lazy(() => import('../logBooks/LogBook'))
+const LogBook = lazy(() => import('../logBook/LogBook'))
 
 const WebAuthorized = () => {
   return (

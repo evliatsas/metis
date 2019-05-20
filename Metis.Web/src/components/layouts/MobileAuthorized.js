@@ -4,7 +4,7 @@ import { Layout as AntdLayout } from 'antd'
 
 const Map = lazy(() => import('../map/MobileMapLayout'))
 const LogBooks = lazy(() => import('../logBooks/LogBooks'))
-const LogBook = lazy(() => import('../logBooks/LogBook'))
+const LogBook = lazy(() => import('../logBook/LogBook'))
 
 const MobileAuthorized = () => {
   return (

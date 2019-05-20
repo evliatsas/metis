@@ -10,6 +10,7 @@ const LogBookContainer = props => {
   const { children } = props
   const hub = useRef(null)
   const [logBook, setLogBook] = useState(null)
+  const [messages, setMessages] = useState([])
 
   useEffect(() => {
     async function fetchLogBook() {
@@ -17,7 +18,14 @@ const LogBookContainer = props => {
       setLogBook(response)
     }
 
+    async function fetchMessages() {
+      const response = await api.get(`/api/logbooks/${id}/messages`)
+      const sorted = response.sort((a, b) => (a.sent > b.sent ? 1 : -1))
+      setMessages(sorted)
+    }
+
     fetchLogBook()
+    fetchMessages()
 
     hubConnectionBuilder(HUB_URL)
       .then(con => {
@@ -31,8 +39,15 @@ const LogBookContainer = props => {
           console.log('userDisconnected', username, title, email)
         })
 
-        hub.current.on('received', (username, message) => {
-          console.log('received', username, message)
+        hub.current.on('received', (username, title, message) => {
+          setMessages(prevMessages => [
+            ...prevMessages,
+            {
+              sender: { username: username, title: title },
+              sent: new Date().toISOString(),
+              message: message
+            }
+          ])
         })
       })
       .catch(err => {
@@ -58,6 +73,7 @@ const LogBookContainer = props => {
   return React.Children.map(children, child =>
     React.cloneElement(child, {
       logBook,
+      messages,
       sendMessage
     })
   )

@@ -64,7 +64,7 @@ namespace Metis.Overseer.Hubs
 
                 foreach (var cid in allReceivers)
                 {
-                    await Clients.Client(cid).SendAsync("received", userName, message);
+                    await Clients.Client(cid).SendAsync("received", userName, title, message);
                 }
             }
         }
