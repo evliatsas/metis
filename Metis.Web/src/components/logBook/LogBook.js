@@ -2,28 +2,18 @@ import React from 'react'
 import LogBookContainer from '../containers/LogBookContainer'
 import LogBookHeader from './LogBookHeader'
 import LogBookChat from './LogBookChat'
-import { Divider } from 'antd'
+import LogBookEntriesTable from './LogBookEntriesTable'
 
-const LogBookView = ({ logBook, members, messages, sendMessage }) => {
+const LogBookView = ({ logBook, members, messages, sendMessage, onBack }) => {
   if (!logBook) {
     return null
   }
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <LogBookHeader logBook={logBook} />
+      <LogBookHeader logBook={logBook} onBack={onBack} />
       <div style={{ display: 'flex', height: '100%' }}>
-        <div style={{ flexGrow: 1, overflow: 'auto' }}>
-          <div>
-            {JSON.stringify({
-              ...logBook,
-              members: undefined,
-              entries: undefined
-            })}
-          </div>
-          <Divider />
-          <div>{JSON.stringify(logBook.members)}</div>
-          <Divider />
-          <div>{JSON.stringify(logBook.entries)}</div>
+        <div className="logbook-body">
+          <LogBookEntriesTable entries={logBook.entries} />
         </div>
         <LogBookChat
           members={members}

@@ -7,11 +7,15 @@ const HUB_URL = `${process.env.REACT_APP_API_URL}/chat`
 
 const LogBookContainer = props => {
   const { id } = props.match.params
-  const { children } = props
+  const { children, history } = props
   const hub = useRef(null)
   const [logBook, setLogBook] = useState(null)
   const [messages, setMessages] = useState([])
   const [members, setMembers] = useState([])
+
+  function onBack() {
+    history.push('/logbooks')
+  }
 
   useEffect(() => {
     async function fetchLogBook() {
@@ -105,7 +109,8 @@ const LogBookContainer = props => {
       logBook,
       members,
       messages,
-      sendMessage
+      sendMessage,
+      onBack
     })
   )
 }
