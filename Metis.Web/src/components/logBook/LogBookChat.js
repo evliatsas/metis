@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Input, Button } from 'antd'
+import LogBookMembers from './LogBookMembers'
 import LogBookChatMessage from './LogBookChatMessage'
+
 import './logBook.less'
 
-const LogBookChat = ({ messages, onSend }) => {
+const LogBookChat = ({ members, messages, onSend }) => {
   const messagesRef = useRef(null)
   const [message, setMessage] = useState('')
 
@@ -23,9 +25,11 @@ const LogBookChat = ({ messages, onSend }) => {
       messagesRef.current.scrollTop = messagesRef.current.scrollHeight
     }
   }, [messages, messagesRef])
-
+  console.log(members)
   return (
     <div className="logbook-chat">
+      <LogBookMembers members={members} />
+
       <div ref={messagesRef} className="logbook-chat-message-list">
         {messages.map((msg, idx) => (
           <LogBookChatMessage

@@ -11,6 +11,7 @@ const LogBookContainer = props => {
   const hub = useRef(null)
   const [logBook, setLogBook] = useState(null)
   const [messages, setMessages] = useState([])
+  const [members, setMembers] = useState([])
 
   useEffect(() => {
     async function fetchLogBook() {
@@ -33,10 +34,22 @@ const LogBookContainer = props => {
 
         hub.current.on('userConnected', (username, title, email) => {
           console.log('userConnected', username, title, email)
+          setMembers(prevMembers => {
+            const nextMembers = [...prevMembers]
+            const user = nextMembers.find(m => m.email === email)
+            user.online = true
+            return nextMembers
+          })
         })
 
         hub.current.on('userDisconnected', (username, title, email) => {
           console.log('userDisconnected', username, title, email)
+          setMembers(prevMembers => {
+            const nextMembers = [...prevMembers]
+            const user = nextMembers.find(m => m.email === email)
+            user.online = false
+            return nextMembers
+          })
         })
 
         hub.current.on('received', (username, title, message) => {
@@ -63,6 +76,23 @@ const LogBookContainer = props => {
     }
   }, [id])
 
+  useEffect(() => {
+    if (!logBook || !hub.current) {
+      return
+    }
+
+    async function fetchMembers() {
+      const connected = await hub.current.invoke('GetConnectedUsers')
+      const _members = logBook.members.map(m => ({
+        ...m,
+        online: connected.some(c => c.id === m.userId)
+      }))
+      setMembers(_members)
+    }
+
+    fetchMembers()
+  }, [logBook])
+
   async function sendMessage(message) {
     if (!hub.current) {
       return
@@ -73,6 +103,7 @@ const LogBookContainer = props => {
   return React.Children.map(children, child =>
     React.cloneElement(child, {
       logBook,
+      members,
       messages,
       sendMessage
     })

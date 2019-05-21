@@ -4,7 +4,7 @@ import LogBookHeader from './LogBookHeader'
 import LogBookChat from './LogBookChat'
 import { Divider } from 'antd'
 
-const LogBookView = ({ logBook, messages, sendMessage }) => {
+const LogBookView = ({ logBook, members, messages, sendMessage }) => {
   if (!logBook) {
     return null
   }
@@ -25,7 +25,11 @@ const LogBookView = ({ logBook, messages, sendMessage }) => {
           <Divider />
           <div>{JSON.stringify(logBook.entries)}</div>
         </div>
-        <LogBookChat messages={messages} onSend={sendMessage} />
+        <LogBookChat
+          members={members}
+          messages={messages}
+          onSend={sendMessage}
+        />
       </div>
     </div>
   )
