@@ -25,7 +25,7 @@ const LogBookChat = ({ members, messages, onSend }) => {
       messagesRef.current.scrollTop = messagesRef.current.scrollHeight
     }
   }, [messages, messagesRef])
-  console.log(members)
+
   return (
     <div className="logbook-chat">
       <LogBookMembers members={members} />

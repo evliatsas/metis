@@ -5,6 +5,19 @@ const STRINGS = {
   HEADER: 'Μέλη'
 }
 
+const ConnectedMember = ({ member }) => (
+  <div style={{ display: 'flex', color: 'green', fontWeight: 'bolder' }}>
+    <span style={{ flexGrow: 1 }}>{member.name}</span>
+    <Icon type="wifi" />
+  </div>
+)
+
+const DisconectedMember = ({ member }) => (
+  <div>
+    <span>{member.name}</span>
+  </div>
+)
+
 const LogBookMembers = ({ members }) => (
   <Collapse bordered={false}>
     <Collapse.Panel
@@ -16,12 +29,13 @@ const LogBookMembers = ({ members }) => (
           </span>
         </div>
       }>
-      {members.map((m, idx) => (
-        <div key={idx} style={{ display: 'flex' }}>
-          <span style={{ flexGrow: 1 }}>{m.name}</span>
-          {m.online && <Icon style={{ color: 'lightgreen' }} type="wifi" />}
-        </div>
-      ))}
+      {members.map((m, idx) =>
+        m.online ? (
+          <ConnectedMember key={idx} member={m} />
+        ) : (
+          <DisconectedMember key={idx} member={m} />
+        )
+      )}
     </Collapse.Panel>
   </Collapse>
 )
