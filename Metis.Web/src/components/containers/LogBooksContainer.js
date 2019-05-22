@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react'
+import { withRouter } from 'react-router-dom'
 import api from '../../services/api'
 
-const LogBooksContainer = ({ children }) => {
+const LogBooksContainer = props => {
+  const { children, history } = props
   const [logBooks, setLogBooks] = useState([])
+
+  function onCreate() {
+    history.push('/logbooks/new')
+  }
 
   useEffect(() => {
     async function fetchLogBooks() {
@@ -15,9 +21,10 @@ const LogBooksContainer = ({ children }) => {
 
   return React.Children.map(children, child =>
     React.cloneElement(child, {
-      logBooks
+      logBooks,
+      onCreate
     })
   )
 }
 
-export default LogBooksContainer
+export default withRouter(LogBooksContainer)

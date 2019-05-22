@@ -9,14 +9,13 @@ const STRINGS = {
   NEW: 'Νέο Συμβάν'
 }
 
-const LogBooksHeader = ({ onBack, onCreate }) => {
+const LogBooksHeader = ({ onCreate }) => {
   return (
     <AntdPageHeader
       title={STRINGS.TITLE}
       subTitle={STRINGS.SUBTITLE}
-      //onBack={() => onBack()}
       extra={
-        <AntdButton key="1" type="primary" size="small" onClick={onCreate}>
+        <AntdButton key="1" type="ghost" size="small" onClick={onCreate}>
           {STRINGS.NEW}
         </AntdButton>
       }

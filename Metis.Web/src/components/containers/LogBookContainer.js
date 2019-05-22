@@ -17,6 +17,14 @@ const LogBookContainer = props => {
     history.push('/logbooks')
   }
 
+  function onEdit() {
+    history.push(`/logbooks/${id}/edit`)
+  }
+
+  function onCreate() {
+    history.push('/logbooks/new')
+  }
+
   useEffect(() => {
     async function fetchLogBook() {
       const response = await api.get(`/api/logbooks/${id}`)
@@ -110,7 +118,9 @@ const LogBookContainer = props => {
       members,
       messages,
       sendMessage,
-      onBack
+      onBack,
+      onEdit,
+      onCreate
     })
   )
 }

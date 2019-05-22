@@ -4,10 +4,10 @@ import LogBooksHeader from './LogBooksHeader'
 import LogBooksTable from './LogBooksTable'
 import './logBooks.less'
 
-const LogBooksView = ({ logBooks }) => {
+const LogBooksView = ({ logBooks, onCreate }) => {
   return (
     <div>
-      <LogBooksHeader />
+      <LogBooksHeader onCreate={onCreate} />
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <LogBooksTable logBooks={logBooks} />
       </div>

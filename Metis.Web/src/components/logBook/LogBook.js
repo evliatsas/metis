@@ -4,14 +4,26 @@ import LogBookHeader from './LogBookHeader'
 import LogBookChat from './LogBookChat'
 import LogBookEntriesTable from './LogBookEntriesTable'
 
-const LogBookView = ({ logBook, members, messages, sendMessage, onBack }) => {
+const LogBookView = ({
+  logBook,
+  members,
+  messages,
+  sendMessage,
+  onBack,
+  onEdit,
+  onCreate
+}) => {
   if (!logBook) {
     return null
   }
-  console.log(logBook)
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <LogBookHeader logBook={logBook} onBack={onBack} />
+      <LogBookHeader
+        logBook={logBook}
+        onBack={onBack}
+        onEdit={onEdit}
+        onCreate={onCreate}
+      />
       <div style={{ display: 'flex', height: '100%' }}>
         <div className="logbook-body">
           <LogBookEntriesTable entries={logBook.entries} />

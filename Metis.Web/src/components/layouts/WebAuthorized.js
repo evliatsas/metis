@@ -5,7 +5,9 @@ import WebSidebar from './WebSidebar'
 
 const Map = lazy(() => import('../map/WebMapLayout'))
 const LogBooks = lazy(() => import('../logBooks/LogBooks'))
+const LogBookCreate = lazy(() => import('../logBookCreate/LogBookCreate'))
 const LogBook = lazy(() => import('../logBook/LogBook'))
+const LogBookEdit = lazy(() => import('../logBookEdit/LogBookEdit'))
 
 const WebAuthorized = () => {
   return (
@@ -17,7 +19,9 @@ const WebAuthorized = () => {
             <Switch>
               <Route exact path="/map" component={Map} />
               <Route exact path="/logbooks" component={LogBooks} />
+              <Route exact path="/logbooks/new" component={LogBookCreate} />
               <Route exact path="/logbooks/:id" component={LogBook} />
+              <Route exact path="/logbooks/:id/edit" component={LogBookEdit} />
               <Redirect to="/map" />
             </Switch>
           </Suspense>
