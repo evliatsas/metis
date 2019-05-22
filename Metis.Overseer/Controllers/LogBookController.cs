@@ -4,6 +4,7 @@ using Metis.Teamwork.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
+using Metis.Overseer.Extensions;
 
 namespace Metis.Overseer.Controllers
 {
@@ -52,11 +53,23 @@ namespace Metis.Overseer.Controllers
         [HttpGet]
         public async Task<IActionResult> GetBook(string id)
         {
-            var claim = User.Claims.FirstOrDefault(t => t.Type == "userid");
-            var userId = claim != null ? claim.Value : "";
+            var userId = User.Identity.GetUserId();
+            var book = new LogBook();
 
-            var book = await _logService.GetBook(id);
+            if (id == "new")
+            {
+                var email = User.Identity.GetEmail();
+                var name = User.Identity.GetUserName();
+                book.Owner = new Member
+                {
+                    Email = email,
+                    UserId = userId,
+                    Name = name
+                };
+                return Ok(book);
+            }
 
+            book = await _logService.GetBook(id);
             if (book.Owner.UserId != userId && !book.Members.Any(t => t.UserId == userId))
             {
                 throw new Exception("Your account has no permission for this entry.");
