@@ -3,7 +3,7 @@ import {
   Table as AntdTable,
   Tooltip as AntdTooltip,
   Tag as AntdTag,
-  Icon as AntdIcon,
+  Button as AntdButton,
   Popconfirm as AntdPopconfirm
 } from 'antd'
 import moment from 'moment'
@@ -11,11 +11,20 @@ import storage from '../../services/storage'
 import './logBook.less'
 
 const STRINGS = {
-  PRIORITIES: ['Normal', 'Low', 'High', 'Urgent'],
+  DATETIME_FORMAT: 'DD/MM HH:mm',
   EDIT: 'επεξεργασία',
   DELETE: 'διαγραφή',
+  DELETE_CONFIRMATION:
+    'Θέλετε σίγουρα να αφαιρέσετε το συμβάν; (η διαδικασία είναι μη αναιρέσιμη)',
   OPEN: 'Ενεργό',
   CLOSED: 'Ανενεργό'
+}
+
+const PRIORITIES = {
+  //0: { color: 'primary', caption: '' },
+  1: { color: '#065d9b', caption: 'Δευτερεύων' },
+  2: { color: '#e0610d', caption: 'Επείγον' },
+  3: { color: '#e00d0d', caption: 'Άμενο' }
 }
 
 function isEntryIssuer(entry) {
@@ -25,16 +34,16 @@ function isEntryIssuer(entry) {
 
 const columns = [
   {
-    title: <AntdTooltip title="Προτεραιότητα">Π</AntdTooltip>,
-    dataIndex: 'priority',
-    key: 'priority',
-    render: p => STRINGS.PRIORITIES[p]
-  },
-  {
-    title: 'DTG',
+    title: 'Έναρξη',
     dataIndex: 'dtg',
     key: 'dtg',
-    render: item => moment(item).format('L')
+    render: item => moment(item).format(STRINGS.DATETIME_FORMAT)
+  },
+  {
+    title: 'Λήξη',
+    dataIndex: 'ect',
+    key: 'ect',
+    render: item => moment(item).format(STRINGS.DATETIME_FORMAT)
   },
   {
     title: 'Εκδότης',
@@ -60,16 +69,25 @@ const columns = [
   },
   {
     title: 'Κατάσταση',
-    dataIndex: 'status',
-    key: 'status',
-    render: s =>
-      s === 1 ? (
-        <AntdTag color="#cf1322">{STRINGS.CLOSED}</AntdTag>
-      ) : (
-        <AntdTag color="#378212">{STRINGS.OPEN}</AntdTag>
-      )
+    key: 'tags',
+    render: entry => <LogBookEntryTags entry={entry} />
   }
 ]
+
+const LogBookEntryTags = ({ entry }) => (
+  <div>
+    {entry.status === 1 ? (
+      <AntdTag color="#cf1322">{STRINGS.CLOSED}</AntdTag>
+    ) : (
+      <AntdTag color="#378212">{STRINGS.OPEN}</AntdTag>
+    )}
+    {entry.priority > 0 && (
+      <AntdTag color={PRIORITIES[entry.priority].color}>
+        {PRIORITIES[entry.priority].caption}
+      </AntdTag>
+    )}
+  </div>
+)
 
 const LogBookEntriessTable = ({ entries, onEdit, onDelete }) => {
   const headers = [
@@ -84,20 +102,28 @@ const LogBookEntriessTable = ({ entries, onEdit, onDelete }) => {
         return (
           <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
             <AntdTooltip title={STRINGS.EDIT}>
-              <AntdIcon
-                className="is-link"
-                type="form"
+              <AntdButton
+                size="small"
+                type="ghost"
+                shape="circle"
+                icon="form"
                 onClick={() => onEdit(row)}
               />
             </AntdTooltip>
             <AntdPopconfirm
-              title="Θέλετε σίγουρα να αφαιρέσετε το γεγονός?"
+              title={STRINGS.DELETE_CONFIRMATION}
               onConfirm={() => onDelete(row)}
               onCancel={null}
               okText="Ναι"
               cancelText="Όχι">
               <AntdTooltip title={STRINGS.DELETE}>
-                <AntdIcon style={{ color: 'red' }} type="delete" />
+                <AntdButton
+                  className="logbook-delete-entry-button"
+                  size="small"
+                  type="ghost"
+                  shape="circle"
+                  icon="delete"
+                />
               </AntdTooltip>
             </AntdPopconfirm>
           </div>

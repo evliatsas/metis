@@ -59,12 +59,12 @@ namespace Metis.Overseer.Controllers
             if (id == "new")
             {
                 var email = User.Identity.GetEmail();
-                var name = User.Identity.GetUserName();
+                var title = User.Identity.GetTitle();
                 book.Owner = new Member
                 {
                     Email = email,
                     UserId = userId,
-                    Name = name
+                    Name = title
                 };
                 book.Members.Add(book.Owner);
                 return Ok(book);

@@ -3,10 +3,10 @@ import { PageHeader as AntdPageHeader, Button as AntdButton } from 'antd'
 import './logBooks.less'
 
 const STRINGS = {
-  TITLE: 'Συμβάντα',
-  SUBTITLE: 'Σύντομη ανασκόπηση συμβάντων ταξινομημένα κατα ημερομηνία',
+  TITLE: 'Βιβλία Καταγραφής',
+  SUBTITLE: 'Βιβλία καταγραφής συμβάντων',
   REFRESH: 'Ανανέωση',
-  NEW: 'Νέο Συμβάν'
+  NEW: 'Νέο Βιβλίο'
 }
 
 const LogBooksHeader = ({ onCreate }) => {
