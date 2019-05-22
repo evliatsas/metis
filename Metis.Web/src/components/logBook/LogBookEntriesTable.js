@@ -110,6 +110,7 @@ const LogBookEntriessTable = ({ entries, onEdit, onDelete }) => {
       rowKey={item => item.id}
       columns={headers}
       dataSource={entries}
+      pagination={{ defaultPageSize: 10, hideOnSinglePage: true }}
     />
   )
 }
