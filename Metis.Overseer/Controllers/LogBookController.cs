@@ -66,6 +66,7 @@ namespace Metis.Overseer.Controllers
                     UserId = userId,
                     Name = title
                 };
+                book.Close = DateTime.Now.AddDays(1);
                 book.Members.Add(book.Owner);
                 return Ok(book);
             }

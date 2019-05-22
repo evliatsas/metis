@@ -12,7 +12,7 @@ const WebMapLayoutView = ({
   //onMaintenanceStop
 }) => {
   return (
-    <div style={{ height: '100vh', display: 'flex' }}>
+    <div style={{ height: '100%', display: 'flex' }}>
       <div style={{ flexGrow: 1 }}>
         <Map
           sites={sites}

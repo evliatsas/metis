@@ -19,6 +19,10 @@ const LogBookCreateContainer = props => {
     }
   }
 
+  const logBookHandler = newValue => {
+    setLogBook({ ...newValue })
+  }
+
   function onCancel() {
     onBack()
   }
@@ -43,7 +47,8 @@ const LogBookCreateContainer = props => {
       users,
       onBack,
       onSave,
-      onCancel
+      onCancel,
+      logBookHandler
     })
   )
 }

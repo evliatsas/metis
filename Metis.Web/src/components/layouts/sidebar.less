@@ -1,19 +1,38 @@
 .sidebar-menu {
-  border-right: unset;
+    border-right: unset;
 }
 
 .sidebar-logout:hover {
-  color: red;
+    color: red;
 }
 
 .sidebar-menu-item:hover {
-  background-color: #3b3b3b;
+    background-color: #3b3b3b;
 }
 
 .sidebar-version {
-  margin-top: 20px;
-  color: unset;
-  border-top: 2px solid #3b3b3b;
-  border-bottom: 2px solid #3b3b3b;
-  padding: 2px 8px;
+    margin-top: 20px;
+    color: unset;
+    border-top: 2px solid #3b3b3b;
+    border-bottom: 2px solid #3b3b3b;
+    padding: 2px 8px;
+}
+
+.bottom-menu-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background-color: #3b3b3b;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    >.mobile-menu-item {
+        min-width: 20%;
+        text-align: center;
+        font-size: 22px
+    }
 }
