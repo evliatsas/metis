@@ -44,7 +44,7 @@ namespace Metis.Teamwork.Entities
         /// (Non persisted property)
         /// </summary>
         [BsonIgnore]
-        public IEnumerable<LogEntry> Entries { get; set; }
+        public ICollection<LogEntry> Entries { get; set; }
 
         /// <summary>
         /// The number of Entries that belong to the book
