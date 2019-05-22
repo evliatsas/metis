@@ -66,6 +66,7 @@ namespace Metis.Overseer.Controllers
                     UserId = userId,
                     Name = name
                 };
+                book.Members.Add(book.Owner);
                 return Ok(book);
             }
 
