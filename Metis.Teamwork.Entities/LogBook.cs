@@ -13,7 +13,7 @@ namespace Metis.Teamwork.Entities
         public string Id { get; set; }
         /// <summary>
         /// The Owner of the book
-        /// </summary>        
+        /// </summary>
         [Required]
         [BsonElement("owner")]
         public Member Owner { get; set; }
@@ -32,7 +32,7 @@ namespace Metis.Teamwork.Entities
         /// The users that can view/edit the entries in the book
         /// </summary>
         [BsonElement("members")]
-        public IEnumerable<Member> Members { get; set; }
+        public ICollection<Member> Members { get; set; }
         /// <summary>
         /// The name of the book
         /// </summary>

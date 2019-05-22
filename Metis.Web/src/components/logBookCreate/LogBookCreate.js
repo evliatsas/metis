@@ -2,7 +2,7 @@ import React from 'react'
 import LogBookCreateContainer from '../containers/LogBookCreateContainer'
 import LogBookCreateHeader from './LogBookCreateHeader'
 
-const LogBookCreateView = ({ logBook, onBack, onSave, onCancel }) => {
+const LogBookCreateView = ({ logBook, users, onBack, onSave, onCancel }) => {
   if (!logBook) {
     return null
   }
@@ -14,8 +14,10 @@ const LogBookCreateView = ({ logBook, onBack, onSave, onCancel }) => {
         onSave={onSave}
         onCancel={onCancel}
       />
-      <div style={{ display: 'flex', height: '100%' }}>
-        <div>form</div>
+      <div style={{ height: '100%' }}>
+        <div>users: {JSON.stringify(users)}</div>
+        <hr />
+        <div>members: {JSON.stringify(logBook.members)}</div>
       </div>
     </div>
   )
