@@ -8,6 +8,7 @@ const LogBookView = ({ logBook, members, messages, sendMessage, onBack }) => {
   if (!logBook) {
     return null
   }
+  console.log(logBook)
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <LogBookHeader logBook={logBook} onBack={onBack} />

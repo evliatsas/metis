@@ -115,42 +115,6 @@ const MapContainer = () => {
       <MapAlarms alarms={messages} />
     </div>
   )
-
-  return (
-    <div style={{ height: '100%' }}>
-      <AntdRow style={{ height: '100%' }}>
-        <AntdCol style={{ height: '100%' }} />
-        <AntdCol
-          style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-          <MapSiteList
-            sites={sites}
-            onSelect={setSelected}
-            style={{ flexGrow: 1 }}
-          />
-          {selected && (
-            <MapSiteDetails
-              site={selected}
-              onClose={() => setSelected(null)}
-              onMaintenanceStart={onMaintenanceStart}
-              onMaintenanceStop={onMaintenanceStop}
-            />
-          )}
-        </AntdCol>
-      </AntdRow>
-      <MapAlarms alarms={messages} />
-      <svg hidden>
-        <filter id="map-filter">
-          <feColorMatrix
-            type="matrix"
-            values="0.2 0 0 0 0
-                    0 0.3 0 0 0
-                    0 0 0.4 0 0
-                    0 0 0 1 0"
-          />
-        </filter>
-      </svg>
-    </div>
-  )
 }
 
 export default MapContainer
