@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace Metis.Overseer.Controllers
 {
     [ApiController]
-    [Route("api/token")]
+    [Route("api/admin")]
     public class AdminController : ControllerBase
     {
         private readonly UserService _userService;
