@@ -9,6 +9,9 @@ const LogBookCreate = lazy(() => import('../logBookCreate/LogBookCreate'))
 const LogBook = lazy(() => import('../logBook/LogBook'))
 const LogBookEdit = lazy(() => import('../logBookEdit/LogBookEdit'))
 
+const UsersAdmin = lazy(() => import('../admin/Users'))
+const SitesAdmin = lazy(() => import('../admin/Sites'))
+
 const WebAuthorized = () => {
   return (
     <div style={{ height: '100vh', overflow: 'hidden' }}>
@@ -22,6 +25,8 @@ const WebAuthorized = () => {
               <Route exact path="/logbooks/new" component={LogBookCreate} />
               <Route exact path="/logbooks/:id" component={LogBook} />
               <Route exact path="/logbooks/:id/edit" component={LogBookEdit} />
+              <Route exact path="/admin/users" component={UsersAdmin} />
+              <Route exact path="/admin/sites" component={SitesAdmin} />
               <Redirect to="/map" />
             </Switch>
           </Suspense>
