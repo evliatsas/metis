@@ -7,13 +7,15 @@ import {
 import moment from 'moment'
 const dateFormat = 'YYYY/MM/DD'
 const formItemLayout = {
-    xs: { span: 24 },
-    sm: { span: 24 },
-    md: { span: 24 },
-    lg: { span: 18 },
-    xl: { span: 12 },
-    xxl: { span: 10 }
-}
+    labelCol: {
+      xs: { span: 24 },
+      sm: { span: 8 },
+    },
+    wrapperCol: {
+      xs: { span: 24 },
+      sm: { span: 16 },
+    },
+  };
 const LogBookEntryView = ({ logBookEntry, members, onCancel, onSave, onDelete, logBookHandler }) => {
     if (!logBookEntry) {
         return null

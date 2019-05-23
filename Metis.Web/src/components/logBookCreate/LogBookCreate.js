@@ -1,24 +1,26 @@
 import React from 'react'
 import LogBookCreateContainer from '../containers/LogBookCreateContainer'
 import LogBookCreateHeader from './LogBookCreateHeader'
+import '../logBookEdit/logBookEdit.less'
 import {
-  DatePicker, Row, Form,
-  Icon, Input, Col, Transfer, Divider
+  DatePicker, Row, Form, Icon, Input, Col, Select, List, Button as AntdButton
 } from 'antd'
 import moment from 'moment'
-const locale = {
-  itemUnit: 'Χρήστες',
-  itemsUnit: 'Χρήστες',
-  searchPlaceholder: 'Αναζήτηση'
-}
+
 const formItemLayout = {
-  xs: { span: 24 },
-  sm: { span: 24 },
-  md: { span: 24 },
-  lg: { span: 18 },
-  xl: { span: 12 },
-  xxl: { span: 10 }
-}
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 24 },
+    md: { span: 24 },
+    lg: { span: 7 }
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 24 },
+    md: { span: 24 },
+    lg: { span: 10 }
+  },
+};
 const LogBookCreateView = ({ logBook, users, onBack, onSave, onCancel, logBookHandler }) => {
 
   if (!logBook) {
@@ -32,65 +34,77 @@ const LogBookCreateView = ({ logBook, users, onBack, onSave, onCancel, logBookHa
     }
     logBookHandler(logBook)
   }
-  const usersHandler = nextTargetKeys => {
-    logBook = {
-      ...logBook,
-      members: users.filter(f => nextTargetKeys.some(s => s === f.key))
-    }
+  const usersHandler = userId => {
+    const m = users.find(x => x.userId === userId)
+    logBook.members.push(m)
+    logBook = { ...logBook }
+    logBookHandler(logBook)
+  }
+
+  const removeUser = userId => {
+    const index = logBook.members.findIndex(x => x.userId === userId)
+    logBook.members.splice(index, 1)
+    logBook = { ...logBook }
     logBookHandler(logBook)
   }
   return (
-    <Form>
-      <Row type="flex" justify="center">
-        <Col span={24}>
-          <LogBookCreateHeader
-            logBook={logBook}
-            onBack={onBack}
-            onSave={onSave}
-            onCancel={onCancel}
-          />
-        </Col>
-        <Col
-          {...formItemLayout}
-          style={{ padding: 10 }}
-          className="mt-2">
-          <Divider>Λεπτομέρειες</Divider>
-          <Form.Item label="Τίτλος">
-            <Input
-              prefix={<Icon type="folder-open" />}
-              name="name"
-              value={logBook.name}
-              placeholder="Τίτλος Συμβάν"
-              onChange={logBookChange}
-            />
-          </Form.Item>
-          <Form.Item label="Ημ/νια Λήξης">
-            <DatePicker
-              value={moment(logBook.close)}
-              placeholder="Επιλογή Ημ/νιας"
-              onChange={logBookChange}
-              className="is-fullwidth"
-            />
-          </Form.Item>
-          <Divider>Επιλογή μέλών για προβολή/επεξεργασία</Divider>
-          <Form.Item label="">
-            <Transfer
-              locale={locale}
-              titles={['Επιλογή', 'Επιλεγμένοι']}
-              rowKey={record => record.userId}
-              dataSource={users}
-              showSearch
-              listStyle={{
-                height: 400, width: '45%'
-              }}
-              targetKeys={logBook.members.map(x=>x.userId)}
-              onChange={usersHandler}
-              render={item => `${item.name}`}
-            />
-          </Form.Item>
-        </Col>
-      </Row>
-    </Form>
+    <div style={{ height: '100%' }} >
+      <LogBookCreateHeader
+        logBook={logBook}
+        onBack={onBack}
+        onSave={onSave}
+        onCancel={onCancel}
+      />
+      <Form style={{ marginTop: 20, width: '100%' }} {...formItemLayout}>
+        <Row type="flex" justify="center" gutter={20}>
+          <Col xs={24}>
+            <Form.Item label="Τίτλος"  >
+              <Input
+                prefix={<Icon type="folder-open" />}
+                name="name"
+                value={logBook.name}
+                placeholder="Τίτλος Συμβάν"
+                onChange={logBookChange}
+              />
+            </Form.Item>
+            <Form.Item label="Ημ/νια Λήξης" >
+              <DatePicker
+                value={moment(logBook.close)}
+                placeholder="Επιλογή Ημ/νιας"
+                onChange={logBookChange}
+                className="is-fullwidth"
+              />
+            </Form.Item>
+            <Form.Item label="Μέλη">
+              <Select
+                showSearch
+                placeholder="Επιλογή Μέλους"
+                optionFilterProp="name"
+                onChange={usersHandler}>
+                {users.map(m => (
+                  <Select.Option key={m.userId} value={m.userId}>{m.name}</Select.Option>
+                ))}
+              </Select>
+              <List
+                size="small"
+                header={<div style={{ color: 'white' }}>Επιλεγμένα Μέλη</div>}
+                bordered
+                dataSource={logBook.members}
+                renderItem={item => <List.Item actions={[
+                  <AntdButton className="btn-xs" onClick={() => removeUser(item.userId)}
+                    size="small"
+                    type="danger"
+                    ghost
+                    shape="circle"
+                    icon="close"
+                  />]
+                }>{item.name}</List.Item>}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+      </Form>
+    </div>
   )
 }
 

@@ -27,6 +27,10 @@ const UserContainer = props => {
     onBack()
   }
 
+  const userHandler = newValue => {
+    setUser({ ...newValue })
+  }
+
   function onBack() {
     history.push('/admin/users')
   }
@@ -63,7 +67,8 @@ const UserContainer = props => {
       onBack,
       onCancel,
       onSave,
-      onDelete
+      onDelete,
+      userHandler
     })
   )
 }

@@ -1,15 +1,19 @@
 @import '../../styles/theme.less';
 
-.logbook-header
-  > .ant-page-header-title-view
-  > .ant-page-header-title-view-sub-title {
-  color: darkgray;
+.logbook-header>.ant-page-header-title-view>.ant-page-header-title-view-sub-title {
+    color: darkgray;
 }
 
 .logbook-body {
-  flex-grow: 1;
-  overflow: auto;
-  border: 1px inset @border-color-base;
-  //margin-top: 1px;
-  //margin: 20px;
+    flex-grow: 1;
+    overflow: auto;
+    border: 1px inset @border-color-base;
+    //margin-top: 1px;
+    //margin: 20px;
+}
+
+.btn-xs {
+    width: 20px!important;
+    height: 20px!important;
+    font-size: 10px!important;
 }

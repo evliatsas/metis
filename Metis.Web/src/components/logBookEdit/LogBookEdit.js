@@ -1,23 +1,25 @@
 import React from 'react'
 import LogBookEditContainer from '../containers/LogBookEditContainer'
 import LogBookEditHeader from './LogBookEditHeader'
+import './logBookEdit.less'
 import {
-  DatePicker, Row, Form, Icon, Input, Col, Transfer, Divider
+  DatePicker, Row, Form, Icon, Input, Col, Select, List, Button as AntdButton
 } from 'antd'
 import moment from 'moment'
-const locale = {
-  itemUnit: 'Χρήστες',
-  itemsUnit: 'Χρήστες',
-  searchPlaceholder: 'Αναζήτηση'
-}
 const formItemLayout = {
-  xs: { span: 24 },
-  sm: { span: 24 },
-  md: { span: 24 },
-  lg: { span: 18 },
-  xl: { span: 12 },
-  xxl: { span: 10 }
-}
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 24 },
+    md: { span: 24 },
+    lg: { span: 7 }
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 24 },
+    md: { span: 24 },
+    lg: { span: 10 }
+  },
+};
 const LogBookEditView = ({ logBook, onBack, onSave, onCancel, users, logBookHandler, onDelete }) => {
   if (!logBook) {
     return null
@@ -31,16 +33,22 @@ const LogBookEditView = ({ logBook, onBack, onSave, onCancel, users, logBookHand
     }
     logBookHandler(logBook)
   }
-  const usersHandler = nextTargetKeys => {
-    logBook = {
-      ...logBook,
-      members: users.filter(f => nextTargetKeys.some(s => s === f.key))
-    }
+  const usersHandler = userId => {
+    const m = users.find(x => x.userId === userId)
+    logBook.members.push(m)
+    logBook = { ...logBook }
+    logBookHandler(logBook)
+  }
+
+  const removeUser = userId => {
+    const index = logBook.members.findIndex(x => x.userId === userId)
+    logBook.members.splice(index, 1)
+    logBook = { ...logBook }
     logBookHandler(logBook)
   }
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ height: '100%' }} >
       <LogBookEditHeader
         logBook={logBook}
         onBack={onBack}
@@ -48,14 +56,10 @@ const LogBookEditView = ({ logBook, onBack, onSave, onCancel, users, logBookHand
         onCancel={onCancel}
         onDelete={onDelete}
       />
-      <Form>
-        <Row type="flex" justify="center">
-          <Col
-            {...formItemLayout}
-            style={{ padding: 10 }}
-            className="mt-2">
-            <Divider>Λεπτομέρειες</Divider>
-            <Form.Item label="Τίτλος">
+      <Form style={{ marginTop: 20, width: '100%' }} {...formItemLayout}>
+        <Row type="flex" justify="center" gutter={20}>
+          <Col xs={24}>
+            <Form.Item label="Τίτλος"  >
               <Input
                 prefix={<Icon type="folder-open" />}
                 name="name"
@@ -64,28 +68,37 @@ const LogBookEditView = ({ logBook, onBack, onSave, onCancel, users, logBookHand
                 onChange={logBookChange}
               />
             </Form.Item>
-            <Form.Item label="Ημ/νια Λήξης">
+            <Form.Item label="Ημ/νια Λήξης" >
               <DatePicker
                 value={moment(logBook.close)}
                 placeholder="Επιλογή Ημ/νιας"
                 onChange={logBookChange}
-                className="is-fullwidth"
               />
             </Form.Item>
-            <Divider>Επιλογή μέλών για προβολή/επεξεργασία</Divider>
-            <Form.Item label="">
-              <Transfer
-                locale={locale}
-                titles={['Επιλογή', 'Επιλεγμένοι']}
-                rowKey={record => record.userId}
-                dataSource={users}
+            <Form.Item label="Μέλη">
+              <Select
                 showSearch
-                listStyle={{
-                  height: 400, width: '45%'
-                }}
-                targetKeys={logBook.members.map(x => x.userId)}
-                onChange={usersHandler}
-                render={item => `${item.name}`}
+                placeholder="Επιλογή Μέλους"
+                optionFilterProp="name"
+                onChange={usersHandler}>
+                {users.map(m => (
+                  <Select.Option key={m.userId} value={m.userId}>{m.name}</Select.Option>
+                ))}
+              </Select>
+              <List
+                size="small"
+                header={<div style={{ color: 'white' }}>Επιλεγμένα Μέλη</div>}
+                bordered
+                dataSource={logBook.members}
+                renderItem={item => <List.Item actions={[
+                  <AntdButton className="btn-xs" onClick={() => removeUser(item.userId)}
+                    size="small"
+                    type="danger"
+                    ghost
+                    shape="circle"
+                    icon="close"
+                  />]
+                }>{item.name}</List.Item>}
               />
             </Form.Item>
           </Col>

@@ -4,7 +4,7 @@ import {
   Tooltip as AntdTooltip,
   Tag as AntdTag,
   Button as AntdButton,
-  Popconfirm as AntdPopconfirm
+  Popconfirm as AntdPopconfirm, Comment
 } from 'antd'
 import moment from 'moment'
 import storage from '../../services/storage'
@@ -40,12 +40,6 @@ const columns = [
     render: (item, row) => moment(item).format(STRINGS.DATETIME_FORMAT) + ' - ' +
       moment(row.ect).format(STRINGS.DATETIME_FORMAT)
   },
-  // {
-  //   title: 'Λήξη',
-  //   dataIndex: 'ect',
-  //   key: 'ect',
-  //   render: item => moment(item).format(STRINGS.DATETIME_FORMAT)
-  // },
   {
     title: 'Εκδότης',
     dataIndex: 'issuer',
@@ -62,11 +56,6 @@ const columns = [
     title: 'Τίτλος',
     dataIndex: 'title',
     key: 'title'
-  },
-  {
-    title: 'Περιγραφή',
-    dataIndex: 'description',
-    key: 'description'
   },
   {
     title: 'Κατάσταση',
@@ -136,8 +125,17 @@ const LogBookEntriessTable = ({ entries, onEdit, onDelete }) => {
       rowKey={item => item.id}
       columns={headers}
       dataSource={entries}
-      expandedRowRender={row => <p>
-        {row.actions}</p>}
+      expandedRowRender={row => <div>
+        <Comment 
+          author={<span style={{ color: 'white' }}>Περιγραφή</span>}
+          content={
+            <p>{row.description} </p>
+          } />
+        <Comment
+          author={<span style={{ color: 'white' }}>Ενέργειες</span>}
+          content={<p>{row.actions}</p>} />
+      </div>
+      }
       pagination={{ defaultPageSize: 10, hideOnSinglePage: true }}
     />
   )

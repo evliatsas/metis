@@ -17,10 +17,10 @@ const LogBookCreateHeader = ({ logBook, onBack, onSave, onCancel }) => {
       className="logbook-header"
       extra={[
         [
-          <AntdButton key="2" type="danger" size="small" onClick={onCancel}>
+          <AntdButton key="2" type="ghost"  size="small" onClick={onCancel}>
             {STRINGS.CANCEL}
           </AntdButton>,
-          <AntdButton key="1" type="primary" size="small" onClick={onSave}>
+          <AntdButton key="1" type="ghost" size="small" onClick={onSave}>
             {STRINGS.SAVE}
           </AntdButton>
         ]
