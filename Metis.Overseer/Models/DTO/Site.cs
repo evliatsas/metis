@@ -7,31 +7,31 @@ namespace Metis.Overseer.Models.DTO
 {
     public class Site
     {
-        public string id { get; set; }
-        public string name { get; set; }
-        public string status { get; set; }
-        public decimal latitude { get; set; }
-        public decimal longitude { get; set; }
-        public string category { get; set; }
-        public IEnumerable<Page> pages { get; set; }
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Status { get; set; }
+        public decimal Latitude { get; set; }
+        public decimal Longitude { get; set; }
+        public string Category { get; set; }
+        public IEnumerable<Page> Pages { get; set; }
 
         public Site() { }
 
         public Site(Guard.Watcher watcher)
         {
-            id = watcher.Site.Id;
-            name = watcher.Site.Name;
-            status = watcher.Site.Status.ToString();
-            latitude = watcher.Site.Latitude;
-            longitude = watcher.Site.Longitude;
-            category = watcher.Site.Category;
-            pages = watcher.Site.Pages.Select(page =>
+            Id = watcher.Site.Id;
+            Name = watcher.Site.Name;
+            Status = watcher.Site.Status.ToString();
+            Latitude = watcher.Site.Latitude;
+            Longitude = watcher.Site.Longitude;
+            Category = watcher.Site.Category;
+            Pages = watcher.Site.Pages.Select(page =>
                 new DTO.Page()
                 {
-                    name = page.Title,
-                    uri = page.Uri,
-                    status = page.Status.ToString(),
-                    guard = watcher.GetPageWorkerStatus(page.Uri).ToString()
+                    Name = page.Title,
+                    Uri = page.Uri,
+                    Status = page.Status.ToString(),
+                    Guard = watcher.GetPageWorkerStatus(page.Uri).ToString()
                 });
         }
     }

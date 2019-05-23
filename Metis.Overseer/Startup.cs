@@ -39,6 +39,7 @@ namespace Metis.Overseer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<UserService>();
+            services.AddScoped<SiteService>();
             services.AddScoped<LogService>();
             services.AddSingleton<IEmailConfiguration>(Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>());
             services.AddTransient<IEmailService, EmailService>();

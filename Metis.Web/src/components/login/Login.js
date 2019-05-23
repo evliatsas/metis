@@ -56,7 +56,7 @@ const Login = () => {
               type="password"
               size="large"
               prefix={<AntdIcon type="key" />}
-              placeholder={STRINGS.USERNAME_PLACEHOLDER}
+              placeholder={STRINGS.PASSWORD_PLACEHOLDER}
               value={password}
               onChange={evt => setPassword(evt.target.value)}
             />
