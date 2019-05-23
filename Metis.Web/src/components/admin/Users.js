@@ -43,7 +43,7 @@ const columns = [
     render: r => ['Viewer', 'Manager', 'Administrator'][r]
   },
   {
-    title: 'Ιστοσελίδες',
+    title: 'Ιστότοποι',
     dataIndex: 'sites',
     key: 'sites',
     render: (e, row) => (
