@@ -11,7 +11,7 @@ const UsersContainer = props => {
   }
 
   function onEdit(user) {
-    console.log('edit', user)
+    history.push(`/admin/users/${user.id}`)
   }
 
   function onDelete(user) {

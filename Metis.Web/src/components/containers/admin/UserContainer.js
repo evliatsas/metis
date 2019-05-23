@@ -2,10 +2,19 @@ import React, { useState, useEffect } from 'react'
 import { withRouter } from 'react-router-dom'
 import api from '../../../services/api'
 
+const initialState = {
+  username: '',
+  password: '',
+  email: '',
+  title: 'Νέος Χρήστης',
+  role: 0,
+  sites: []
+}
+
 const UserContainer = props => {
   const { id } = props.match.params
   const { children, history } = props
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(initialState)
   const [sites, setSites] = useState([])
 
   async function onSave() {
@@ -19,7 +28,7 @@ const UserContainer = props => {
   }
 
   function onBack() {
-    history.push(`/api/admin/users`)
+    history.push('/admin/users')
   }
 
   function onCancel() {
@@ -28,12 +37,15 @@ const UserContainer = props => {
 
   async function onDelete() {
     await api.delete(`/api/admin/users/${id}`)
-    history.push('/api/admin/users')
+    history.push('/admin/users')
   }
 
   useEffect(() => {
     async function fetchUser() {
-      const response = await api.get(`/api/admin/user/${id}`)
+      if (id === 'new') {
+        return
+      }
+      const response = await api.get(`/api/admin/users/${id}`)
       setUser(response)
     }
     async function fetchSites() {
@@ -48,6 +60,7 @@ const UserContainer = props => {
     React.cloneElement(child, {
       user,
       sites,
+      onBack,
       onCancel,
       onSave,
       onDelete

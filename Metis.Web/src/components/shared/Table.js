@@ -8,7 +8,7 @@ const Table = ({ columns, data, keySelector = item => item.id }) => (
     rowKey={item => item.id}
     columns={columns}
     dataSource={data}
-    pagination={{ defaultPageSize: 15, hideOnSinglePage: true }}
+    pagination={{ defaultPageSize: 10, hideOnSinglePage: true }}
   />
 )
 

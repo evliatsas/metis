@@ -13,33 +13,23 @@ import { statusColor } from '../map/mapUtilities'
 const STRINGS = {
   TITLE: 'Ιστότοποι',
   SUBTITLE: 'διαχείριση ιστότοπων εφαρμογής',
-  NEW: 'Νέος Χρήστης',
+  NEW: 'Νέος Ιστότοπος',
   EDIT: 'Επεξεργασία',
   DELETE: 'Διαγραφή',
   DELETE_CONFIRMATION:
     'Είστε σίγουρος ότι επιθυμείτε να διαγράψετε τον επιλεγμένο ιστότοπο;'
 }
-
+console.log(Object.values(statusColor))
 const columns = [
   {
-    title: 'Τίτλος',
-    dataIndex: 'title',
-    key: 'title'
+    title: 'Όνομα',
+    dataIndex: 'name',
+    key: 'name'
   },
   {
-    title: 'Όνομα Χρήστη',
-    dataIndex: 'username',
-    key: 'username'
-  },
-  {
-    title: 'Email',
-    dataIndex: 'email',
-    key: 'email'
-  },
-  {
-    title: 'Ρόλος',
-    dataIndex: 'role',
-    key: 'role'
+    title: 'Κατηγορία',
+    dataIndex: 'category',
+    key: 'category'
   },
   {
     title: 'Ιστοσελίδες',
@@ -49,11 +39,11 @@ const columns = [
       <div>
         {row.pages.map(p => (
           <AntdTag
-            key={p.id}
-            color={statusColor[p.status]}
+            key={p.uri}
+            color={Object.values(statusColor)[p.status]}
             style={{ marginTop: '5px' }}>
             <a target="_window" href={p.uri}>
-              {p.name}
+              {p.uri}
             </a>
           </AntdTag>
         ))}
@@ -113,7 +103,13 @@ const SitesView = ({ sites, onCreate, onEdit, onDelete }) => {
         ]}
       />
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <Table columns={headers} data={sites} />
+        <div style={{ width: '100%', maxWidth: '1200px' }}>
+          <Table
+            columns={headers}
+            data={sites}
+            style={{ maxWidth: '1024px' }}
+          />
+        </div>
       </div>
     </div>
   )
