@@ -19,7 +19,7 @@ const STRINGS = {
   DELETE_CONFIRMATION:
     'Είστε σίγουρος ότι επιθυμείτε να διαγράψετε τον επιλεγμένο ιστότοπο;'
 }
-console.log(Object.values(statusColor))
+
 const columns = [
   {
     title: 'Όνομα',
@@ -89,7 +89,7 @@ const SitesView = ({ sites, onCreate, onEdit, onDelete }) => {
       )
     }
   ]
-  console.log(sites[0])
+
   return (
     <div>
       <PageHeader

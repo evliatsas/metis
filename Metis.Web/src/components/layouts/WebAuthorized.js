@@ -13,6 +13,7 @@ const LogBookEntry = lazy(() => import('../logBookEntry/LogBookEntryEdit'))
 const UsersAdmin = lazy(() => import('../admin/Users'))
 const UserAdmin = lazy(() => import('../admin/User'))
 const SitesAdmin = lazy(() => import('../admin/Sites'))
+const SiteAdmin = lazy(() => import('../admin/Site'))
 
 const WebAuthorized = () => {
   return (
@@ -35,6 +36,7 @@ const WebAuthorized = () => {
               <Route exact path="/admin/users" component={UsersAdmin} />
               <Route exact path="/admin/users/:id" component={UserAdmin} />
               <Route exact path="/admin/sites" component={SitesAdmin} />
+              <Route exact path="/admin/sites/:id" component={SiteAdmin} />
               <Redirect to="/map" />
             </Switch>
           </Suspense>

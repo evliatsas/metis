@@ -11,7 +11,7 @@ const SitesContainer = props => {
   }
 
   function onEdit(site) {
-    console.log('edit', site)
+    history.push(`/admin/sites/${site.id}`)
   }
 
   function onDelete(site) {
