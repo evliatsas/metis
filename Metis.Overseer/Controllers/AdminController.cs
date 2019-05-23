@@ -1,5 +1,5 @@
 using Metis.Core.Entities;
-using Metis.Overseer.Models.DTO;
+using Metis.Guard.Entities;
 using Metis.Overseer.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
