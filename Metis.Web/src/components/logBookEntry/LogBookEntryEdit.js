@@ -73,7 +73,7 @@ const LogBookEntryView = ({ logBookEntry, members, onCancel, onSave, onDelete, l
                                 showSearch
                                 placeholder="Επιλογή παραλήπτη"
                                 optionFilterProp="name"
-                                defaultValue={logBookEntry.recipient.userId}
+                                defaultValue={logBookEntry.recipient ? logBookEntry.recipient.userId : null}
                                 onChange={e => logBookEntryChange(e, 4)}>
                                 {members.map(m => (
                                     <Select.Option key={m.userId} value={m.userId}>{m.name}</Select.Option>

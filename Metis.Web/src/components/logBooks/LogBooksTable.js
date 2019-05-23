@@ -1,6 +1,6 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import { Table as AntdTable, Divider as AntdDivider } from 'antd'
+import { Table as AntdTable, Divider as AntdDivider, Button as AntdButton } from 'antd'
 import moment from 'moment'
 import LogBookStatus from './LogBookStatus'
 import './logBooks.less'
@@ -48,11 +48,24 @@ const columns = [
     title: 'Ενέργειες',
     key: 'action',
     render: (e, row) => (
-      <span>
-        <NavLink to={`/logbooks/${row.id}/edit`}>{STRINGS.EDIT}</NavLink>
-        <AntdDivider type="vertical" />
-        <NavLink to={`/logbooks/${row.id}`}>{STRINGS.VIEW}</NavLink>
-      </span>
+      <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
+        <NavLink to={`/logbooks/${row.id}/edit`}>
+          <AntdButton
+            size="small"
+            type="ghost"
+            shape="circle"
+            icon="form"
+          />
+        </NavLink>
+        <NavLink to={`/logbooks/${row.id}`}>
+          <AntdButton
+            size="small"
+            type="ghost"
+            shape="circle"
+            icon="eye"
+          />
+        </NavLink>
+      </div>
     )
   }
 ]

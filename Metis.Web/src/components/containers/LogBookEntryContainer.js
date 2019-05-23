@@ -16,6 +16,7 @@ const LogBookEntryContainer = props => {
             }
         } else {
             const saved = await api.put(`/api/logbooks/${id}/entries/${logBookEntry.id}`, logBookEntry)
+            history.push(`/logbooks/${id}`)
         }
     }
 
