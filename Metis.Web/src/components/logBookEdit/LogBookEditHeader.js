@@ -1,14 +1,18 @@
 import React from 'react'
-import { PageHeader as AntdPageHeader, Button as AntdButton } from 'antd'
+import {
+  Button as AntdButton, PageHeader as AntdPageHeader
+} from 'antd'
 import './logBookEdit.less'
 
 const STRINGS = {
   SUBTITLE: 'Επεξεργασία Βιβλίου Συμβάντων',
   SAVE: 'Αποθήκευση',
-  CANCEL: 'Ακύρωση'
+  CANCEL: 'Ακύρωση',
+  DELETE: 'Διαγραφή'
 }
 
-const LogBookEditHeader = ({ logBook, onBack, onSave, onCancel }) => {
+const LogBookEditHeader = ({ logBook, onBack, onSave, onCancel, onDelete }) => {
+
   return (
     <AntdPageHeader
       title={logBook.name}
@@ -17,6 +21,9 @@ const LogBookEditHeader = ({ logBook, onBack, onSave, onCancel }) => {
       className="logbook-header"
       extra={[
         [
+          <AntdButton key="0" type="danger" size="small" onClick={onDelete}>
+            {STRINGS.DELETE}
+          </AntdButton>,
           <AntdButton key="2" type="danger" size="small" onClick={onCancel}>
             {STRINGS.CANCEL}
           </AntdButton>,
