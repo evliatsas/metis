@@ -24,7 +24,7 @@ namespace Metis.Overseer.Controllers
         {
             var sites = _guardService.Watchers
                 .Select(w => new Models.DTO.Site(w))
-                .OrderBy(o => o.name);
+                .OrderBy(o => o.Name);
 
             return Ok(sites);
         }
