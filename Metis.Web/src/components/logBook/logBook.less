@@ -1,60 +1,59 @@
 @import '../../styles/theme.less';
 
 @logbook-chat-avatar-colors: {
-  one: orange;
-  two: green;
-  three: blue;
-  four: yellow;
-};
+    one: orange;
+    two: green;
+    three: blue;
+    four: yellow;
+}
 
-.logbook-header
-  > .ant-page-header-title-view
-  > .ant-page-header-title-view-sub-title {
-  color: darkgray;
+;
+
+.logbook-header>.ant-page-header-title-view>.ant-page-header-title-view-sub-title {
+    color: darkgray;
 }
 
 .logbook-body {
-  flex-grow: 1;
-  overflow: auto;
-  border: 1px inset @border-color-base;
-  //margin-top: 1px;
-  //margin: 20px;
+    flex-grow: 1;
+    overflow: auto;
+    border: 1px inset @border-color-base;
+    //margin-top: 1px;
+    //margin: 20px;
 }
-
 .logbook-chat {
-  height: 100%;
-  max-width: 25%;
-  min-width: 25%;
-  display: flex;
-  flex-direction: column;
-  background-color: @body-background;
-  border: 1px inset @border-color-base;
+    height: 100%;
+    max-width: 25%;
+    min-width: 25%;
+    display: flex;
+    flex-direction: column;
+    background-color: @body-background;
+    border: 1px inset @border-color-base;
 }
 
 .logbook-chat-message-list {
-  flex-grow: 1;
-  padding-left: 10px;
-  overflow-y: scroll;
+    flex-grow: 1;
+    padding-left: 10px;
+    overflow-y: scroll;
 }
 
 .logbook-chat-message {
-  color: @text-color;
+    color: @text-color;
 }
 
 .logbook-chat-message & .ant-comment-content-author-name {
-  color: @primary-color;
+    color: @primary-color;
 }
 
 .logbook-chat-message & .ant-comment-inner {
-  padding: 8px 0;
+    padding: 8px 0;
 }
 
 .logbook-chat-avatar {
-  background-color: orange;
-  font-weight: bold;
+    background-color: orange;
+    font-weight: bold;
 }
 
 .logbook-delete-entry-button:hover {
-  color: @text-color-danger;
-  border-color: red;
+    color: @text-color-danger;
+    border-color: red;
 }

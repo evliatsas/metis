@@ -17,17 +17,19 @@ const LogBookContainer = props => {
     history.push('/logbooks')
   }
 
-  const onEdit = (event) => {
-    console.log(event)
-    history.push(`/logbooks/${id}/event/${event.id}`)
+  const onEdit = (row) => {
+    history.push(`/logbooks/${id}/event/${row.id}`)
   }
 
   function onCreate() {
     history.push(`/logbooks/${id}/event/new`)
   }
 
-  function onBookEntryDelete() {
-    alert('delete entry')
+  async function onBookEntryDelete(row) {
+    await api.delete(`/api/logbooks/${id}/entries/${row.id}`)
+    const index = logBook.entries.findIndex(x => x.id == row.id)
+    logBook.entries.splice(index, 1)
+    setLogBook({ ...logBook })
   }
 
   useEffect(() => {

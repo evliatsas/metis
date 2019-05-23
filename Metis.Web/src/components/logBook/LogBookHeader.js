@@ -16,9 +16,9 @@ const LogBookHeader = ({ logBook, onBack, onEdit, onCreate }) => {
       className="logbook-header"
       extra={[
         [
-          <AntdButton key="1" type="ghost" size="small" onClick={onEdit}>
-            {STRINGS.EDIT}
-          </AntdButton>,
+          // <AntdButton key="1" type="ghost" size="small" onClick={onEdit}>
+          //   {STRINGS.EDIT}
+          // </AntdButton>,
           <AntdButton key="2" type="ghost" size="small" onClick={onCreate}>
             {STRINGS.CREATE}
           </AntdButton>

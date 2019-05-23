@@ -9,10 +9,10 @@ const LogBookEntryContainer = props => {
     const [members, setMembers] = useState([])
 
     async function onSave() {
-        if (logBookEntry.id) {
+        if (!logBookEntry.id) {
             const created = await api.post(`/api/logbooks/${id}/entries`, logBookEntry)
             if (created) {
-                history.push(`/logbooks/${created.id}`)
+                history.push(`/logbooks/${id}/event/${created.id}`)
             }
         } else {
             const saved = await api.put(`/api/logbooks/${id}/entries/${logBookEntry.id}`, logBookEntry)
@@ -26,6 +26,11 @@ const LogBookEntryContainer = props => {
     function onCancel() {
         onBack()
     }
+
+    const logBookHandler = newValue => {
+        setLogBookEntry({ ...newValue })
+    }
+
 
     async function onDelete() {
         await api.delete(`/api/logbooks/${id}/entries/${logBookEntry.id}`)
@@ -51,7 +56,8 @@ const LogBookEntryContainer = props => {
             members,
             onCancel,
             onSave,
-            onDelete
+            onDelete,
+            logBookHandler
         })
     )
     );

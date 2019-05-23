@@ -21,10 +21,10 @@ const STRINGS = {
 }
 
 const PRIORITIES = {
-  //0: { color: 'primary', caption: '' },
+  0: { color: '#631ff4', caption: 'Κανονική' },
   1: { color: '#065d9b', caption: 'Δευτερεύων' },
   2: { color: '#e0610d', caption: 'Επείγον' },
-  3: { color: '#e00d0d', caption: 'Άμενο' }
+  3: { color: '#e00d0d', caption: 'Άμεσο' }
 }
 
 function isEntryIssuer(entry) {
@@ -34,17 +34,18 @@ function isEntryIssuer(entry) {
 
 const columns = [
   {
-    title: 'Έναρξη',
+    title: 'Έναρξη - Λήξη',
     dataIndex: 'dtg',
     key: 'dtg',
-    render: item => moment(item).format(STRINGS.DATETIME_FORMAT)
+    render: (item, row) => moment(item).format(STRINGS.DATETIME_FORMAT) + ' - ' +
+      moment(row.ect).format(STRINGS.DATETIME_FORMAT)
   },
-  {
-    title: 'Λήξη',
-    dataIndex: 'ect',
-    key: 'ect',
-    render: item => moment(item).format(STRINGS.DATETIME_FORMAT)
-  },
+  // {
+  //   title: 'Λήξη',
+  //   dataIndex: 'ect',
+  //   key: 'ect',
+  //   render: item => moment(item).format(STRINGS.DATETIME_FORMAT)
+  // },
   {
     title: 'Εκδότης',
     dataIndex: 'issuer',
@@ -79,13 +80,12 @@ const LogBookEntryTags = ({ entry }) => (
     {entry.status === 1 ? (
       <AntdTag color="#cf1322">{STRINGS.CLOSED}</AntdTag>
     ) : (
-      <AntdTag color="#378212">{STRINGS.OPEN}</AntdTag>
-    )}
-    {entry.priority > 0 && (
-      <AntdTag color={PRIORITIES[entry.priority].color}>
-        {PRIORITIES[entry.priority].caption}
-      </AntdTag>
-    )}
+        <AntdTag color="#378212">{STRINGS.OPEN}</AntdTag>
+      )}
+    {<AntdTag color={PRIORITIES[entry.priority].color}>
+      {PRIORITIES[entry.priority].caption}
+    </AntdTag>
+    }
   </div>
 )
 
@@ -136,6 +136,8 @@ const LogBookEntriessTable = ({ entries, onEdit, onDelete }) => {
       rowKey={item => item.id}
       columns={headers}
       dataSource={entries}
+      expandedRowRender={row => <p>
+        {row.actions}</p>}
       pagination={{ defaultPageSize: 10, hideOnSinglePage: true }}
     />
   )
