@@ -8,6 +8,7 @@ const LogBooks = lazy(() => import('../logBooks/LogBooks'))
 const LogBookCreate = lazy(() => import('../logBookCreate/LogBookCreate'))
 const LogBook = lazy(() => import('../logBook/LogBook'))
 const LogBookEdit = lazy(() => import('../logBookEdit/LogBookEdit'))
+const LogBookEntry = lazy(() => import('../logBookEntry/LogBookEntryEdit'))
 
 const UsersAdmin = lazy(() => import('../admin/Users'))
 const SitesAdmin = lazy(() => import('../admin/Sites'))
@@ -27,6 +28,11 @@ const WebAuthorized = () => {
               <Route exact path="/logbooks/:id/edit" component={LogBookEdit} />
               <Route exact path="/admin/users" component={UsersAdmin} />
               <Route exact path="/admin/sites" component={SitesAdmin} />
+              <Route
+                exact
+                path="/logbooks/:id/event/:eventId"
+                component={LogBookEntry}
+              />
               <Redirect to="/map" />
             </Switch>
           </Suspense>

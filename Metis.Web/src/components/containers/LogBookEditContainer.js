@@ -6,14 +6,23 @@ const LogBookEditContainer = props => {
   const { id } = props.match.params
   const { children, history } = props
   const [logBook, setLogBook] = useState(null)
-
+  const [users, setUsers] = useState([])
   function onBack() {
     history.push('/logbooks')
   }
 
   async function onSave() {
     const saved = await api.put(`/api/logbooks/${id}`, logBook)
-    setLogBook(saved)
+    //setLogBook(saved)
+  }
+
+  async function onDelete() {
+    await api.delete(`/api/logbooks/${id}`)
+    history.push(`/logbooks`)
+  }
+
+  const logBookHandler = newValue => {
+    setLogBook({ ...newValue })
   }
 
   function onCancel() {
@@ -25,6 +34,11 @@ const LogBookEditContainer = props => {
       const response = await api.get(`/api/logbooks/${id}`)
       setLogBook(response)
     }
+    async function fetchUsers() {
+      const response = await api.get('/api/logbooks/members')
+      setUsers(response)
+    }
+    fetchUsers()
     fetchLogBook()
   }, [id])
 
@@ -33,7 +47,10 @@ const LogBookEditContainer = props => {
       logBook,
       onBack,
       onSave,
-      onCancel
+      onCancel,
+      users,
+      logBookHandler,
+      onDelete
     })
   )
 }

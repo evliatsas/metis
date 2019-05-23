@@ -17,12 +17,17 @@ const LogBookContainer = props => {
     history.push('/logbooks')
   }
 
-  function onEdit() {
-    history.push(`/logbooks/${id}/edit`)
+  const onEdit = (event) => {
+    console.log(event)
+    history.push(`/logbooks/${id}/event/${event.id}`)
   }
 
   function onCreate() {
-    history.push('/logbooks/new')
+    history.push(`/logbooks/${id}/event/new`)
+  }
+
+  function onBookEntryDelete() {
+    alert('delete entry')
   }
 
   useEffect(() => {
@@ -120,7 +125,8 @@ const LogBookContainer = props => {
       sendMessage,
       onBack,
       onEdit,
-      onCreate
+      onCreate,
+      onBookEntryDelete
     })
   )
 }
