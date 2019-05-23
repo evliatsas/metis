@@ -2,8 +2,7 @@ import React from 'react'
 import LogBookEditContainer from '../containers/LogBookEditContainer'
 import LogBookEditHeader from './LogBookEditHeader'
 import {
-  DatePicker, Row, Form,
-  Icon, Input, Col, Transfer, Divider
+  DatePicker, Row, Form, Icon, Input, Col, Transfer, Divider
 } from 'antd'
 import moment from 'moment'
 const locale = {
@@ -19,7 +18,7 @@ const formItemLayout = {
   xl: { span: 12 },
   xxl: { span: 10 }
 }
-const LogBookEditView = ({ logBook, onBack, onSave, onCancel, users, logBookHandler,onDelete }) => {
+const LogBookEditView = ({ logBook, onBack, onSave, onCancel, users, logBookHandler, onDelete }) => {
   if (!logBook) {
     return null
   }

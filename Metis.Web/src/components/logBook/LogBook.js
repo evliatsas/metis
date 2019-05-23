@@ -11,7 +11,8 @@ const LogBookView = ({
   sendMessage,
   onBack,
   onEdit,
-  onCreate
+  onCreate,
+  onBookEntryDelete
 }) => {
   if (!logBook) {
     return null
@@ -26,7 +27,7 @@ const LogBookView = ({
       />
       <div style={{ display: 'flex', height: '100%' }}>
         <div className="logbook-body">
-          <LogBookEntriesTable entries={logBook.entries} />
+          <LogBookEntriesTable onEdit={onEdit} onDelete={onBookEntryDelete} entries={logBook.entries} />
         </div>
         <LogBookChat
           members={members}
