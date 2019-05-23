@@ -49,14 +49,13 @@ const columns = [
     render: (e, row) => (
       <div>
         {row.sites.map(s => (
-          <AntdTag
-            key={s.id}
-            color={statusColor[s.status]}
-            style={{ marginTop: '5px' }}>
-            <a target="_window" href={s.pages[0].uri}>
-              {s.name}
-            </a>
-          </AntdTag>
+          <AntdTooltip key={s.id} title={s.pages[0].uri}>
+            <AntdTag color={statusColor[s.status]} style={{ marginTop: '5px' }}>
+              <a target="_window" href={s.pages[0].uri}>
+                {s.name}
+              </a>
+            </AntdTag>
+          </AntdTooltip>
         ))}
       </div>
     )
