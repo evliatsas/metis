@@ -22,6 +22,16 @@ const items = [
     path: '/logbooks',
     icon: 'notification',
     caption: 'Συμβάντα'
+  },
+  {
+    path: '/admin/users',
+    icon: 'team',
+    caption: 'Διαχείριση Χρηστών'
+  },
+  {
+    path: '/admin/sites',
+    icon: 'file-protect',
+    caption: 'Διαχείριση Ιστοσελίδων'
   }
 ]
 

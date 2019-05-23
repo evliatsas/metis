@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Metis.Core.Entities;
-using Metis.Overseer.Models.DTO;
+using Metis.Guard.Entities;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 
@@ -23,7 +23,8 @@ namespace Metis.Overseer.Services
 
         public async Task<IEnumerable<Site>> GetAll()
         {
-            return await _Sites.Find(User => true).ToListAsync();
+            var data = await _Sites.Find(site => true).ToListAsync();
+            return data;
         }
 
         public async Task<IEnumerable<Site>> GetForMembers()

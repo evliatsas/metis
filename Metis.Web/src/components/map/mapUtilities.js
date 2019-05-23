@@ -14,10 +14,10 @@ export const MAP_CENTER = {
 }
 
 export const statusColor = {
-  Alarm: '#f5222d',
   Ok: '#52c41a',
-  NotFound: '#1890ff',
   Maintenance: '#faad14',
+  Alarm: '#f5222d',
+  NotFound: '#1890ff',
   Selected: 'cyan',
   Pending: '#fadb14'
 }
