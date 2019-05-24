@@ -65,7 +65,6 @@ const columns = [
 const UsersView = ({ users, onCreate, onEdit, onDelete }) => {
   const headers = [
     ...columns,
-
     {
       title: 'Ενέργειες',
       key: 'action',

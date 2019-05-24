@@ -27,9 +27,9 @@ const PRIORITIES = {
   3: { color: '#e00d0d', caption: 'Άμεσο' }
 }
 
-function isEntryIssuer(entry) {
+function isEntryIssuerOrRecipient(entry) {
   const user = storage.get('auth')
-  return entry.issuer.userId === user.userid
+  return entry.issuer.userId === user.userid || entry.recipient.userId === user.userid
 }
 
 const columns = [
@@ -85,7 +85,7 @@ const LogBookEntriessTable = ({ entries, onEdit, onDelete }) => {
       title: 'Ενέργειες',
       key: 'action',
       render: (e, row) => {
-        if (!isEntryIssuer(row)) {
+        if (!isEntryIssuerOrRecipient(row)) {
           return null
         }
         return (

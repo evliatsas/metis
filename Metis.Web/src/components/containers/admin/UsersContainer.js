@@ -14,8 +14,11 @@ const UsersContainer = props => {
     history.push(`/admin/users/${user.id}`)
   }
 
-  function onDelete(user) {
-    console.log('delete', user)
+  async function onDelete(user) {
+    await api.delete(`/api/admin/users/${user.id}`)
+    const index = users.findIndex(x => x.id = user.id)
+    users.splice(index, 1)
+    setUsers([...users])
   }
 
   useEffect(() => {

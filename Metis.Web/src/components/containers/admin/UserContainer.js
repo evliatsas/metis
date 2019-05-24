@@ -19,9 +19,9 @@ const UserContainer = props => {
 
   async function onSave() {
     if (user.id) {
-      await api.post(`/api/admin/users`, user)
-    } else {
       await api.put(`/api/admin/users/${id}`, user)
+    } else {
+      await api.post(`/api/admin/users`, user)     
     }
 
     onBack()

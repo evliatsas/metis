@@ -11,9 +11,10 @@ const LogBookEntryContainer = props => {
     async function onSave() {
         if (!logBookEntry.id) {
             const created = await api.post(`/api/logbooks/${id}/entries`, logBookEntry)
-            if (created) {
-                history.push(`/logbooks/${id}/event/${created.id}`)
-            }
+            history.push(`/logbooks/${id}`)
+            // if (created) {
+            //     history.push(`/logbooks/${id}/event/${created.id}`)
+            // }
         } else {
             const saved = await api.put(`/api/logbooks/${id}/entries/${logBookEntry.id}`, logBookEntry)
             history.push(`/logbooks/${id}`)

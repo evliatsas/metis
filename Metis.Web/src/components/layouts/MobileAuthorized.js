@@ -8,6 +8,7 @@ const LogBooks = lazy(() => import('../logBooks/LogBooks'))
 const LogBookCreate = lazy(() => import('../logBookCreate/LogBookCreate'))
 const LogBookEdit = lazy(() => import('../logBookEdit/LogBookEdit'))
 const LogBook = lazy(() => import('../logBook/LogBook'))
+const LogBookEntry = lazy(() => import('../logBookEntry/LogBookEntryEdit'))
 
 const MobileAuthorized = () => {
   return (<React.Fragment>
@@ -20,6 +21,11 @@ const MobileAuthorized = () => {
             <Route exact path="/logbooks/:id" component={LogBook} />
             <Route exact path="/logbooks/new" component={LogBookCreate} />
             <Route exact path="/logbooks/:id/edit" component={LogBookEdit} />
+            <Route
+                exact
+                path="/logbooks/:id/event/:eventId"
+                component={LogBookEntry}
+              />
             <Redirect to="/map" />
           </Switch>
         </Suspense>
