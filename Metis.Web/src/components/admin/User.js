@@ -3,7 +3,14 @@ import UserContainer from '../containers/admin/UserContainer'
 import PageHeader from '../shared/PageHeader'
 import '../logBookEdit/logBookEdit.less'
 import {
-  Select, Row, Form, Icon, Input, Col, List, Button as AntdButton
+  Select,
+  Row,
+  Form,
+  Icon,
+  Input,
+  Col,
+  List,
+  Button as AntdButton
 } from 'antd'
 const STRINGS = {
   SUBTITLE_NEW: 'δημιουργία χρήστη',
@@ -23,8 +30,8 @@ const formItemLayout = {
     sm: { span: 24 },
     md: { span: 24 },
     lg: { span: 10 }
-  },
-};
+  }
+}
 
 const UserView = ({ user, sites, onSave, onCancel, onBack, userHandler }) => {
   if (!user) {
@@ -32,7 +39,7 @@ const UserView = ({ user, sites, onSave, onCancel, onBack, userHandler }) => {
   }
 
   const userChange = event => {
-    user = ({ ...user, [event.target.name]: event.target.value })
+    user = { ...user, [event.target.name]: event.target.value }
     userHandler(user)
   }
   const handleSite = siteId => {
@@ -67,7 +74,7 @@ const UserView = ({ user, sites, onSave, onCancel, onBack, userHandler }) => {
       <Form style={{ marginTop: 20, width: '100%' }} {...formItemLayout}>
         <Row type="flex" justify="center" gutter={20}>
           <Col xs={24}>
-            <Form.Item label="Τίτλος"  >
+            <Form.Item label="Τίτλος">
               <Input
                 prefix={<Icon type="user" />}
                 name="title"
@@ -75,7 +82,7 @@ const UserView = ({ user, sites, onSave, onCancel, onBack, userHandler }) => {
                 onChange={userChange}
               />
             </Form.Item>
-            <Form.Item label="Username" >
+            <Form.Item label="Username">
               <Input
                 prefix={<Icon type="edit" />}
                 name="username"
@@ -84,7 +91,7 @@ const UserView = ({ user, sites, onSave, onCancel, onBack, userHandler }) => {
               />
             </Form.Item>
 
-            <Form.Item label="Email" >
+            <Form.Item label="Email">
               <Input
                 prefix={<Icon type="inbox" />}
                 name="email"
@@ -92,7 +99,7 @@ const UserView = ({ user, sites, onSave, onCancel, onBack, userHandler }) => {
                 onChange={userChange}
               />
             </Form.Item>
-            <Form.Item label="Κωδικός" >
+            <Form.Item label="Κωδικός">
               <Input
                 prefix={<Icon type="lock" />}
                 name="password"
@@ -102,8 +109,7 @@ const UserView = ({ user, sites, onSave, onCancel, onBack, userHandler }) => {
               />
             </Form.Item>
             <Form.Item label="Ρόλος">
-              <Select
-                value={user.role} onChange={roleHandler}>
+              <Select value={user.role} onChange={roleHandler}>
                 <Select.Option value={0}>Viewer</Select.Option>
                 <Select.Option value={1}>Manager</Select.Option>
                 <Select.Option value={2}>Administrator</Select.Option>
@@ -113,25 +119,37 @@ const UserView = ({ user, sites, onSave, onCancel, onBack, userHandler }) => {
               <Select
                 showSearch
                 placeholder="Επιλογή Site"
-                optionFilterProp="name" onChange={handleSite}>
+                optionFilterProp="name"
+                onChange={handleSite}>
                 {sites.map(s => (
-                  <Select.Option key={s.id} value={s.id}>{s.name}</Select.Option>
+                  <Select.Option key={s.id} value={s.id}>
+                    {s.name}
+                  </Select.Option>
                 ))}
               </Select>
               <List
                 size="small"
-                header={<div style={{ color: 'white' }}>Site προς διαχείριση</div>}
+                header={
+                  <div style={{ color: 'white' }}>Site προς διαχείριση</div>
+                }
                 bordered
                 dataSource={user.sites}
-                renderItem={item => <List.Item actions={[
-                  <AntdButton className="btn-xs" onClick={() => removeSite(item)}
-                    size="small"
-                    type="danger"
-                    ghost
-                    shape="circle"
-                    icon="close"
-                  />]
-                }>{(sites.find(x => x.id == item)).name}</List.Item>}
+                renderItem={item => (
+                  <List.Item
+                    actions={[
+                      <AntdButton
+                        className="btn-xs"
+                        onClick={() => removeSite(item)}
+                        size="small"
+                        type="danger"
+                        ghost
+                        shape="circle"
+                        icon="close"
+                      />
+                    ]}>
+                    {sites.find(x => x.id === item).name}
+                  </List.Item>
+                )}
               />
             </Form.Item>
           </Col>

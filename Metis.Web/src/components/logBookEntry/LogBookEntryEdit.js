@@ -48,7 +48,7 @@ const LogBookEntryView = ({
       case 4:
         logBookEntry = {
           ...logBookEntry,
-          recipient: members.find(x => x.userId == event)
+          recipient: members.find(x => x.userId === event)
         }
         break
       default:
