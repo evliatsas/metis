@@ -37,10 +37,10 @@ const LogBookEntryView = ({
         }
         break
       case 1:
-        logBookEntry = { ...logBookEntry, ect: event._d }
+        logBookEntry = { ...logBookEntry, ect: event ? event._d : null }
         break
       case 2:
-        logBookEntry = { ...logBookEntry, dtg: event._d }
+        logBookEntry = { ...logBookEntry, dtg: event ? event._d : null }
         break
       case 3:
         logBookEntry = { ...logBookEntry, priority: event }
@@ -103,7 +103,7 @@ const LogBookEntryView = ({
           <Select
             defaultValue={logBookEntry.priority}
             onChange={e => logBookEntryChange(e, 3)}>
-            <Select.Option value={0}>Κανονική</Select.Option>
+            <Select.Option value={0}>Κανονικό</Select.Option>
             <Select.Option value={1}>Δευτερεύων</Select.Option>
             <Select.Option value={2}>Επείγον</Select.Option>
             <Select.Option value={3}>Άμεσο</Select.Option>
@@ -118,24 +118,26 @@ const LogBookEntryView = ({
             autosize={{ minRows: 4, maxRows: 4 }}
           />
         </Form.Item>
-        <Form.Item label="DTG">
+        <Form.Item label="Έναρξη">
           <DatePicker
+            showTime={{ format: 'HH:mm' }}
+            allowClear={false}
             defaultValue={
               logBookEntry.dtg ? moment(logBookEntry.dtg, dateFormat) : null
             }
             className="is-fullwidth"
             onChange={e => logBookEntryChange(e, 2)}
-            placeholder="DateTime given"
           />
         </Form.Item>
-        <Form.Item label="ECT">
+        <Form.Item label="Λήξη">
           <DatePicker
+            showTime={{ format: 'HH:mm' }}
+            allowClear={false}
             defaultValue={
               logBookEntry.ect ? moment(logBookEntry.ect, dateFormat) : null
             }
             className="is-fullwidth"
             onChange={e => logBookEntryChange(e, 1)}
-            placeholder="DateTime of completion"
           />
         </Form.Item>
       </Form>
