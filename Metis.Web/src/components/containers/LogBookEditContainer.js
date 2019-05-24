@@ -12,8 +12,9 @@ const LogBookEditContainer = props => {
   }
 
   async function onSave() {
-    const saved = await api.put(`/api/logbooks/${id}`, logBook)
-    //setLogBook(saved)
+    await api.put(`/api/logbooks/${id}`, logBook)
+    const response = await api.get(`/api/logbooks/${id}`)
+    setLogBook(response)
   }
 
   async function onDelete() {

@@ -1,8 +1,12 @@
 import React from 'react'
 import LogBookContainer from '../containers/LogBookContainer'
-import LogBookHeader from './LogBookHeader'
+import PageHeader from '../shared/PageHeader'
 import LogBookChat from './LogBookChat'
 import LogBookEntriesTable from './LogBookEntriesTable'
+
+const STRINGS = {
+  CREATE: 'Νέο Συμβάν'
+}
 
 const LogBookView = ({
   logBook,
@@ -12,22 +16,33 @@ const LogBookView = ({
   onBack,
   onEdit,
   onCreate,
-  onBookEntryDelete
+  onΕntryDelete,
+  onEntryClose
 }) => {
   if (!logBook) {
     return null
   }
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <LogBookHeader
-        logBook={logBook}
+      <PageHeader
+        title={logBook.name}
+        subtitle={logBook.owner.name}
         onBack={onBack}
-        onEdit={onEdit}
-        onCreate={onCreate}
+        actions={[
+          {
+            caption: STRINGS.CREATE,
+            onClick: onCreate
+          }
+        ]}
       />
       <div style={{ display: 'flex', height: '100%' }}>
         <div className="logbook-body">
-          <LogBookEntriesTable onEdit={onEdit} onDelete={onBookEntryDelete} entries={logBook.entries} />
+          <LogBookEntriesTable
+            entries={logBook.entries}
+            onEdit={onEdit}
+            onDelete={onΕntryDelete}
+            onClose={onEntryClose}
+          />
         </div>
         <LogBookChat
           members={members}

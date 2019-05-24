@@ -4,7 +4,8 @@ import {
   Tooltip as AntdTooltip,
   Tag as AntdTag,
   Button as AntdButton,
-  Popconfirm as AntdPopconfirm, Comment
+  Popconfirm as AntdPopconfirm,
+  Comment
 } from 'antd'
 import moment from 'moment'
 import storage from '../../services/storage'
@@ -12,8 +13,9 @@ import './logBook.less'
 
 const STRINGS = {
   DATETIME_FORMAT: 'DD/MM HH:mm',
-  EDIT: 'επεξεργασία',
-  DELETE: 'διαγραφή',
+  EDIT: 'Επεξεργασία',
+  DELETE: 'Διαγραφή',
+  CLOSE: 'Λήξη',
   DELETE_CONFIRMATION:
     'Θέλετε σίγουρα να αφαιρέσετε το συμβάν; (η διαδικασία είναι μη αναιρέσιμη)',
   OPEN: 'Ενεργό',
@@ -29,7 +31,10 @@ const PRIORITIES = {
 
 function isEntryIssuerOrRecipient(entry) {
   const user = storage.get('auth')
-  return entry.issuer.userId === user.userid || entry.recipient.userId === user.userid
+  return (
+    entry.issuer.userId === user.userid ||
+    entry.recipient.userId === user.userid
+  )
 }
 
 const columns = [
@@ -37,7 +42,9 @@ const columns = [
     title: 'Έναρξη - Λήξη',
     dataIndex: 'dtg',
     key: 'dtg',
-    render: (item, row) => moment(item).format(STRINGS.DATETIME_FORMAT) + ' - ' +
+    render: (item, row) =>
+      moment(item).format(STRINGS.DATETIME_FORMAT) +
+      ' - ' +
       moment(row.ect).format(STRINGS.DATETIME_FORMAT)
   },
   {
@@ -69,16 +76,17 @@ const LogBookEntryTags = ({ entry }) => (
     {entry.status === 1 ? (
       <AntdTag color="#cf1322">{STRINGS.CLOSED}</AntdTag>
     ) : (
-        <AntdTag color="#378212">{STRINGS.OPEN}</AntdTag>
-      )}
-    {<AntdTag color={PRIORITIES[entry.priority].color}>
-      {PRIORITIES[entry.priority].caption}
-    </AntdTag>
+      <AntdTag color="#378212">{STRINGS.OPEN}</AntdTag>
+    )}
+    {
+      <AntdTag color={PRIORITIES[entry.priority].color}>
+        {PRIORITIES[entry.priority].caption}
+      </AntdTag>
     }
   </div>
 )
 
-const LogBookEntriessTable = ({ entries, onEdit, onDelete }) => {
+const LogBookEntriessTable = ({ entries, onEdit, onDelete, onClose }) => {
   const headers = [
     ...columns,
     {
@@ -89,7 +97,7 @@ const LogBookEntriessTable = ({ entries, onEdit, onDelete }) => {
           return null
         }
         return (
-          <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
+          <div className="metis-table-actions">
             <AntdTooltip title={STRINGS.EDIT}>
               <AntdButton
                 size="small"
@@ -107,7 +115,7 @@ const LogBookEntriessTable = ({ entries, onEdit, onDelete }) => {
               cancelText="Όχι">
               <AntdTooltip title={STRINGS.DELETE}>
                 <AntdButton
-                  className="logbook-delete-entry-button"
+                  className="metis-table-delete-button"
                   size="small"
                   type="ghost"
                   shape="circle"
@@ -115,6 +123,17 @@ const LogBookEntriessTable = ({ entries, onEdit, onDelete }) => {
                 />
               </AntdTooltip>
             </AntdPopconfirm>
+            {row.status === 0 && (
+              <AntdTooltip title={STRINGS.CLOSE}>
+                <AntdButton
+                  size="small"
+                  type="ghost"
+                  shape="circle"
+                  icon="check"
+                  onClick={() => onClose(row)}
+                />
+              </AntdTooltip>
+            )}
           </div>
         )
       }
@@ -125,17 +144,18 @@ const LogBookEntriessTable = ({ entries, onEdit, onDelete }) => {
       rowKey={item => item.id}
       columns={headers}
       dataSource={entries}
-      expandedRowRender={row => <div>
-        <Comment 
-          author={<span style={{ color: 'white' }}>Περιγραφή</span>}
-          content={
-            <p>{row.description} </p>
-          } />
-        <Comment
-          author={<span style={{ color: 'white' }}>Ενέργειες</span>}
-          content={<p>{row.actions}</p>} />
-      </div>
-      }
+      expandedRowRender={row => (
+        <div>
+          <Comment
+            author={<span style={{ color: 'white' }}>Περιγραφή</span>}
+            content={<p>{row.description} </p>}
+          />
+          <Comment
+            author={<span style={{ color: 'white' }}>Ενέργειες</span>}
+            content={<p>{row.actions}</p>}
+          />
+        </div>
+      )}
       pagination={{ defaultPageSize: 10, hideOnSinglePage: true }}
     />
   )

@@ -10,6 +10,12 @@ const LogBooksContainer = props => {
     history.push('/logbooks/new')
   }
 
+  async function onDelete(logBook) {
+    await api.delete(`/api/logbooks/${logBook.id}`)
+    const response = await api.get('/api/logbooks')
+    setLogBooks(response)
+  }
+
   useEffect(() => {
     async function fetchLogBooks() {
       const response = await api.get('/api/logbooks')
@@ -22,7 +28,8 @@ const LogBooksContainer = props => {
   return React.Children.map(children, child =>
     React.cloneElement(child, {
       logBooks,
-      onCreate
+      onCreate,
+      onDelete
     })
   )
 }

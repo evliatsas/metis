@@ -69,7 +69,7 @@ const UsersView = ({ users, onCreate, onEdit, onDelete }) => {
       title: 'Ενέργειες',
       key: 'action',
       render: (e, row) => (
-        <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
+        <div className="metis-table-actions">
           <AntdTooltip title={STRINGS.EDIT}>
             <AntdButton
               size="small"

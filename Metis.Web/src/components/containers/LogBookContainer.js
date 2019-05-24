@@ -17,7 +17,7 @@ const LogBookContainer = props => {
     history.push('/logbooks')
   }
 
-  const onEdit = (row) => {
+  const onEdit = row => {
     history.push(`/logbooks/${id}/event/${row.id}`)
   }
 
@@ -25,11 +25,16 @@ const LogBookContainer = props => {
     history.push(`/logbooks/${id}/event/new`)
   }
 
-  async function onBookEntryDelete(row) {
-    await api.delete(`/api/logbooks/${id}/entries/${row.id}`)
-    const index = logBook.entries.findIndex(x => x.id == row.id)
-    logBook.entries.splice(index, 1)
-    setLogBook({ ...logBook })
+  async function onEntryClose(entry) {
+    await api.get(`/api/logbooks/${id}/entries/${entry.id}/close`)
+    const response = await api.get(`/api/logbooks/${id}`)
+    setLogBook(response)
+  }
+
+  async function onΕntryDelete(entry) {
+    await api.delete(`/api/logbooks/${id}/entries/${entry.id}`)
+    const response = await api.get(`/api/logbooks/${id}`)
+    setLogBook(response)
   }
 
   useEffect(() => {
@@ -128,7 +133,8 @@ const LogBookContainer = props => {
       onBack,
       onEdit,
       onCreate,
-      onBookEntryDelete
+      onΕntryDelete,
+      onEntryClose
     })
   )
 }
