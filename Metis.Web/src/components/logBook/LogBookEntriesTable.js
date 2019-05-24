@@ -13,8 +13,9 @@ import './logBook.less'
 
 const STRINGS = {
   DATETIME_FORMAT: 'DD/MM HH:mm',
-  EDIT: 'επεξεργασία',
-  DELETE: 'διαγραφή',
+  EDIT: 'Επεξεργασία',
+  DELETE: 'Διαγραφή',
+  CLOSE: 'Λήξη',
   DELETE_CONFIRMATION:
     'Θέλετε σίγουρα να αφαιρέσετε το συμβάν; (η διαδικασία είναι μη αναιρέσιμη)',
   OPEN: 'Ενεργό',
@@ -85,7 +86,8 @@ const LogBookEntryTags = ({ entry }) => (
   </div>
 )
 
-const LogBookEntriessTable = ({ entries, onEdit, onDelete }) => {
+const LogBookEntriessTable = ({ entries, onEdit, onDelete, onClose }) => {
+  console.log(entries)
   const headers = [
     ...columns,
     {
@@ -106,6 +108,7 @@ const LogBookEntriessTable = ({ entries, onEdit, onDelete }) => {
                 onClick={() => onEdit(row)}
               />
             </AntdTooltip>
+
             <AntdPopconfirm
               title={STRINGS.DELETE_CONFIRMATION}
               onConfirm={() => onDelete(row)}
@@ -122,6 +125,17 @@ const LogBookEntriessTable = ({ entries, onEdit, onDelete }) => {
                 />
               </AntdTooltip>
             </AntdPopconfirm>
+            {row.status === 0 && (
+              <AntdTooltip title={STRINGS.CLOSE}>
+                <AntdButton
+                  size="small"
+                  type="ghost"
+                  shape="circle"
+                  icon="check"
+                  onClick={() => onClose(row)}
+                />
+              </AntdTooltip>
+            )}
           </div>
         )
       }
