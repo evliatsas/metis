@@ -34,7 +34,7 @@ const formItemLayout = {
 }
 
 const UserView = ({ user, sites, onSave, onCancel, onBack, userHandler }) => {
-  if (!user) {
+  if (!user || !sites || sites.length === 0) {
     return null
   }
 
