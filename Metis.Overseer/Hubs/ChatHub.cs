@@ -64,7 +64,7 @@ namespace Metis.Overseer.Hubs
 
                 foreach (var cid in allReceivers)
                 {
-                    await Clients.Client(cid).SendAsync("received", userName, title, message);
+                    await Clients.Client(cid).SendAsync("received", userId, userName, title, message);
                 }
             }
         }
@@ -108,7 +108,7 @@ namespace Metis.Overseer.Hubs
 
             if (user.ConnectionIds.Count == 0)
             {
-                await Clients.Others.SendAsync("userConnected", userName, title, email);
+                await Clients.Others.SendAsync("userConnected", userId, userName, title, email);
             }
 
             lock (user.ConnectionIds)
@@ -146,7 +146,7 @@ namespace Metis.Overseer.Hubs
 
             if (!user.ConnectionIds.Any())
             {
-                await Clients.Others.SendAsync("userDisconnected", userName, title, email);
+                await Clients.Others.SendAsync("userDisconnected", userId, userName, title, email);
             }
 
             await base.OnDisconnectedAsync(exception);

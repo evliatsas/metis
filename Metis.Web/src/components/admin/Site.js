@@ -1,9 +1,7 @@
 import React from 'react'
 import SiteContainer from '../containers/admin/SiteContainer'
 import PageHeader from '../shared/PageHeader'
-import {
-  Select, Row, Form, Icon, Input, Col
-} from 'antd'
+import { Select, Row, Form, Icon, Input, Col } from 'antd'
 import Page from './Page'
 
 const STRINGS = {
@@ -28,19 +26,19 @@ const formItemLayout = {
     md: { span: 24 },
     lg: { span: 12 },
     xl: { span: 11 }
-  },
-};
-const SiteView = ({ site, onSave, onCancel, onBack, siteHandler }) => {  
+  }
+}
+const SiteView = ({ site, onSave, onCancel, onBack, siteHandler }) => {
   if (!site) {
     return null
   }
 
   const siteUpdateHandler = event => {
-    site = ({ ...site, [event.target.name]: event.target.value })
+    site = { ...site, [event.target.name]: event.target.value }
     siteHandler(site)
   }
   const categoryHandler = value => {
-    site = ({ ...site, category: value })
+    site = { ...site, category: value }
     siteHandler(site)
   }
 
@@ -53,7 +51,6 @@ const SiteView = ({ site, onSave, onCancel, onBack, siteHandler }) => {
     site.pages.unshift({ title: 'New Site', url: '', exceptions: [] })
     siteHandler(site)
   }
-
 
   return (
     <div>
@@ -79,7 +76,7 @@ const SiteView = ({ site, onSave, onCancel, onBack, siteHandler }) => {
       <Form style={{ marginTop: 20, width: '100%' }} {...formItemLayout}>
         <Row type="flex" justify="center" gutter={20}>
           <Col xs={24}>
-            <Form.Item label="Όνομα"  >
+            <Form.Item label="Όνομα">
               <Input
                 prefix={<Icon type="user" />}
                 name="name"
@@ -87,7 +84,7 @@ const SiteView = ({ site, onSave, onCancel, onBack, siteHandler }) => {
                 onChange={siteUpdateHandler}
               />
             </Form.Item>
-            <Form.Item label="Encoding" >
+            <Form.Item label="Encoding">
               <Input
                 prefix={<Icon type="file-unknown" />}
                 name="encodingCode"
@@ -95,7 +92,7 @@ const SiteView = ({ site, onSave, onCancel, onBack, siteHandler }) => {
                 onChange={siteUpdateHandler}
               />
             </Form.Item>
-            <Form.Item label="Latitude" >
+            <Form.Item label="Latitude">
               <Input
                 prefix={<Icon type="environment" />}
                 name="latitude"
@@ -103,7 +100,7 @@ const SiteView = ({ site, onSave, onCancel, onBack, siteHandler }) => {
                 onChange={siteUpdateHandler}
               />
             </Form.Item>
-            <Form.Item label="Longitude" >
+            <Form.Item label="Longitude">
               <Input
                 prefix={<Icon type="environment" />}
                 name="longitude"
@@ -112,16 +109,18 @@ const SiteView = ({ site, onSave, onCancel, onBack, siteHandler }) => {
               />
             </Form.Item>
             <Form.Item label="Κατηγορία">
-              <Select
-                value={site.category} onChange={categoryHandler}>
+              <Select value={site.category} onChange={categoryHandler}>
                 <Select.Option value="Δήμοι">Δήμοι</Select.Option>
-                <Select.Option value="katiallo">katiallo</Select.Option>
+                <Select.Option value="Περιφέρειες">Περιφέρειες</Select.Option>
+                <Select.Option value="Υπουργεία">Υπουργεία</Select.Option>
               </Select>
             </Form.Item>
             <Form.Item label="Σελίδες">
-              <Page site={site}
+              <Page
+                site={site}
                 removePage={removePage}
-                siteHandler={siteHandler} />
+                siteHandler={siteHandler}
+              />
             </Form.Item>
           </Col>
         </Row>

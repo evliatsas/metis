@@ -28,7 +28,9 @@ export const FILTER = [
   { key: 'Maintenance', enabled: true, color: statusColor['Maintenance'] },
   { key: 'NotFound', enabled: false, color: statusColor['NotFound'] },
   { key: 'Pending', enabled: false, color: statusColor['Pending'] },
-  { key: 'Δήμοι', enabled: true, color: '#2abbbb' }
+  { key: 'Δήμοι', enabled: true, color: '#2abbbb' },
+  { key: 'Περιφέρειες', enabled: true, color: '#2abbbb' },
+  { key: 'Υπουργεία', enabled: true, color: '#2abbbb' }
 ]
 
 export function applyFilter(site, filter, filterText) {
