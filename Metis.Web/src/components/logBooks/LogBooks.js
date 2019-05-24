@@ -1,6 +1,10 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import { Button as AntdButton, Tooltip as AntdTooltip } from 'antd'
+import {
+  Button as AntdButton,
+  Tooltip as AntdTooltip,
+  Popconfirm as AntdPopconfirm
+} from 'antd'
 import moment from 'moment'
 import LogBooksContainer from '../containers/LogBooksContainer'
 import PageHeader from '../shared/PageHeader'
@@ -9,11 +13,14 @@ import LogBookStatus from './LogBookStatus'
 
 const STRINGS = {
   TITLE: 'Βιβλία Καταγραφής',
-  SUBTITLE: 'Βιβλία καταγραφής συμβάντων',
+  SUBTITLE: 'λίστα βιβλίων καταγραφής συμβάντων',
   REFRESH: 'Ανανέωση',
   NEW: 'Νέο Βιβλίο',
   EDIT: 'Επεξεργασία',
-  VIEW: 'Προβολή'
+  VIEW: 'Προβολή',
+  DELETE: 'Διαγραφή',
+  DELETE_CONFIRMATION:
+    'Είστε σίγουρος ότι επιθυμείτε να διαγράψετε το επιλεγμένο Βιβλίο;'
 }
 
 const columns = [
@@ -35,7 +42,7 @@ const columns = [
     key: 'owner'
   },
   {
-    title: 'Γεγονότα',
+    title: 'Συμβάντα',
     dataIndex: 'entriesCount',
     key: 'entriesCount'
   },
@@ -49,28 +56,52 @@ const columns = [
     dataIndex: 'status',
     key: 'status',
     render: (e, row) => <LogBookStatus closeDate={row.close} />
-  },
-  {
-    title: 'Ενέργειες',
-    key: 'action',
-    render: (e, row) => (
-      <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
-        <AntdTooltip title={STRINGS.EDIT}>
-          <NavLink to={`/logbooks/${row.id}/edit`}>
-            <AntdButton size="small" type="ghost" shape="circle" icon="form" />
-          </NavLink>
-        </AntdTooltip>
-        <AntdTooltip title={STRINGS.VIEW}>
-          <NavLink to={`/logbooks/${row.id}`}>
-            <AntdButton size="small" type="ghost" shape="circle" icon="eye" />
-          </NavLink>
-        </AntdTooltip>
-      </div>
-    )
   }
 ]
 
-const LogBooksView = ({ logBooks, onCreate }) => {
+const LogBooksView = ({ logBooks, onCreate, onDelete }) => {
+  const headers = [
+    ...columns,
+    {
+      title: 'Ενέργειες',
+      key: 'action',
+      render: (e, row) => (
+        <div className="metis-table-actions">
+          <AntdTooltip title={STRINGS.VIEW}>
+            <NavLink to={`/logbooks/${row.id}`}>
+              <AntdButton size="small" type="ghost" shape="circle" icon="eye" />
+            </NavLink>
+          </AntdTooltip>
+          <AntdTooltip title={STRINGS.EDIT}>
+            <NavLink to={`/logbooks/${row.id}/edit`}>
+              <AntdButton
+                size="small"
+                type="ghost"
+                shape="circle"
+                icon="form"
+              />
+            </NavLink>
+          </AntdTooltip>
+          <AntdPopconfirm
+            title={STRINGS.DELETE_CONFIRMATION}
+            onConfirm={() => onDelete(row)}
+            onCancel={null}
+            okText="Ναι"
+            cancelText="Όχι">
+            <AntdTooltip title={STRINGS.DELETE}>
+              <AntdButton
+                className="metis-table-delete-button"
+                size="small"
+                type="ghost"
+                shape="circle"
+                icon="delete"
+              />
+            </AntdTooltip>
+          </AntdPopconfirm>
+        </div>
+      )
+    }
+  ]
   return (
     <div>
       <PageHeader
@@ -84,7 +115,7 @@ const LogBooksView = ({ logBooks, onCreate }) => {
         ]}
       />
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <Table columns={columns} data={logBooks} />
+        <Table columns={headers} data={logBooks} />
       </div>
     </div>
   )
