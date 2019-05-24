@@ -1,3 +1,4 @@
+using System.Linq;
 using Metis.Core.Entities;
 using Metis.Guard.Entities;
 using Metis.Overseer.Services;
@@ -35,7 +36,7 @@ namespace Metis.Overseer.Controllers
         {
             var data = await _userService.GetAll();
 
-            return Ok(data);
+            return Ok(data.OrderBy(u => u.Title));
         }
 
         [Route("users/{id}")]
@@ -80,7 +81,7 @@ namespace Metis.Overseer.Controllers
         {
             var data = await _siteService.GetAll();
 
-            return Ok(data);
+            return Ok(data.OrderBy(p => p.Name));
         }
 
         [Route("sites/{id}")]
