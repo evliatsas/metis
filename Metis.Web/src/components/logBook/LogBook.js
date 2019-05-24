@@ -16,7 +16,7 @@ const LogBookView = ({
   onBack,
   onEdit,
   onCreate,
-  onEntryDelete,
+  onΕntryDelete,
   onEntryClose
 }) => {
   if (!logBook) {
@@ -40,7 +40,7 @@ const LogBookView = ({
           <LogBookEntriesTable
             entries={logBook.entries}
             onEdit={onEdit}
-            onDelete={onEntryDelete}
+            onDelete={onΕntryDelete}
             onClose={onEntryClose}
           />
         </div>

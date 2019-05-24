@@ -87,7 +87,6 @@ const LogBookEntryTags = ({ entry }) => (
 )
 
 const LogBookEntriessTable = ({ entries, onEdit, onDelete, onClose }) => {
-  console.log(entries)
   const headers = [
     ...columns,
     {
@@ -108,7 +107,6 @@ const LogBookEntriessTable = ({ entries, onEdit, onDelete, onClose }) => {
                 onClick={() => onEdit(row)}
               />
             </AntdTooltip>
-
             <AntdPopconfirm
               title={STRINGS.DELETE_CONFIRMATION}
               onConfirm={() => onDelete(row)}

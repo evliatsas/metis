@@ -25,14 +25,14 @@ const LogBookContainer = props => {
     history.push(`/logbooks/${id}/event/new`)
   }
 
-  async function onΕntryDelete(entry) {
-    await api.delete(`/api/logbooks/${id}/entries/${entry.id}`)
+  async function onEntryClose(entry) {
+    await api.get(`/api/logbooks/${id}/entries/${entry.id}/close`)
     const response = await api.get(`/api/logbooks/${id}`)
     setLogBook(response)
   }
 
-  async function onEntryClose(entry) {
-    await api.get(`/api/logbooks/${id}/entries/${entry.id}/close`)
+  async function onΕntryDelete(entry) {
+    await api.delete(`/api/logbooks/${id}/entries/${entry.id}`)
     const response = await api.get(`/api/logbooks/${id}`)
     setLogBook(response)
   }
