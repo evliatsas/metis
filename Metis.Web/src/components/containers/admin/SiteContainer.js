@@ -18,9 +18,11 @@ const SiteContainer = props => {
 
   async function onSave() {
     if (site.id) {
-      await api.post(`/api/admin/sites`, site)
-    } else {
       await api.put(`/api/admin/sites/${id}`, site)
+      history.push('/admin/sites')
+    } else {
+      await api.post(`/api/admin/sites`, site)  
+      history.push('/admin/sites')   
     }
 
     onBack()
@@ -38,6 +40,11 @@ const SiteContainer = props => {
     await api.delete(`/api/admin/sites/${id}`)
     history.push('/admin/sites')
   }
+
+  const siteHandler = newValue => {
+    setSite({ ...newValue })
+  }
+
 
   useEffect(() => {
     async function fetchSite() {
@@ -57,7 +64,8 @@ const SiteContainer = props => {
       onBack,
       onCancel,
       onSave,
-      onDelete
+      onDelete,
+      siteHandler
     })
   )
 }
