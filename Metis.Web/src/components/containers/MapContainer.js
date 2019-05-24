@@ -38,6 +38,7 @@ const MapContainer = ({ children }) => {
               message.currentStatus
             }`
           )
+          message.timestamp = new Date()
           setMessages(messages => [message, ...messages.slice(-100)])
           setAlarm(message)
         })
