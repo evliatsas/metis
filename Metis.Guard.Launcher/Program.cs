@@ -1,5 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using Metis.Core.Entities;
+using MongoDB.Driver;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -20,7 +23,7 @@ namespace Metis.Guard
                 }
                 // read file into a string and deserialize JSON to a type
                 var configuration = JsonConvert.DeserializeObject<Entities.Configuration>(File.ReadAllText(args[0]));
-
+                //importUsers(configuration.ConnectionString);
                 Console.WriteLine($"Started guarding site {configuration.UiD}.");
 
                 var watcher = new Watcher(configuration);
@@ -52,6 +55,40 @@ namespace Metis.Guard
         private static void Watcher_SiteStatusChanged(object sender, Entities.SiteStatusEventArgs e)
         {
             
+        }
+
+        private static void importUsers(string dbConn)
+        {
+            var csv = new List<string>();
+            var path = @"C:\\Users\\ELiatsas\\Downloads\\users_perif.csv";
+
+            using (var reader = new System.IO.StreamReader(path))
+            {
+                while (!reader.EndOfStream)
+                {
+                    csv.Add(reader.ReadLine());
+                }
+            }
+            var users = new List<User>();
+            foreach(var entry in csv)
+            {
+                var data = entry.Split(',');
+                var user = new User()
+                {
+                    Username = data[1],
+                    Email = data[1],
+                    Password = data[0],
+                    Title = data[4] + " " + data[3],
+                    Role = UserRole.Manager,
+                    Sites = new List<string>() { data[2] }
+                };
+                users.Add(user);
+            }
+
+            var client = new MongoClient(dbConn);
+            var database = client.GetDatabase("metis");
+            IMongoCollection<User> _Users = database.GetCollection<User>("users");
+            _Users.InsertMany(users);
         }
     }
 }

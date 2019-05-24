@@ -190,6 +190,10 @@ namespace Metis.Guard
                         var attr = exception.Attribute.Replace("()", string.Empty);
                         removePartialMatch(doc.DocumentNode, exception.Type, attr, exception.Value);
                     }
+                    else if(exception.Value == "remove_all")
+                    {
+                        removeAllAttributeValues(doc.DocumentNode, exception.Type, exception.Attribute);
+                    }
                     else
                     {
                         var path = $"//{exception.Type}[@{exception.Attribute}='{exception.Value}']";
@@ -263,6 +267,16 @@ namespace Metis.Guard
             foreach (var elementNode in nodes)
             {
                 elementNode.ParentNode.RemoveChild(elementNode);
+            }
+        }
+
+        private void removeAllAttributeValues(HtmlNode node, string elementType, string attribute)
+        {
+            var path = $"//{elementType}[@{attribute}]";
+            var nodes = node.SelectNodes(path);
+            foreach (var elementNode in nodes)
+            {
+                elementNode.Attributes[attribute].Value = string.Empty;
             }
         }
 
