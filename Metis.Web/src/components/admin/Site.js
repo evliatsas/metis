@@ -112,6 +112,7 @@ const SiteView = ({ site, onSave, onCancel, onBack, siteHandler }) => {
               <Select value={site.category} onChange={categoryHandler}>
                 <Select.Option value="Δήμοι">Δήμοι</Select.Option>
                 <Select.Option value="Περιφέρειες">Περιφέρειες</Select.Option>
+                <Select.Option value="Υπουργεία">Υπουργεία</Select.Option>
               </Select>
             </Form.Item>
             <Form.Item label="Σελίδες">
