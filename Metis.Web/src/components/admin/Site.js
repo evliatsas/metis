@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
+import React from 'react'
 import SiteContainer from '../containers/admin/SiteContainer'
 import PageHeader from '../shared/PageHeader'
 import {
-  Select, Row, Form, Icon, Input, Col, List, Popconfirm as AntdPopconfirm
+  Select, Row, Form, Icon, Input, Col
 } from 'antd'
+import Page from './Page'
+
 const STRINGS = {
   SUBTITLE_NEW: 'δημιουργία ιστότοπου',
   SUBTITLE_EDIT: 'επεξεργασία ιστότοπου',
@@ -17,17 +19,18 @@ const formItemLayout = {
     xs: { span: 24 },
     sm: { span: 24 },
     md: { span: 24 },
-    lg: { span: 7 }
+    lg: { span: 6 },
+    xl: { span: 6 }
   },
   wrapperCol: {
     xs: { span: 24 },
     sm: { span: 24 },
     md: { span: 24 },
-    lg: { span: 10 }
+    lg: { span: 12 },
+    xl: { span: 11 }
   },
 };
-const SiteView = ({ site, onSave, onCancel, onBack, siteHandler }) => {
-  const [page, setPage] = useState(null)
+const SiteView = ({ site, onSave, onCancel, onBack, siteHandler }) => {  
   if (!site) {
     return null
   }
@@ -47,21 +50,11 @@ const SiteView = ({ site, onSave, onCancel, onBack, siteHandler }) => {
   }
 
   const newPage = () => {
-    setPage({ title: 'New Site', url: '' })
+    site.pages.unshift({ title: 'New Site', url: '', exceptions: [] })
+    siteHandler(site)
   }
 
-  const IconText = ({ type, text, index }) => (
-    <AntdPopconfirm
-      title="Αφαίρεση σελίδας ?"
-      onConfirm={() => removePage(index)}
-      onCancel={null}
-      okText="Ναι"
-      cancelText="Όχι">
-      <span style={{ color: 'white' }}>
-        <Icon type={type} style={{ marginRight: 8 }} />
-        {text}
-      </span></AntdPopconfirm>
-  );
+
   return (
     <div>
       <PageHeader
@@ -126,29 +119,9 @@ const SiteView = ({ site, onSave, onCancel, onBack, siteHandler }) => {
               </Select>
             </Form.Item>
             <Form.Item label="Σελίδες">
-              <List
-                itemLayout="vertical"
-                bordered={true}
-                size="small"
-                dataSource={site.pages}
-                renderItem={(item, i) => (
-                  <List.Item
-                    key={item.title}
-                    actions={[
-                      <IconText type="delete" text="διαγραφη" index={i} />,
-                      <IconText type="edit" text="επεξεργασία" />,
-                    ]}
-                  >
-                    <List.Item.Meta
-                      title={<a target="blank" href={item.uri}>{item.title}</a>}
-                      description={item.exceptions.map((ex, i) => (
-                        <div key={i} style={{ color: 'white' }}>{i + 1}. {ex.type} / {ex.attribute} / {ex.value}</div>
-                      ))}
-                    />
-                  </List.Item>
-                )}
-              />
-
+              <Page site={site}
+                removePage={removePage}
+                siteHandler={siteHandler} />
             </Form.Item>
           </Col>
         </Row>
