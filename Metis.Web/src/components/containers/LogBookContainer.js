@@ -56,31 +56,31 @@ const LogBookContainer = props => {
       .then(con => {
         hub.current = con
 
-        hub.current.on('userConnected', (username, title, email) => {
-          console.log('userConnected', username, title, email)
+        hub.current.on('userConnected', (userId, username, title, email) => {
+          console.log('userConnected', userId, username, title, email)
           setMembers(prevMembers => {
             const nextMembers = [...prevMembers]
-            const user = nextMembers.find(m => m.email === email)
+            const user = nextMembers.find(m => m.userId === userId)
             user.online = true
             return nextMembers
           })
         })
 
-        hub.current.on('userDisconnected', (username, title, email) => {
-          console.log('userDisconnected', username, title, email)
+        hub.current.on('userDisconnected', (userId, username, title, email) => {
+          console.log('userDisconnected', userId, username, title, email)
           setMembers(prevMembers => {
             const nextMembers = [...prevMembers]
-            const user = nextMembers.find(m => m.email === email)
+            const user = nextMembers.find(m => m.userId === userId)
             user.online = false
             return nextMembers
           })
         })
 
-        hub.current.on('received', (username, title, message) => {
+        hub.current.on('received', (userId, username, title, message) => {
           setMessages(prevMessages => [
             ...prevMessages,
             {
-              sender: { username: username, title: title },
+              sender: { userId: userId, username: username, title: title },
               sent: new Date().toISOString(),
               message: message
             }
