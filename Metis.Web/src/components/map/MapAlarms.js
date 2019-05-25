@@ -20,7 +20,10 @@ const MapAlarms = ({ alarms }) => {
   }
 
   return (
-    <div className="map-alarms-container" ref={containerRef}>
+    <div
+      className="map-alarms-container"
+      ref={containerRef}
+      style={{ overflow: 'auto' }}>
       <div className="map-alarms-content">
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           {!isExpanded ? (
