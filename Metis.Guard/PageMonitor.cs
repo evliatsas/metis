@@ -16,7 +16,7 @@ namespace Metis.Guard
         /// <summary>
         /// The page refresh time in seconds
         /// </summary>
-        const int MONITOR_THRESHOLD = 120;
+        const int MONITOR_THRESHOLD = 600;
 
         private readonly Encoding _encoding;
         private Page _page;
@@ -190,7 +190,7 @@ namespace Metis.Guard
                         var attr = exception.Attribute.Replace("()", string.Empty);
                         removePartialMatch(doc.DocumentNode, exception.Type, attr, exception.Value);
                     }
-                    else if(exception.Value == "remove_all")
+                    else if (exception.Value == "remove_all")
                     {
                         removeAllAttributeValues(doc.DocumentNode, exception.Type, exception.Attribute);
                     }
