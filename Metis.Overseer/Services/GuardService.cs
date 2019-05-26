@@ -18,6 +18,7 @@ namespace Metis.Overseer.Services
 {
     public class GuardService : IHostedService, IDisposable
     {
+        private readonly IMongoClient _mongoClient;
         private readonly IEmailService _emailService;
         private readonly IHubContext<GuardHub> _guardHubContext;
         private readonly string _connectionString;
@@ -25,8 +26,9 @@ namespace Metis.Overseer.Services
 
         public IEnumerable<Watcher> Watchers { get { return _guards.Values; } }
 
-        public GuardService(IHubContext<GuardHub> guardHubContext, IConfiguration config, IEmailService emailService)
+        public GuardService(IMongoClient mongoClient, IHubContext<GuardHub> guardHubContext, IConfiguration config, IEmailService emailService)
         {
+            _mongoClient = mongoClient;
             _guardHubContext = guardHubContext;
             _connectionString = config.GetConnectionString("Metis");
             _guards = new ConcurrentDictionary<string, Watcher>();
@@ -58,7 +60,7 @@ namespace Metis.Overseer.Services
             else
             {
                 var config = new Configuration() { UiD = siteId, ConnectionString = _connectionString };
-                var watcher = new Watcher(config);
+                var watcher = new Watcher(config, _mongoClient);
                 watcher.SiteStatusChanged += Watcher_SiteStatusChanged;
                 watcher.SiteException += Watcher_SiteException;
                 watcher.Start();
@@ -136,7 +138,7 @@ namespace Metis.Overseer.Services
             Parallel.ForEach(siteIds, (siteId) =>
             {
                 var config = new Configuration() { UiD = siteId, ConnectionString = _connectionString };
-                var watcher = new Watcher(config);
+                var watcher = new Watcher(config, _mongoClient);
                 watcher.SiteStatusChanged += Watcher_SiteStatusChanged;
                 watcher.SiteException += Watcher_SiteException;
                 watcher.Start();
@@ -179,8 +181,7 @@ namespace Metis.Overseer.Services
 
         private async Task<IEnumerable<string>> getSitesFromDb()
         {
-            var client = new MongoClient(_connectionString);
-            var database = client.GetDatabase("metis");
+            var database = _mongoClient.GetDatabase("metis");
             var siteCollection = database.GetCollection<Site>("sites");
             var sites = await siteCollection.Find(x => true)
                 .Project<Site>(Builders<Site>.Projection.Include(x => x.Id))

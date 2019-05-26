@@ -26,7 +26,7 @@ async function hubConnectionBuilder(url) {
   }
 
   connection.onclose(async () => {
-    //await start()
+    await start()
   })
 
   await start()

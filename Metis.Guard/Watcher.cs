@@ -15,6 +15,12 @@ namespace Metis.Guard
     /// </summary>
     public class Watcher
     {
+        private readonly IMongoClient _mongoClient;
+        private readonly IMongoDatabase _database;
+        private readonly IMongoCollection<Site> _sites;
+        private readonly IMongoCollection<User> _users;
+        private readonly IMongoCollection<PageContent> _pagesContent;
+
         private readonly string _connectionString;
         private readonly Encoding _encoding;
         private readonly Dictionary<string, PageMonitor> _pageMonitors;
@@ -24,8 +30,14 @@ namespace Metis.Guard
         /// </summary>
         public Site Site { get; private set; }
 
-        public Watcher(Configuration configuration)
+        public Watcher(Configuration configuration, IMongoClient mongoClient)
         {
+            _mongoClient = mongoClient;
+            _database = mongoClient.GetDatabase("metis");
+            _sites = _database.GetCollection<Site>("sites");
+            _users = _database.GetCollection<User>("users");
+            _pagesContent = _database.GetCollection<PageContent>("pagesContent");
+
             var task = Task.Run(async () => await readSiteFromDb(configuration));
             task.Wait();
             if (this.Site == null)
@@ -194,15 +206,12 @@ namespace Metis.Guard
         /// <param name="configuration">The configration containing the connection string</param>
         private async Task readSiteFromDb(Configuration configuration)
         {
-            var client = new MongoClient(configuration.ConnectionString);
-            var database = client.GetDatabase("metis");
-            var siteCollection = database.GetCollection<Site>("sites");
-            var query = await siteCollection.FindAsync(Builders<Site>.Filter.Eq(x => x.Id, configuration.UiD));
+            var query = await _sites.FindAsync(Builders<Site>.Filter.Eq(x => x.Id, configuration.UiD));
             this.Site = await query.SingleOrDefaultAsync();
 
-            var userCollection = database.GetCollection<User>("users");
+
             FilterDefinition<User> userFilter = "{$or:[{role:'Administrator'},{sites:{$elemMatch:{$eq:'" + configuration.UiD + "'}}}]}";
-            var userQuery = await userCollection.FindAsync(userFilter);
+            var userQuery = await _users.FindAsync(userFilter);
             var users = await userQuery.ToListAsync();
 
             foreach (var user in users)
@@ -220,10 +229,6 @@ namespace Metis.Guard
         /// <param name="page">The page to update</param>
         private async Task updateSitePage(Page page)
         {
-            var client = new MongoClient(_connectionString);
-            var database = client.GetDatabase("metis");
-            var siteCollection = database.GetCollection<Site>("sites");
-
             var filter = Builders<Site>.Filter;
             var siteIdAndPageIdFilter = filter.And(
               filter.Eq(x => x.Id, Site.Id),
@@ -231,7 +236,7 @@ namespace Metis.Guard
 
             var update = Builders<Site>.Update;
             var pageStatusSetter = update.Set("pages.$", page);
-            await siteCollection.UpdateOneAsync(siteIdAndPageIdFilter, pageStatusSetter);
+            await _sites.UpdateOneAsync(siteIdAndPageIdFilter, pageStatusSetter);
         }
 
         /// <summary>
@@ -242,11 +247,9 @@ namespace Metis.Guard
         /// <returns></returns>
         private async Task updateSitePageContent(Page page, string content)
         {
-            var client = new MongoClient(_connectionString);
-            var database = client.GetDatabase("metis");
-            var contentCollection = database.GetCollection<PageContent>("pagesContent");
-            var pageContent = await contentCollection.Find(Builders<PageContent>.Filter.Eq(x => x.PageUri, page.Uri))
+            var pageContent = await _pagesContent.Find(Builders<PageContent>.Filter.Eq(x => x.PageUri, page.Uri))
                 .FirstOrDefaultAsync();
+
             if (pageContent == null)
             {
                 pageContent = new PageContent()
@@ -255,8 +258,9 @@ namespace Metis.Guard
                     PageUri = page.Uri,
                     Differences = new List<PageDifference>()
                 };
-                await contentCollection.InsertOneAsync(pageContent);
+                await _pagesContent.InsertOneAsync(pageContent);
             }
+
             switch (page.Status)
             {
                 case Status.Alarm:
@@ -280,7 +284,7 @@ namespace Metis.Guard
                     break;
             }
 
-            await contentCollection.ReplaceOneAsync(s => s.Id == pageContent.Id, pageContent);
+            await _pagesContent.ReplaceOneAsync(s => s.Id == pageContent.Id, pageContent);
         }
 
         /// <summary>
@@ -289,10 +293,7 @@ namespace Metis.Guard
         /// <param name="site">The site to update</param>
         private async Task updateSiteStatus(Site site)
         {
-            var client = new MongoClient(_connectionString);
-            var database = client.GetDatabase("metis");
-            var siteCollection = database.GetCollection<Site>("sites");
-            await siteCollection.FindOneAndUpdateAsync(s => s.Id == Site.Id,
+            await _sites.FindOneAndUpdateAsync(s => s.Id == Site.Id,
                 Builders<Site>.Update.Set(s => s.Status, site.Status));
         }
 

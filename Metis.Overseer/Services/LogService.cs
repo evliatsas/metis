@@ -17,10 +17,9 @@ namespace Metis.Overseer.Services
         private readonly IMongoCollection<ChatMessage> _ChatMessages;
         private readonly IMongoCollection<User> _Users;
 
-        public LogService(IConfiguration config)
+        public LogService(IMongoClient mongoClient)
         {
-            var client = new MongoClient(config.GetConnectionString("Metis"));
-            var database = client.GetDatabase("metis");
+            var database = mongoClient.GetDatabase("metis");
             _LogBooks = database.GetCollection<LogBook>("logBooks");
             _LogEntries = database.GetCollection<LogEntry>("logEntries");
             _ChatMessages = database.GetCollection<ChatMessage>("chats");

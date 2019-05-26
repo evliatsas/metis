@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using MongoDB.Driver;
 using Newtonsoft.Json;
 using Serilog;
 using Swashbuckle.AspNetCore.Swagger;
@@ -38,6 +39,7 @@ namespace Metis.Overseer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IMongoClient>(new MongoClient(Configuration.GetConnectionString("Metis")));
             services.AddScoped<UserService>();
             services.AddScoped<SiteService>();
             services.AddScoped<LogService>();

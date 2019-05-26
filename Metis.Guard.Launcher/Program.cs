@@ -25,8 +25,8 @@ namespace Metis.Guard
                 var configuration = JsonConvert.DeserializeObject<Entities.Configuration>(File.ReadAllText(args[0]));
                 //importUsers(configuration.ConnectionString);
                 Console.WriteLine($"Started guarding site {configuration.UiD}.");
-
-                var watcher = new Watcher(configuration);
+                var mongoClient = new MongoClient(configuration.ConnectionString);
+                var watcher = new Watcher(configuration, mongoClient);
                 watcher.SiteStatusChanged += Watcher_SiteStatusChanged;
                 watcher.SiteException += Watcher_SiteException;
                 watcher.Start();
@@ -39,22 +39,22 @@ namespace Metis.Guard
                 Console.WriteLine("Stopped");
                 Console.ReadLine();
             }
-            catch(Exception exc)
+            catch (Exception exc)
             {
                 Console.WriteLine(exc.ToString());
 
                 Console.ReadLine();
-            }           
+            }
         }
 
         private static void Watcher_SiteException(object sender, Entities.SiteExceptionEventArgs e)
         {
-            
+
         }
 
         private static void Watcher_SiteStatusChanged(object sender, Entities.SiteStatusEventArgs e)
         {
-            
+
         }
 
         private static void importUsers(string dbConn)
@@ -70,7 +70,7 @@ namespace Metis.Guard
                 }
             }
             var users = new List<User>();
-            foreach(var entry in csv)
+            foreach (var entry in csv)
             {
                 var data = entry.Split(',');
                 var user = new User()

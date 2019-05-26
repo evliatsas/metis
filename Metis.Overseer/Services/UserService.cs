@@ -13,10 +13,9 @@ namespace Metis.Overseer.Services
         private readonly IMongoCollection<User> _Users;
 
         #region snippet_UserserviceConstructor
-        public UserService(IConfiguration config)
+        public UserService(IMongoClient mongoClient)
         {
-            var client = new MongoClient(config.GetConnectionString("Metis"));
-            var database = client.GetDatabase("metis");
+            var database = mongoClient.GetDatabase("metis");
             _Users = database.GetCollection<User>("users");
         }
         #endregion
