@@ -1,35 +1,24 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import {
   Icon as AntdIcon,
   Input as AntdInput,
   Typography as AntdTypography
 } from 'antd'
 import MapSiteListFilter from './MapSiteListFilter'
-import { FILTER, statusColor, applyFilter } from './mapUtilities'
+import { statusColor } from './mapUtilities'
 
-const MapSiteList = ({ sites, onSelect }) => {
-  const [filter, setFilter] = useState([...FILTER])
-  const [filterText, setFilterText] = useState('')
-  const [filtered, setFiltered] = useState([])
-
-  function handleFilterChange(f) {
-    setFilter(prevFilter => {
-      const idx = prevFilter.findIndex(x => x.key === f.key)
-      prevFilter[idx] = f
-      return [...prevFilter]
-    })
-  }
-
-  useEffect(() => {
-    const _filtered = sites.filter(site =>
-      applyFilter(site, filter, filterText)
-    )
-    setFiltered(_filtered)
-  }, [sites, filter, filterText])
-
+const MapSiteList = ({
+  sites,
+  onSelect,
+  filtered,
+  filter,
+  filterText,
+  setFilterText,
+  onFilterChange
+}) => {
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <MapSiteListFilter filter={filter} onFilterChange={handleFilterChange} />
+      <MapSiteListFilter filter={filter} onFilterChange={onFilterChange} />
       <div className="map-site-list-header">
         <div style={{ flexGrow: 1, padding: '6px' }}>
           <AntdInput

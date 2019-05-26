@@ -11,13 +11,18 @@ const WebMapLayoutView = ({
   setSelected,
   messages,
   onMaintenanceStart,
-  onMaintenanceStop
+  onMaintenanceStop,
+  filtered,
+  filter,
+  filterText,
+  setFilterText,
+  onFilterChange
 }) => {
   return (
     <div style={{ height: '100vh', display: 'flex' }}>
       <div style={{ flexGrow: 1 }}>
         <Map
-          sites={sites}
+          sites={filtered}
           selected={selected}
           onSelect={setSelected}
           zoom={9}
@@ -41,7 +46,15 @@ const WebMapLayoutView = ({
           flexDirection: 'column',
           overflow: 'auto'
         }}>
-        <MapSiteList sites={sites} onSelect={setSelected} />
+        <MapSiteList
+          sites={sites}
+          onSelect={setSelected}
+          filtered={filtered}
+          filter={filter}
+          filterText={filterText}
+          setFilterText={setFilterText}
+          onFilterChange={onFilterChange}
+        />
         {selected && (
           <MapSiteDetails
             site={selected}

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import hubConnectionBuilder from '../../services/hubConnectionBuilder'
 import { HUB_URL } from '../map/mapUtilities'
 import api from '../../services/api'
+import { FILTER, statusColor, applyFilter } from '../map/mapUtilities'
 
 const MapContainer = ({ children }) => {
   const hub = useRef(null)
@@ -9,6 +10,9 @@ const MapContainer = ({ children }) => {
   const [messages, setMessages] = useState([])
   const [selected, setSelected] = useState(null)
   const [alarm, setAlarm] = useState(null)
+  const [filter, setFilter] = useState([...FILTER])
+  const [filterText, setFilterText] = useState('')
+  const [filtered, setFiltered] = useState([])
 
   async function onMaintenanceStart() {
     setSelected(ps => ({ ...ps, status: 'Pending' }))
@@ -18,6 +22,14 @@ const MapContainer = ({ children }) => {
   async function onMaintenanceStop() {
     setSelected(ps => ({ ...ps, status: 'Pending' }))
     await api.get(`/api/sites/${selected.id}/maintenance/stop`)
+  }
+
+  function onFilterChange(f) {
+    setFilter(prevFilter => {
+      const idx = prevFilter.findIndex(x => x.key === f.key)
+      prevFilter[idx] = f
+      return [...prevFilter]
+    })
   }
 
   useEffect(() => {
@@ -61,6 +73,13 @@ const MapContainer = ({ children }) => {
   }, [])
 
   useEffect(() => {
+    const _filtered = sites.filter(site =>
+      applyFilter(site, filter, filterText)
+    )
+    setFiltered(_filtered)
+  }, [sites, filter, filterText])
+
+  useEffect(() => {
     if (!alarm) {
       return
     }
@@ -88,7 +107,12 @@ const MapContainer = ({ children }) => {
       selected,
       setSelected,
       onMaintenanceStart,
-      onMaintenanceStop
+      onMaintenanceStop,
+      filtered,
+      filter,
+      filterText,
+      setFilterText,
+      onFilterChange
     })
   )
 }
