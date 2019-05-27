@@ -135,7 +135,7 @@ namespace Metis.Overseer.Services
         {
             var siteIds = await getSitesFromDb();
 
-            Parallel.ForEach(siteIds, (siteId) =>
+            foreach (var siteId in siteIds)
             {
                 var config = new Configuration() { UiD = siteId, ConnectionString = _connectionString };
                 var watcher = new Watcher(config, _mongoClient);
@@ -146,7 +146,7 @@ namespace Metis.Overseer.Services
                 _guards.TryAdd(siteId, watcher);
 
                 Log.Debug("watcher of site {name} started.", watcher.Site.Name);
-            });
+            }
         }
 
         private void Watcher_SiteException(object sender, SiteExceptionEventArgs e)
@@ -156,6 +156,7 @@ namespace Metis.Overseer.Services
 
             var message = GuardHub._CreateMessage(e);
             Task.Run(() => _guardHubContext.Clients.All.SendAsync("SiteGuardingException", message));
+            Task.Run(() => saveAlarm(message));
         }
 
         private void Watcher_SiteStatusChanged(object sender, SiteStatusEventArgs e)
@@ -166,6 +167,7 @@ namespace Metis.Overseer.Services
             var message = GuardHub._CreateMessage(e);
 
             Task.Run(() => _guardHubContext.Clients.All.SendAsync("SiteStatusChanged", message));
+            Task.Run(() => saveAlarm(message));
 
             if (e.Site.Status != e.PreviousStatus)
             {
@@ -188,6 +190,13 @@ namespace Metis.Overseer.Services
                 .ToListAsync();
 
             return sites.Select(x => x.Id);
+        }
+
+        private async Task saveAlarm(SiteEvent msg)
+        {
+            var database = _mongoClient.GetDatabase("metis");
+            var col = database.GetCollection<SiteEvent>("siteEvents");
+            await col.InsertOneAsync(msg);
         }
 
         public void Dispose()
