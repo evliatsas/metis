@@ -85,14 +85,14 @@ const MapContainer = ({ children }) => {
     }
 
     setSites(prevSites => {
-      const site = prevSites.find(x => x.id === alarm.id)
+      const site = prevSites.find(x => x.id === alarm.siteId)
       const idx = prevSites.indexOf(site)
       prevSites.splice(idx, 1, { ...site, status: alarm.currentStatus })
       return prevSites.slice()
     })
 
     setSelected(prevSelected => {
-      if (!prevSelected || prevSelected.id !== alarm.id) {
+      if (!prevSelected || prevSelected.id !== alarm.siteId) {
         return prevSelected
       }
       return { ...prevSelected, status: alarm.currentStatus }
