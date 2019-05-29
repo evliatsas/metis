@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Metis.Overseer.Extensions;
 
 namespace Metis.Overseer.Controllers
 {
@@ -12,19 +13,29 @@ namespace Metis.Overseer.Controllers
     public class SitesController : ControllerBase
     {
         private readonly GuardService _guardService;
+        private readonly UserService _userService;
 
-        public SitesController(GuardService guardService)
+        public SitesController(GuardService guardService, UserService userService)
         {
             _guardService = guardService;
+            _userService = userService;
         }
 
         [Route("")]
         [HttpGet]
-        public IActionResult GetSites()
+        public async Task<IActionResult> GetSites()
         {
+            var userId = User.Identity.GetUserId();
+
             var sites = _guardService.Watchers
                 .Select(w => new Models.DTO.Site(w))
-                .OrderBy(o => o.Name);
+                .OrderBy(o => o.Name).ToList();
+
+            var user = await _userService.Get(userId);
+            if (user.Role != UserRole.Administrator)
+            {
+                sites = sites.Where(s => user.Sites.Contains(s.Id)).ToList();
+            }
 
             return Ok(sites);
         }
