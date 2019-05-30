@@ -18,6 +18,7 @@ namespace Metis.Guard
         /// </summary>
         const int MONITOR_THRESHOLD = 600;
 
+        private HtmlWeb web;
         private readonly Encoding _encoding;
         private Page _page;
 
@@ -96,6 +97,7 @@ namespace Metis.Guard
             {
                 while (!token.IsCancellationRequested)
                 {
+                    web = new HtmlWeb();
                     this.MonitorStatus = WorkerStatus.Running;
 
                     var content = await parsePage(page);
@@ -147,6 +149,7 @@ namespace Metis.Guard
                 }
 
                 this.MonitorStatus = WorkerStatus.Stopped;
+                web = null;
             }
             catch (Exception exception)
             {
@@ -165,7 +168,6 @@ namespace Metis.Guard
         /// <returns>Page content or string.Empty on exception</returns>
         private async Task<string> parsePage(Page page)
         {
-            var web = new HtmlWeb();
             try
             {
                 var doc = await web.LoadFromWebAsync(page.Uri, _encoding);
