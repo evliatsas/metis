@@ -58,6 +58,7 @@ namespace Metis.Guard
         public void Stop()
         {
             this.CancellationTokenSource.Cancel();
+            web = null;
         }
 
         /// <summary>
