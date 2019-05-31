@@ -49,7 +49,7 @@ namespace Metis.Guard
         public void Start()
         {
             this.CancellationTokenSource = new CancellationTokenSource();
-            Task.Factory.StartNew(() => monitor(_page, this.CancellationTokenSource.Token));
+            Task.Run(async () => await monitor(_page, this.CancellationTokenSource.Token));
         }
 
         /// <summary>
