@@ -97,71 +97,72 @@ namespace Metis.Guard
 
         private async Task monitor(Page page, CancellationToken token)
         {
-            try
+            while (!token.IsCancellationRequested)
             {
-                while (!token.IsCancellationRequested)
+                web = new HtmlWeb();
+                this.MonitorStatus = WorkerStatus.Running;
+
+                var content = string.Empty;
+                try
                 {
-                    web = new HtmlWeb();
-                    this.MonitorStatus = WorkerStatus.Running;
+                    content = await parsePage(page);
+                }
+                catch (Exception exception)
+                {
+                    // raise page parse exception event
+                    page.Status = Status.Alarm;
+                    var args = new PageExceptionEventArgs(page, exception);
+                    OnPageParseException(args);
+                }
 
-                    var content = await parsePage(page);
+                if (string.IsNullOrEmpty(content))
+                {
+                    // an exception has occured
+                    // an event should already notified the watcher to safely stop the monitor
+                    continue;
+                }
 
-                    if (string.IsNullOrEmpty(content))
+                var md5 = Utilities.CreateMD5(content, _encoding);
+
+                //if it is a new page
+                if (string.IsNullOrEmpty(page.MD5Hash))
+                {
+                    //initialize the md5 hash of the content to the current one
+                    page.MD5Hash = md5;
+                    var previousStatus = page.Status;
+                    page.Status = Status.Ok;
+                    // raise page status changed event
+                    var args = new PageStatusEventArgs(page, previousStatus, content);
+                    OnPageStatusChanged(args);
+                }
+                else if (string.Equals(page.MD5Hash, md5))
+                {
+                    if (page.Status != Status.Ok)
                     {
-                        // an exception has occured
-                        // an event should already notified the watcher to safely stop the monitor
-                        continue;
-                    }
-
-                    var md5 = Utilities.CreateMD5(content, _encoding);
-
-                    //if it is a new page
-                    if (string.IsNullOrEmpty(page.MD5Hash))
-                    {
-                        //initialize the md5 hash of the content to the current one
-                        page.MD5Hash = md5;
                         var previousStatus = page.Status;
                         page.Status = Status.Ok;
                         // raise page status changed event
                         var args = new PageStatusEventArgs(page, previousStatus, content);
                         OnPageStatusChanged(args);
                     }
-                    else if (string.Equals(page.MD5Hash, md5))
+                }
+                else
+                {
+                    if (page.Status != Status.Alarm)
                     {
-                        if (page.Status != Status.Ok)
-                        {
-                            var previousStatus = page.Status;
-                            page.Status = Status.Ok;
-                            // raise page status changed event
-                            var args = new PageStatusEventArgs(page, previousStatus, content);
-                            OnPageStatusChanged(args);
-                        }
+                        var previousStatus = page.Status;
+                        page.Status = Status.Alarm;
+                        // raise page status changed event
+                        var args = new PageStatusEventArgs(page, previousStatus, content);
+                        OnPageStatusChanged(args);
                     }
-                    else
-                    {
-                        if (page.Status != Status.Alarm)
-                        {
-                            var previousStatus = page.Status;
-                            page.Status = Status.Alarm;
-                            // raise page status changed event
-                            var args = new PageStatusEventArgs(page, previousStatus, content);
-                            OnPageStatusChanged(args);
-                        }
-                    }
-
-                    await Task.Delay(TimeSpan.FromSeconds(MONITOR_THRESHOLD), token);
                 }
 
-                this.MonitorStatus = WorkerStatus.Stopped;
-                web = null;
+                await Task.Delay(TimeSpan.FromSeconds(MONITOR_THRESHOLD), token);
             }
-            catch (Exception exception)
-            {
-                // raise page parse exception event
-                page.Status = Status.Alarm;
-                var args = new PageExceptionEventArgs(page, exception);
-                OnPageParseException(args);
-            }
+
+            this.MonitorStatus = WorkerStatus.Stopped;
+            web = null;
         }
 
         /// <summary>
