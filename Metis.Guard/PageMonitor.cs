@@ -48,8 +48,11 @@ namespace Metis.Guard
         /// </summary>
         public void Start()
         {
-            this.CancellationTokenSource = new CancellationTokenSource();
-            Task.Run(async () => await monitor(_page, this.CancellationTokenSource.Token));
+            if (web == null)
+            {
+                this.CancellationTokenSource = new CancellationTokenSource();
+                Task.Run(async () => await monitor(_page, this.CancellationTokenSource.Token));
+            }
         }
 
         /// <summary>
