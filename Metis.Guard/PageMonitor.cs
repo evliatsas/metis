@@ -102,18 +102,7 @@ namespace Metis.Guard
                 web = new HtmlWeb();
                 this.MonitorStatus = WorkerStatus.Running;
 
-                var content = string.Empty;
-                try
-                {
-                    content = await parsePage(page);
-                }
-                catch (Exception exception)
-                {
-                    // raise page parse exception event
-                    page.Status = Status.Alarm;
-                    var args = new PageExceptionEventArgs(page, exception);
-                    OnPageParseException(args);
-                }
+                var content = await parsePage(page);
 
                 if (string.IsNullOrEmpty(content))
                 {
@@ -158,7 +147,10 @@ namespace Metis.Guard
                     }
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(MONITOR_THRESHOLD), token);
+                if (!token.IsCancellationRequested)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(MONITOR_THRESHOLD), token);
+                }
             }
 
             this.MonitorStatus = WorkerStatus.Stopped;
