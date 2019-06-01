@@ -10,11 +10,4 @@
         Alarm,
         NotFound
     }
-
-    public enum WorkerStatus
-    {
-        None,
-        Running,
-        Stopped
-    }
 }

@@ -1,10 +1,9 @@
 ﻿using Metis.Core.Entities;
+using Metis.Overseer.Extensions;
 using Metis.Overseer.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Metis.Overseer.Extensions;
 
 namespace Metis.Overseer.Controllers
 {
@@ -27,7 +26,8 @@ namespace Metis.Overseer.Controllers
         {
             var userId = User.Identity.GetUserId();
 
-            var sites = _guardService.Watchers
+            var sites = await _guardService.GetSitesFromDb();
+            var dto = sites
                 .Select(w => new Models.DTO.Site(w))
                 .OrderBy(o => o.Name).ToList();
 
@@ -37,25 +37,7 @@ namespace Metis.Overseer.Controllers
                 sites = sites.Where(s => user.Sites.Contains(s.Id)).ToList();
             }
 
-            return Ok(sites);
-        }
-
-        [Route("{id}/start")]
-        [HttpGet]
-        public IActionResult StartSiteGuard(string id)
-        {
-            _guardService.StartGuard(id);
-
-            return Ok();
-        }
-
-        [Route("{id}/stop")]
-        [HttpGet]
-        public IActionResult StopSiteGuard(string id)
-        {
-            _guardService.StopGuard(id);
-
-            return Ok();
+            return Ok(dto);
         }
 
         [Route("{id}/refresh")]

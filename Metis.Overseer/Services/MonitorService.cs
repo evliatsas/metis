@@ -1,28 +1,31 @@
-using System.Linq;
-using System;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using HtmlAgilityPack;
+using Metis.Core.Entities;
 using Metis.Guard.Entities;
 using Metis.Overseer.Hubs;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Hosting;
 using MongoDB.Driver;
 using Serilog;
-using Metis.Core.Entities;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Metis.Overseer.Services
 {
-    public class MonitorService
+    internal class MonitorService : IHostedService, IDisposable
     {
         private readonly IMongoCollection<Site> _sites;
         private readonly IMongoCollection<SiteEvent> _siteEvents;
         private readonly IMongoCollection<PageContent> _pagesContent;
         private readonly IHubContext<GuardHub> _guardHubContext;
         private readonly IEmailService _emailService;
+        private readonly IGuardConfiguration _guardConfiguration;
 
-        public MonitorService(IMongoClient mongoClient, IHubContext<GuardHub> guardHubContext, IEmailService emailService)
+        private Timer _timer;
+
+        public MonitorService(IMongoClient mongoClient, IHubContext<GuardHub> guardHubContext, IEmailService emailService, IGuardConfiguration guardConfiguration)
         {
             var db = mongoClient.GetDatabase("metis");
             _sites = db.GetCollection<Site>("sites");
@@ -31,12 +34,38 @@ namespace Metis.Overseer.Services
 
             _guardHubContext = guardHubContext;
             _emailService = emailService;
+            _guardConfiguration = guardConfiguration;
         }
 
-        public void Execute()
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            Log.Debug("Timed Background Monitoring is starting.");
+
+            _timer = new Timer(Execute, null, TimeSpan.Zero,
+                TimeSpan.FromSeconds(_guardConfiguration.RefreshInterval));
+
+            return Task.CompletedTask;
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            Log.Debug("Timed Background Monitoring is stopping.");
+
+            _timer?.Change(Timeout.Infinite, 0);
+
+            return Task.CompletedTask;
+        }
+
+        public void Dispose()
+        {
+            _timer?.Dispose();
+        }
+
+        private void Execute(object state)
         {
             var builder = Builders<Site>.Filter;
             var filter = builder.Ne(t => t.Status, Status.Maintenance);
+            var monitorTasks = new List<Task>();
             using (var cursor = _sites.Find(filter).ToCursor())
             {
                 while (cursor.MoveNext())
@@ -45,11 +74,12 @@ namespace Metis.Overseer.Services
                     {
                         foreach (var page in site.Pages)
                         {
-                            monitor(site, page);
+                            monitorTasks.Add(monitor(site, page));
                         }
                     }
                 }
             }
+            Task.WaitAll(monitorTasks.ToArray());
         }
 
         private async Task monitor(Site site, Page page)
@@ -62,7 +92,7 @@ namespace Metis.Overseer.Services
                 return;
             }
 
-            var md5 = createMD5(content, encoding);
+            var md5 = Metis.Guard.Utilities.CreateMD5(content, encoding);
 
             //if it is a new page
             if (string.IsNullOrEmpty(page.MD5Hash))
@@ -91,54 +121,8 @@ namespace Metis.Overseer.Services
         {
             try
             {
-                var encoding = Encoding.GetEncoding(site.EncodingCode);
-                var web = new HtmlWeb();
-                var doc = await web.LoadFromWebAsync(page.Uri, encoding);
-
-                var title = doc.DocumentNode.SelectSingleNode("//title");
-                page.Title = string.IsNullOrEmpty(title?.InnerText) ? "no title" : title.InnerText;
-
-                removeComments(doc.DocumentNode);
-
-                foreach (var exception in page.Exceptions)
-                {
-                    if (exception.Type == "script" && exception.Attribute == "text()")
-                    {
-                        removeScriptText(doc.DocumentNode, exception.Value);
-                    }
-                    else if (string.IsNullOrEmpty(exception.Type))
-                    {
-                        removeByAttribute(doc.DocumentNode, exception.Attribute);
-                    }
-                    else if (exception.Attribute.EndsWith("()"))
-                    {
-                        var attr = exception.Attribute.Replace("()", string.Empty);
-                        removePartialMatch(doc.DocumentNode, exception.Type, attr, exception.Value);
-                    }
-                    else if (exception.Value == "remove_all")
-                    {
-                        removeAllAttributeValues(doc.DocumentNode, exception.Type, exception.Attribute);
-                    }
-                    else
-                    {
-                        var path = $"//{exception.Type}[@{exception.Attribute}='{exception.Value}']";
-                        var nodes = doc.DocumentNode.SelectNodes(path);
-                        if (nodes != null)
-                        {
-                            foreach (HtmlNode node in nodes)
-                            {
-                                node.ParentNode.RemoveChild(node);
-                            }
-                        }
-                        else
-                        {
-                            // TODO: commented out to avoid console spam, what to do with it?
-                            Log.Warning($"Exception rule {path} has not been found in page {page.Uri}.");
-                        }
-                    }
-                }
-
-                var content = doc.DocumentNode.InnerHtml;
+                var pageMonitor = new Metis.Guard.PageMonitor();
+                var content = await pageMonitor.ParsePage(site, page);
 
                 return content;
             }
@@ -155,59 +139,6 @@ namespace Metis.Overseer.Services
                 page.Status = Status.Alarm;
                 await siteException(site, page, exception);
                 return string.Empty;
-            }
-        }
-
-        private void removeScriptText(HtmlNode node, string contains)
-        {
-            var path = "//script/text()";
-            var nodes = node.SelectNodes(path);
-            foreach (var scriptNode in nodes)
-            {
-                if (scriptNode.InnerText.Contains(contains))
-                {
-                    scriptNode.ParentNode.RemoveChild(scriptNode);
-                }
-            }
-        }
-
-        private void removePartialMatch(HtmlNode node, string elementType, string attribute, string contains)
-        {
-            var path = $"//{elementType}[contains(@{attribute}, '{contains}')]";
-            var nodes = node.SelectNodes(path);
-            foreach (var elementNode in nodes)
-            {
-                elementNode.ParentNode.RemoveChild(elementNode);
-            }
-        }
-
-        private void removeByAttribute(HtmlNode node, string attribute)
-        {
-            var path = $"//*[@{attribute}]";
-            var nodes = node.SelectNodes(path);
-            foreach (var elementNode in nodes)
-            {
-                elementNode.ParentNode.RemoveChild(elementNode);
-            }
-        }
-
-        private void removeAllAttributeValues(HtmlNode node, string elementType, string attribute)
-        {
-            var path = $"//{elementType}[@{attribute}]";
-            var nodes = node.SelectNodes(path);
-            foreach (var elementNode in nodes)
-            {
-                elementNode.Attributes[attribute].Value = string.Empty;
-            }
-        }
-
-        private void removeComments(HtmlNode node)
-        {
-            var path = "//comment()";
-            var nodes = node.SelectNodes(path);
-            foreach (var elementNode in nodes)
-            {
-                elementNode.ParentNode.RemoveChild(elementNode);
             }
         }
 
@@ -278,7 +209,8 @@ namespace Metis.Overseer.Services
             await updateSitePageContent(site, page, html);
             // update the page status change to the database
             await updateSitePage(site.Id, page);
-
+            // update the status of the site
+            await updateSiteStatus(site);
 
             var message = new SiteEvent
             {
@@ -347,30 +279,14 @@ namespace Metis.Overseer.Services
             await _pagesContent.ReplaceOneAsync(s => s.Id == pageContent.Id, pageContent);
         }
 
-        private string createMD5(string input, Encoding encoding = null)
+        /// <summary>
+        /// update the site status in the database
+        /// </summary>
+        /// <param name="site">The site to update</param>
+        private async Task updateSiteStatus(Site site)
         {
-            if (encoding == null)
-            {
-                encoding = Encoding.UTF8;
-            }
-
-            // remove all white spaces and new lines
-            input = Regex.Replace(input, @"\s+", "");
-
-            // Use input string to calculate MD5 hash
-            using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
-            {
-                byte[] inputBytes = encoding.GetBytes(input);
-                byte[] hashBytes = md5.ComputeHash(inputBytes);
-
-                // Convert the byte array to hexadecimal string
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < hashBytes.Length; i++)
-                {
-                    sb.Append(hashBytes[i].ToString("X2"));
-                }
-                return sb.ToString();
-            }
+            await _sites.FindOneAndUpdateAsync(s => s.Id == site.Id,
+                Builders<Site>.Update.Set(s => s.Status, site.Status));
         }
     }
 }

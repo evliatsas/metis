@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -45,6 +44,7 @@ namespace Metis.Overseer
             services.AddScoped<LogService>();
             services.AddSingleton<IEmailConfiguration>(Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>());
             services.AddTransient<IEmailService, EmailService>();
+            services.AddSingleton<IGuardConfiguration>(Configuration.GetSection("GuardConfiguration").Get<GuardConfiguration>());
 
             services.AddAuthentication(options =>
             {
@@ -102,7 +102,7 @@ namespace Metis.Overseer
             });
 
             services.AddSingleton<GuardService>();
-            services.AddHostedService<BackgroundServiceStarter<GuardService>>();
+            services.AddHostedService<MonitorService>();
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

@@ -1,4 +1,5 @@
 {
   "UiD": "5ce8730a43c47768e10c9587",
-  "ConnectionString": "mongodb://admin:Abc.123@ds349065.mlab.com:49065/metis"
+  "ConnectionString": "mongodb://admin:Abc.123@ds349065.mlab.com:49065/metis",
+  "RefreshInterval":  30
 }

@@ -1,216 +1,188 @@
-﻿using Metis.Core.Entities;
-using Metis.Guard;
+﻿using Metis.Guard;
 using Metis.Guard.Entities;
 using Metis.Overseer.Hubs;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using MongoDB.Driver;
 using Serilog;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Metis.Overseer.Services
 {
-    public class GuardService : IHostedService, IDisposable
+    public class GuardService
     {
         private readonly IMongoClient _mongoClient;
-        private readonly IEmailService _emailService;
         private readonly IHubContext<GuardHub> _guardHubContext;
-        private readonly string _connectionString;
-        private readonly ConcurrentDictionary<string, Watcher> _guards;
 
-        public IEnumerable<Watcher> Watchers { get { return _guards.Values; } }
-
-        public GuardService(IMongoClient mongoClient, IHubContext<GuardHub> guardHubContext, IConfiguration config, IEmailService emailService)
+        public GuardService(IMongoClient mongoClient, IHubContext<GuardHub> guardHubContext)
         {
             _mongoClient = mongoClient;
             _guardHubContext = guardHubContext;
-            _connectionString = config.GetConnectionString("Metis");
-            _guards = new ConcurrentDictionary<string, Watcher>();
-            _emailService = emailService;
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            Task.Run(() => startGuards());
-            Log.Debug("guard service successfully started");
-            return Task.CompletedTask;
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            Dispose();
-            return Task.CompletedTask;
-        }
-
-        public void StartGuard(string siteId)
-        {
-            var exists = _guards.ContainsKey(siteId);
-            if (exists)
-            {
-                Watcher watcher;
-                _guards.TryGetValue(siteId, out watcher);
-                watcher.Start();
-            }
-            else
-            {
-                var config = new Configuration() { UiD = siteId, ConnectionString = _connectionString };
-                var watcher = new Watcher(config, _mongoClient);
-                watcher.SiteStatusChanged += Watcher_SiteStatusChanged;
-                watcher.SiteException += Watcher_SiteException;
-                watcher.Start();
-
-                _guards.TryAdd(siteId, watcher);
-            }
-        }
-
-        public void StopGuard(string siteId)
-        {
-            var exists = _guards.ContainsKey(siteId);
-            if (exists)
-            {
-                Watcher watcher;
-                _guards.TryGetValue(siteId, out watcher);
-                watcher.Stop();
-            }
-            else
-            {
-                throw new KeyNotFoundException("This site is not being watched by the guard service.");
-            }
-        }
-
+        /// <summary>
+        /// Capture a Snapshot of the Page content
+        /// </summary>
+        /// <param name="siteId">The Id of the site to refresh page content</param>
+        /// <returns></returns>
         public async Task RefreshSite(string siteId)
         {
-            var exists = _guards.ContainsKey(siteId);
-            if (exists)
+            try
             {
-                Watcher watcher;
-                _guards.TryGetValue(siteId, out watcher);
-                watcher.Stop();
-                await watcher.TakeSnapshot();
-                watcher.Start();
+                var site = await getSite(siteId);
+                if (site != null)
+                {
+                    var previousSiteStatus = site.Status;
+                    await takeSnapshot(site);
+
+                    var message = new SiteEvent
+                    {
+                        SiteId = site.Id,
+                        Name = site.Name,
+                        CurrentStatus = site.Status.ToString(),
+                        PreviousStatus = previousSiteStatus.ToString(),
+                        Message = $"Site {site.Name} refresh has been requested",
+                        Happened = DateTime.Now
+                    };
+
+                    await sendMessage(message);
+                }
+                else
+                {
+                    Log.Error("This site {@id} is not being watched by the guard service.", siteId);
+                }
             }
-            else
+            catch(Exception exception)
             {
-                throw new KeyNotFoundException("This site is not being watched by the guard service.");
+                Log.Error(exception, "Exception while refreshing site {@id}", siteId);
             }
         }
 
         public async Task StartMaintenance(string siteId)
         {
-            var exists = _guards.ContainsKey(siteId);
-            if (exists)
+            try
             {
-                Watcher watcher;
-                _guards.TryGetValue(siteId, out watcher);
-                await watcher.StartMaintenance();
+                var site = await getSite(siteId);                
+                if (site != null)
+                {
+                    var previousSiteStatus = site.Status;
+                    foreach (var page in site.Pages)
+                    {
+                        page.MD5Hash = string.Empty;
+                        page.Status = Status.Maintenance;
+                    }
+                    site.Status = Status.Maintenance;
+
+                    await updateSite(site);
+
+                    var message = new SiteEvent
+                    {
+                        SiteId = site.Id,
+                        Name = site.Name,
+                        CurrentStatus = site.Status.ToString(),
+                        PreviousStatus = previousSiteStatus.ToString(),
+                        Message = $"Start maintenance for Site {site.Name} has been requested",
+                        Happened = DateTime.Now
+                    };
+
+                    await sendMessage(message);
+                }
+                else
+                {
+                    Log.Error("This site {@id} is not being watched by the guard service.", siteId);
+                }
             }
-            else
+            catch (Exception exception)
             {
-                throw new KeyNotFoundException("This site is not being watched by the guard service.");
+                Log.Error(exception, "Exception while starting maintenance for site {@id}", siteId);
             }
         }
 
         public async Task EndMaintenance(string siteId)
         {
-            var exists = _guards.ContainsKey(siteId);
-            if (exists)
+            try
             {
-                Watcher watcher;
-                _guards.TryGetValue(siteId, out watcher);
-                await watcher.CompleteMaintenance();
-            }
-            else
-            {
-                throw new KeyNotFoundException("This site is not being watched by the guard service.");
-            }
-        }
-
-        private async Task startGuards()
-        {
-            var siteIds = await getSitesFromDb();
-
-            foreach (var siteId in siteIds)
-            {
-                var config = new Configuration() { UiD = siteId, ConnectionString = _connectionString };
-                var watcher = new Watcher(config, _mongoClient);
-                watcher.SiteStatusChanged += Watcher_SiteStatusChanged;
-                watcher.SiteException += Watcher_SiteException;
-                watcher.Start();
-
-                _guards.TryAdd(siteId, watcher);
-
-                Log.Debug("watcher of site {name} started.", watcher.Site.Name);
-            }
-        }
-
-        private void Watcher_SiteException(object sender, SiteExceptionEventArgs e)
-        {
-            Log.Error(e.Exception, "Exception while watching site {@name} {@id} page {@title} {@uri}",
-                e.Site.Name, e.Site.Id, e.Page.Title, e.Page.Uri);
-
-            var message = GuardHub._CreateMessage(e);
-            Task.Run(() => _guardHubContext.Clients.All.SendAsync("SiteGuardingException", message));
-            Task.Run(() => saveAlarm(message));
-        }
-
-        private void Watcher_SiteStatusChanged(object sender, SiteStatusEventArgs e)
-        {
-            Log.Information("Status changed for site {@name} {@id} from {@previous} to {@status}",
-                e.Site.Name, e.Site.Id, e.PreviousStatus, e.Site.Status);
-
-            var message = GuardHub._CreateMessage(e);
-
-            Task.Run(() => _guardHubContext.Clients.All.SendAsync("SiteStatusChanged", message));
-            Task.Run(() => saveAlarm(message));
-
-            if (e.Site.Status != e.PreviousStatus)
-            {
-                _emailService.Send(new EmailMessage()
+                var site = await getSite(siteId);
+                if (site != null)
                 {
-                    Content = $"Status changed for site {e.Site.Name} {e.Site.Id} from {e.PreviousStatus} to {e.Site.Status}",
-                    FromAddress = new EmailAddress("metis", "metis@ypes.gr"),
-                    ToAddresses = e.Site.EmailAddresses,
-                    Subject = "Κατάσταση Ιστοσελίδας"
-                });
+                    var previousSiteStatus = site.Status;
+                    await takeSnapshot(site);
+
+                    var message = new SiteEvent
+                    {
+                        SiteId = site.Id,
+                        Name = site.Name,
+                        CurrentStatus = site.Status.ToString(),
+                        PreviousStatus = previousSiteStatus.ToString(),
+                        Message = $"End of maintenance for Site {site.Name} has been requested",
+                        Happened = DateTime.Now
+                    };
+
+                    await sendMessage(message);
+                }
+                else
+                {
+                    Log.Error("This site {@id} is not being watched by the guard service.", siteId);
+                }
+            }
+            catch (Exception exception)
+            {
+                Log.Error(exception, "Exception while ending maintenance for site {@id}", siteId);
             }
         }
 
-        private async Task<IEnumerable<string>> getSitesFromDb()
+        public async Task<IEnumerable<Site>> GetSitesFromDb()
         {
             var database = _mongoClient.GetDatabase("metis");
             var siteCollection = database.GetCollection<Site>("sites");
             var sites = await siteCollection.Find(x => true)
-                .Project<Site>(Builders<Site>.Projection.Include(x => x.Id))
                 .ToListAsync();
 
-            return sites.Select(x => x.Id);
+            return sites;
         }
 
-        private async Task saveAlarm(SiteEvent msg)
+        private async Task<Site> getSite(string siteId)
         {
             var database = _mongoClient.GetDatabase("metis");
-            var col = database.GetCollection<SiteEvent>("siteEvents");
-            await col.InsertOneAsync(msg);
+            var siteCollection = database.GetCollection<Site>("sites");
+            var site = await siteCollection.Find(x => x.Id == siteId)
+                .SingleOrDefaultAsync();
+
+            return site;
         }
 
-        public void Dispose()
+        private async Task updateSite(Site site)
         {
-            // cleanup statements...
-            foreach (var watcher in _guards.Values)
-            {
-                watcher.Stop();
-                watcher.SiteStatusChanged -= Watcher_SiteStatusChanged;
-                watcher.SiteException -= Watcher_SiteException;
+            var database = _mongoClient.GetDatabase("metis");
+            var siteCollection = database.GetCollection<Site>("sites");
+            await siteCollection.ReplaceOneAsync<Site>(x => x.Id == site.Id, site);
+        }
 
-                Log.Debug("watcher of site {id} safely stopped.", watcher.Site.Id);
+        private async Task sendMessage(SiteEvent message)
+        {
+            await _guardHubContext.Clients.All.SendAsync("SiteStatusChanged", message);
+            var db = _mongoClient.GetDatabase("metis");
+            var siteEvents = db.GetCollection<SiteEvent>("siteEvents");
+            await siteEvents.InsertOneAsync(message);
+        }
+
+        private async Task takeSnapshot(Site site)
+        {
+            var pageMonitor = new PageMonitor();
+            foreach (var page in site.Pages)
+            {
+                var content = await pageMonitor.ParsePage(site, page);
+                var encoding = Encoding.GetEncoding(site.EncodingCode);
+                var md5 = Metis.Guard.Utilities.CreateMD5(content, encoding);
+
+                page.MD5Hash = md5;
+                page.Status = Status.Ok;
             }
-            Log.Debug("guard service safely disposed");
+            site.Status = Status.Ok;
+
+            await updateSite(site);
         }
     }
 }

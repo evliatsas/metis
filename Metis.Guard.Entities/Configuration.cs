@@ -13,5 +13,6 @@
         /// The connection string of the database
         /// </summary>
         public string ConnectionString { get; set; }
+        public int RefreshInterval { get; set; }
     }
 }

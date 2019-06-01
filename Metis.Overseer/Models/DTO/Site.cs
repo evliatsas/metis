@@ -17,21 +17,20 @@ namespace Metis.Overseer.Models.DTO
 
         public Site() { }
 
-        public Site(Guard.Watcher watcher)
+        public Site(Metis.Guard.Entities.Site site)
         {
-            Id = watcher.Site.Id;
-            Name = watcher.Site.Name;
-            Status = watcher.Site.Status.ToString();
-            Latitude = watcher.Site.Latitude;
-            Longitude = watcher.Site.Longitude;
-            Category = watcher.Site.Category;
-            Pages = watcher.Site.Pages.Select(page =>
+            Id = site.Id;
+            Name = site.Name;
+            Status = site.Status.ToString();
+            Latitude = site.Latitude;
+            Longitude = site.Longitude;
+            Category = site.Category;
+            Pages = site.Pages.Select(page =>
                 new DTO.Page()
                 {
                     Name = page.Title,
                     Uri = page.Uri,
-                    Status = page.Status.ToString(),
-                    Guard = watcher.GetPageWorkerStatus(page.Uri).ToString()
+                    Status = page.Status.ToString()
                 });
         }
     }

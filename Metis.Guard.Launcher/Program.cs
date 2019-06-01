@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Metis.Guard
+namespace Metis.Guard.Launcher
 {
     class Program
     {
@@ -26,18 +26,13 @@ namespace Metis.Guard
                 //importUsers(configuration.ConnectionString);
                 Console.WriteLine($"Started guarding site {configuration.UiD}.");
                 var mongoClient = new MongoClient(configuration.ConnectionString);
-                var watcher = new Watcher(configuration, mongoClient);
-                watcher.SiteStatusChanged += Watcher_SiteStatusChanged;
-                watcher.SiteException += Watcher_SiteException;
-                watcher.Start();
+                var monitor = new Monitor(configuration.UiD, configuration.RefreshInterval, mongoClient);
+                monitor.Start();
 
                 Console.ReadLine();
                 Console.WriteLine("Stopping....");
-                watcher.Stop();
-                watcher.SiteStatusChanged -= Watcher_SiteStatusChanged;
-                watcher.SiteException -= Watcher_SiteException;
-                Console.WriteLine("Stopped");
-                Console.ReadLine();
+                monitor.Stop();
+                monitor.Dispose();
             }
             catch (Exception exc)
             {
@@ -45,16 +40,6 @@ namespace Metis.Guard
 
                 Console.ReadLine();
             }
-        }
-
-        private static void Watcher_SiteException(object sender, Entities.SiteExceptionEventArgs e)
-        {
-
-        }
-
-        private static void Watcher_SiteStatusChanged(object sender, Entities.SiteStatusEventArgs e)
-        {
-
         }
 
         private static void importUsers(string dbConn)
