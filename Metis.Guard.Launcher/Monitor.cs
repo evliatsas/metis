@@ -95,6 +95,50 @@ namespace Metis.Guard.Launcher
                 Builders<Site>.Update.Set(s => s.Status, site.Status));
         }
 
+        private async Task updateSitePageContent(Site site, Page page, string content)
+        {
+            var database = _mongoClient.GetDatabase("metis");
+            var pagesContent = database.GetCollection<PageContent>("pagesContent");
+            var pageContent = await pagesContent.Find(Builders<PageContent>.Filter.Eq(x => x.PageUri, page.Uri))
+                .FirstOrDefaultAsync();
+
+            if (pageContent == null)
+            {
+                pageContent = new PageContent()
+                {
+                    SiteId = site.Id,
+                    PageUri = page.Uri,
+                    Differences = new List<PageDifference>()
+                };
+                await pagesContent.InsertOneAsync(pageContent);
+            }
+
+            switch (page.Status)
+            {
+                case Status.Alarm:
+                    pageContent.HtmlRead = content;
+                    var items = new Diff().DiffText(pageContent.HtmlKnown, content);
+                    pageContent.Differences = items.Select(i => new PageDifference(i));
+                    break;
+                case Status.Maintenance:
+                    pageContent.HtmlKnown = string.Empty;
+                    pageContent.HtmlRead = string.Empty;
+                    pageContent.Differences = new List<PageDifference>();
+                    break;
+                case Status.NotFound:
+                    pageContent.HtmlRead = string.Empty;
+                    pageContent.Differences = new List<PageDifference>();
+                    break;
+                case Status.Ok:
+                    pageContent.HtmlKnown = content;
+                    pageContent.HtmlRead = string.Empty;
+                    pageContent.Differences = new List<PageDifference>();
+                    break;
+            }
+
+            await pagesContent.ReplaceOneAsync(s => s.Id == pageContent.Id, pageContent);
+        }
+
         private async Task monitor(Site site, Page page)
         {
             var encoding = Encoding.GetEncoding(site.EncodingCode);
@@ -133,6 +177,7 @@ namespace Metis.Guard.Launcher
                 }
             }
 
+            await updateSitePageContent(site, page, content);
             Console.WriteLine($"Page {page.Uri} status is {page.Status}");
         }
     }
