@@ -16,7 +16,8 @@ const WebMapLayoutView = ({
   filter,
   filterText,
   setFilterText,
-  onFilterChange
+  onFilterChange,
+  role
 }) => {
   return (
     <div style={{ height: '100vh', display: 'flex' }}>
@@ -61,6 +62,7 @@ const WebMapLayoutView = ({
             onClose={() => setSelected(null)}
             onMaintenanceStart={onMaintenanceStart}
             onMaintenanceStop={onMaintenanceStop}
+            role={role}
             style={{ minHeight: '100px' }}
           />
         )}

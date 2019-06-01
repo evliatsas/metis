@@ -31,7 +31,8 @@ const MapSiteDetails = ({
   site,
   onClose,
   onMaintenanceStart,
-  onMaintenanceStop
+  onMaintenanceStop,
+  role
 }) => {
   return (
     <div>
@@ -64,7 +65,7 @@ const MapSiteDetails = ({
           ))}
         </ul>
         <div>
-          {site.status !== 'Pending' && (
+          {role !== 'Viewer' && site.status !== 'Pending' && (
             <StartOrStopMaintenanceButton
               site={site}
               onMaintenanceStart={onMaintenanceStart}

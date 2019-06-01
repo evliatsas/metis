@@ -41,7 +41,8 @@ const AuthProvider = props => {
   const [isAuthenticated, setIsAuthenticated] = useState(initAuthentication())
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, signIn, signOut }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, signIn, signOut, getSession }}>
       {props.children}
     </AuthContext.Provider>
   )

@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
 import hubConnectionBuilder from '../../services/hubConnectionBuilder'
-import { HUB_URL } from '../map/mapUtilities'
+import { HUB_URL, FILTER, applyFilter } from '../map/mapUtilities'
+import { useAuth } from '../../contexts/AuthProvider'
 import api from '../../services/api'
-import { FILTER, statusColor, applyFilter } from '../map/mapUtilities'
 
 const MapContainer = ({ children }) => {
   const hub = useRef(null)
+  const auth = useAuth()
   const [sites, setSites] = useState([])
   const [messages, setMessages] = useState([])
   const [selected, setSelected] = useState(null)
@@ -13,6 +14,7 @@ const MapContainer = ({ children }) => {
   const [filter, setFilter] = useState([...FILTER])
   const [filterText, setFilterText] = useState('')
   const [filtered, setFiltered] = useState([])
+  const [role, setRole] = useState(null)
 
   async function onMaintenanceStart() {
     setSelected(ps => ({ ...ps, status: 'Pending' }))
@@ -31,6 +33,11 @@ const MapContainer = ({ children }) => {
       return [...prevFilter]
     })
   }
+
+  useEffect(() => {
+    const session = auth.getSession()
+    setRole(auth.isAuthenticated && session ? session.role : null)
+  }, [auth])
 
   useEffect(() => {
     async function fetchSites() {
@@ -112,7 +119,8 @@ const MapContainer = ({ children }) => {
       filter,
       filterText,
       setFilterText,
-      onFilterChange
+      onFilterChange,
+      role
     })
   )
 }
