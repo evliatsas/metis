@@ -259,8 +259,11 @@ namespace Metis.Overseer.Services
             {
                 case Status.Alarm:
                     pageContent.HtmlRead = content;
-                    var items = new Diff().DiffText(pageContent.HtmlKnown, content);
-                    pageContent.Differences = items.Select(i => new PageDifference(i));
+                    if (!(string.IsNullOrEmpty(pageContent.HtmlKnown) || string.IsNullOrEmpty(content)))
+                    {
+                        var items = new Diff().DiffText(pageContent.HtmlKnown, content);
+                        pageContent.Differences = items.Select(i => new PageDifference(i));
+                    }
                     break;
                 case Status.Maintenance:
                     pageContent.HtmlKnown = string.Empty;
