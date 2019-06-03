@@ -248,7 +248,9 @@ namespace Metis.Overseer.Services
                 {
                     SiteId = site.Id,
                     PageUri = page.Uri,
-                    Differences = new List<PageDifference>()
+                    Differences = new List<PageDifference>(),
+                    HtmlKnown = string.Empty,
+                    HtmlRead = string.Empty
                 };
                 await _pagesContent.InsertOneAsync(pageContent);
             }
