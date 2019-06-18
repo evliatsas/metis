@@ -58,7 +58,7 @@ const Sidebar = () => {
 
         <AntdMenu selectable={false} mode="vertical" className="sidebar-menu">
           {items
-            .filter(x => x.roles.some(role))
+            .filter(x => x.roles.some(r === role))
             .map(item => (
               <AntdMenu.Item key={item.path} className="sidebar-menu-item">
                 <NavLink to={item.path}>
