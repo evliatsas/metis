@@ -34,7 +34,7 @@ namespace Metis.Overseer.Controllers
             var user = await _userService.Get(userId);
             if (user.Role != UserRole.Administrator)
             {
-                sites = sites.Where(s => user.Sites.Contains(s.Id)).ToList();
+                dto = dto.Where(s => user.Sites.Contains(s.Id)).ToList();
             }
 
             return Ok(dto);
