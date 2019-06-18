@@ -16,27 +16,32 @@ const items = [
   {
     path: '/map',
     icon: 'global',
-    caption: 'Χάρτης'
+    caption: 'Χάρτης',
+    roles: ['Viewer', 'Manager', 'Administrator']
   },
   {
     path: '/logbooks',
     icon: 'notification',
-    caption: 'Συμβάντα'
+    caption: 'Συμβάντα',
+    roles: ['Viewer', 'Manager', 'Administrator']
   },
   {
     path: '/admin/users',
     icon: 'team',
-    caption: 'Διαχείριση Χρηστών'
+    caption: 'Διαχείριση Χρηστών',
+    roles: ['Administrator']
   },
   {
     path: '/admin/sites',
     icon: 'file-protect',
-    caption: 'Διαχείριση Ιστοσελίδων'
+    caption: 'Διαχείριση Ιστοσελίδων',
+    roles: ['Manager', 'Administrator']
   }
 ]
 
 const Sidebar = () => {
   const auth = useAuth()
+  const role = auth.getSession().role
   return (
     <AntdLayout.Sider collapsed={true}>
       <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -52,14 +57,16 @@ const Sidebar = () => {
         </div>
 
         <AntdMenu selectable={false} mode="vertical" className="sidebar-menu">
-          {items.map(item => (
-            <AntdMenu.Item key={item.path} className="sidebar-menu-item">
-              <NavLink to={item.path}>
-                <AntdIcon type={item.icon} />
-                <span>{item.caption}</span>
-              </NavLink>
-            </AntdMenu.Item>
-          ))}
+          {items
+            .filter(x => x.roles.some(role))
+            .map(item => (
+              <AntdMenu.Item key={item.path} className="sidebar-menu-item">
+                <NavLink to={item.path}>
+                  <AntdIcon type={item.icon} />
+                  <span>{item.caption}</span>
+                </NavLink>
+              </AntdMenu.Item>
+            ))}
         </AntdMenu>
         <div style={{ flexGrow: '1' }} />
         <AntdMenu
