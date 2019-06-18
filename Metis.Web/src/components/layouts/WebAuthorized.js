@@ -18,7 +18,8 @@ const SiteAdmin = lazy(() => import('../admin/Site'))
 
 const WebAuthorized = () => {
   const auth = useAuth()
-  const role = auth.getSession().role
+  const session = auth.getSession()
+  const role = session && session.role
 
   return (
     <div style={{ height: '100vh', overflow: 'hidden' }}>

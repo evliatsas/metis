@@ -41,7 +41,8 @@ const items = [
 
 const Sidebar = () => {
   const auth = useAuth()
-  const role = auth.getSession().role
+  const session = auth.getSession()
+  const role = session && session.role
   return (
     <AntdLayout.Sider collapsed={true}>
       <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
