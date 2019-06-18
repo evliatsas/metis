@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from 'react'
 import { Route, Switch, Redirect } from 'react-router-dom'
 import { Layout as AntdLayout } from 'antd'
 import WebSidebar from './WebSidebar'
+import { useAuth } from '../../contexts/AuthProvider'
 
 const Map = lazy(() => import('../map/WebMapLayout'))
 const LogBooks = lazy(() => import('../logBooks/LogBooks'))
@@ -16,6 +17,9 @@ const SitesAdmin = lazy(() => import('../admin/Sites'))
 const SiteAdmin = lazy(() => import('../admin/Site'))
 
 const WebAuthorized = () => {
+  const auth = useAuth()
+  const role = auth.getSession().role
+
   return (
     <div style={{ height: '100vh', overflow: 'hidden' }}>
       <AntdLayout>
@@ -33,10 +37,18 @@ const WebAuthorized = () => {
                 path="/logbooks/:id/event/:eventId"
                 component={LogBookEntry}
               />
-              <Route exact path="/admin/users" component={UsersAdmin} />
-              <Route exact path="/admin/users/:id" component={UserAdmin} />
-              <Route exact path="/admin/sites" component={SitesAdmin} />
-              <Route exact path="/admin/sites/:id" component={SiteAdmin} />
+              {role === 'Administrator' && (
+                <Route exact path="/admin/users" component={UsersAdmin} />
+              )}
+              {role === 'Administrator' && (
+                <Route exact path="/admin/users/:id" component={UserAdmin} />
+              )}
+              {role !== 'Viewer' && (
+                <Route exact path="/admin/sites" component={SitesAdmin} />
+              )}
+              {role !== 'Viewer' && (
+                <Route exact path="/admin/sites/:id" component={SiteAdmin} />
+              )}
               <Redirect to="/map" />
             </Switch>
           </Suspense>
