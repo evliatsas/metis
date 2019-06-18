@@ -12,6 +12,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Metis.Overseer.Extensions;
 
 namespace Metis.Overseer.Controllers
 {
@@ -79,7 +80,15 @@ namespace Metis.Overseer.Controllers
         [HttpGet]
         public async Task<IActionResult> GetSites()
         {
+            var userId = User.Identity.GetUserId();
+
             var data = await _siteService.GetAll();
+
+            var user = await _userService.Get(userId);
+            if (user.Role != UserRole.Administrator)
+            {
+                data = data.Where(s => user.Sites.Contains(s.Id)).ToList();
+            }
 
             return Ok(data.OrderBy(p => p.Name));
         }
