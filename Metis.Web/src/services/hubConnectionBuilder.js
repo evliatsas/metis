@@ -1,4 +1,4 @@
-import { HubConnectionBuilder, LogLevel } from '@aspnet/signalr'
+import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
 import storage from './storage'
 
 // connection timeout if no messages received (120.000ms = 120s = 2m)

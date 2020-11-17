@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
 using System.Text;
@@ -14,7 +15,7 @@ namespace Metis.Overseer
 
             try
             {
-                CreateWebHostBuilder(args).Build().Run();
+                CreateHostBuilder(args).Build().Run();
                 return;
             }
             catch (Exception ex)
@@ -28,12 +29,19 @@ namespace Metis.Overseer
             }
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.ConfigureKestrel(serverOptions =>
+                {
+                    // Set properties and call methods on options
+                })
                 .UseSerilog((context, config) =>
-                    {
-                        config.ReadFrom.Configuration(context.Configuration);
-                    })
+                {
+                    config.ReadFrom.Configuration(context.Configuration);
+                })
                 .UseStartup<Startup>();
+            });
     }
 }
